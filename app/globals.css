@@ -128,3 +128,51 @@
     @apply font-sans;
   }
 }
+
+/* ── Landing page animations ─────────────────────────────────── */
+@keyframes bv-marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+@keyframes bv-fade-up {
+  from { opacity: 0; transform: translateY(32px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bv-pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.5; transform: scale(0.75); }
+}
+
+@keyframes bv-shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
+@keyframes bv-float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-8px); }
+}
+
+/* Scroll reveal */
+.bv-reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity  0.85s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.bv-reveal.bv-visible { opacity: 1; transform: translateY(0); }
+.bv-reveal-d1 { transition-delay: 80ms; }
+.bv-reveal-d2 { transition-delay: 160ms; }
+.bv-reveal-d3 { transition-delay: 240ms; }
+.bv-reveal-d4 { transition-delay: 320ms; }
+
+/* Feature card hover */
+.bv-feat-card {
+  transition: border-color 0.2s ease, transform 0.2s cubic-bezier(0.16,1,0.3,1), box-shadow 0.2s ease;
+}
+.bv-feat-card:hover {
+  transform: translateX(4px);
+}
