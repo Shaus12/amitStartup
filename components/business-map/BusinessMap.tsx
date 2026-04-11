@@ -39,7 +39,7 @@ export function BusinessMap({ data }: BusinessMapProps) {
     const rawNodes: DepartmentNodeType[] = data.departments.map((dept) => ({
       id: dept.id,
       type: "department" as const,
-      position: { x: dept.positionX, y: dept.positionY },
+      position: { x: dept.positionX ?? 0, y: dept.positionY ?? 0 },
       data: {
         label: dept.name,
         color: dept.color,
@@ -48,9 +48,9 @@ export function BusinessMap({ data }: BusinessMapProps) {
         processes: dept.processes.map((p) => ({
           id: p.id,
           name: p.name,
-          timeSpentHrsPerWeek: p.timeSpentHrsPerWeek,
-          isManual: p.isManual,
-          frequency: p.frequency,
+          timeSpentHrsPerWeek: p.timeSpentHrsPerWeek ?? 0,
+          isManual: p.isManual ?? false,
+          frequency: p.frequency ?? null,
         })),
         painPointCount: dept.painPoints.length,
         opportunityCount: dept.aiOpportunities.length,

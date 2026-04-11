@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
           },
           setAll(cookiesToSet) {
             cookiesToSet.forEach(({ name, value, options }) => {
-              req.cookies.set(name, value, options);
+              req.cookies.set({ name, value, ...options });
               response.cookies.set(name, value, options);
             });
           },

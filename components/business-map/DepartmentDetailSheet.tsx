@@ -163,7 +163,7 @@ export function DepartmentDetailSheet({
                           {process.name}
                         </span>
                         <div className="flex items-center gap-1.5 flex-wrap">
-                          <FrequencyBadge frequency={process.frequency} />
+                          <FrequencyBadge frequency={process.frequency ?? null} />
                           {process.isManual && (
                             <span className="inline-flex items-center rounded-full bg-amber-500/20 px-2 py-0.5 text-xs font-medium text-amber-400">
                               Manual
@@ -171,8 +171,7 @@ export function DepartmentDetailSheet({
                           )}
                         </div>
                       </div>
-                      {process.timeSpentHrsPerWeek !== null &&
-                        process.timeSpentHrsPerWeek > 0 && (
+                      {(process.timeSpentHrsPerWeek ?? 0) > 0 && (
                           <span className="text-xs text-zinc-500">
                             ~{process.timeSpentHrsPerWeek} hrs/week
                           </span>
