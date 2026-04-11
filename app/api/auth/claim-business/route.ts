@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { supabaseAdmin } from "@/lib/supabase-admin";
+export const dynamic = "force-dynamic";
 
 /**
  * POST /api/auth/claim-business
