@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { supabaseAdmin as supabase } from "@/lib/supabase-admin";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -7,30 +7,37 @@ export async function GET(req: NextRequest) {
   if (!businessId) return NextResponse.json({ error: "businessId required" }, { status: 400 });
 
   try {
-    const opportunities = await prisma.aiOpportunity.findMany({
-      where: { businessId, dismissedAt: null },
-      include: {
-        department: { select: { name: true, color: true } },
-      },
-      orderBy: [{ pinned: "desc" }, { estimatedHoursSaved: "desc" }],
-    });
+    const { data: opportunities, error } = await supabase
+      .from("ai_opportunities")
+      .select("*, department:departments(name, color)")
+      .eq("business_id", businessId)
+      .order("estimated_hours_saved", { ascending: false });
 
-    return NextResponse.json(opportunities);
-  } catch {
+    if (error) throw error;
+
+    return NextResponse.json(opportunities || []);
+  } catch (err: any) {
+    console.error("Opportunities route error:", err);
     return NextResponse.json({ error: "Failed to fetch" }, { status: 500 });
   }
 }
 
 export async function PATCH(req: NextRequest) {
   try {
-    const { id, pinned, dismiss } = await req.json();
-    const data: { pinned?: boolean; dismissedAt?: Date | null } = {};
-    if (pinned !== undefined) data.pinned = pinned;
-    if (dismiss !== undefined) data.dismissedAt = dismiss ? new Date() : null;
+    const { id, roadmapStatus } = await req.json();
 
-    const opp = await prisma.aiOpportunity.update({ where: { id }, data });
+    const { data: opp, error } = await supabase
+      .from("ai_opportunities")
+      .update({ roadmap_status: roadmapStatus })
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (error) throw error;
+
     return NextResponse.json(opp);
-  } catch {
+  } catch (err: any) {
+    console.error("Opportunities patch error:", err);
     return NextResponse.json({ error: "Update failed" }, { status: 500 });
   }
 }

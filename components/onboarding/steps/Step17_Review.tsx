@@ -93,19 +93,21 @@ export function Step17_Review({ onBack }: Props) {
       const { businessId } = await onboardingRes.json();
       setBusinessId(businessId);
 
-      // Step 2: Trigger opportunity generation
-      const genRes = await fetch("/api/opportunities/generate", {
+      // Signal to middleware that we're in the "just onboarded" state
+      // so /dashboard is accessible before the user creates an account
+      document.cookie = "onboarding_just_completed=1; path=/; max-age=3600";
+
+      // Step 2: Trigger opportunity generation in the background (non-blocking).
+      // The dashboard will show opportunities once they're ready.
+      fetch("/api/opportunities/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ businessId }),
+      }).catch(() => {
+        // Silently ignore — user can regenerate from the dashboard
       });
 
-      if (!genRes.ok) {
-        const err = await genRes.json().catch(() => ({}));
-        throw new Error(err.message ?? "Failed to generate your business map. Please try again.");
-      }
-
-      // Step 3: Redirect to dashboard
+      // Step 3: Redirect immediately — don't wait for generation to finish
       router.push("/dashboard");
     } catch (err: unknown) {
       const message =
@@ -114,6 +116,7 @@ export function Step17_Review({ onBack }: Props) {
       setLoading(false);
     }
   }
+
 
   const departmentNames = answers.departments.map((d) => d.name);
   const processCount = answers.processes.length;

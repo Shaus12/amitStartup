@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { supabaseAdmin as supabase } from "@/lib/supabase-admin";
 
 // PATCH /api/opportunities/roadmap  { id, status }
 export async function PATCH(req: NextRequest) {
@@ -8,10 +8,15 @@ export async function PATCH(req: NextRequest) {
     if (!id || !["backlog", "in_progress", "done"].includes(status)) {
       return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
     }
-    const updated = await prisma.aiOpportunity.update({
-      where: { id },
-      data: { roadmapStatus: status },
-    });
+    const { data: updated, error } = await supabase
+      .from("ai_opportunities")
+      .update({ roadmap_status: status })
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (error) throw error;
+
     return NextResponse.json(updated);
   } catch (e) {
     return NextResponse.json({ error: String(e) }, { status: 500 });
@@ -22,10 +27,16 @@ export async function PATCH(req: NextRequest) {
 export async function GET(req: NextRequest) {
   const businessId = req.nextUrl.searchParams.get("businessId");
   if (!businessId) return NextResponse.json({ error: "Missing businessId" }, { status: 400 });
-  const opportunities = await prisma.aiOpportunity.findMany({
-    where: { businessId, dismissedAt: null },
-    include: { department: { select: { name: true, color: true } } },
-    orderBy: { generatedAt: "desc" },
-  });
-  return NextResponse.json(opportunities);
+
+  const { data: opportunities, error } = await supabase
+    .from("ai_opportunities")
+    .select("*, department:departments(name, color)")
+    .eq("business_id", businessId)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    return NextResponse.json({ error: "Failed to fetch opportunities" }, { status: 500 });
+  }
+
+  return NextResponse.json(opportunities || []);
 }

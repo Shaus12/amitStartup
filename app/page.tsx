@@ -1,14 +1,16 @@
 import { redirect } from "next/navigation";
-import { prisma } from "@/lib/prisma";
+import { createClient } from "@/lib/supabase/server";
 import { LandingPage } from "@/components/landing/LandingPage";
 
 export default async function Home() {
-  const business = await prisma.business.findFirst({
-    where: { onboardingCompleted: true },
-    orderBy: { createdAt: "desc" },
-  });
+  // Only send logged-in users to the dashboard.
+  // Anonymous visitors (including those mid-onboarding) always see the landing page.
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  if (business) {
+  if (user) {
     redirect("/dashboard");
   }
 

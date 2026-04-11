@@ -2,16 +2,20 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { RotateCcw, Network, FileText } from "lucide-react";
+import { RotateCcw, Network, FileText, LogOut } from "lucide-react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { BusinessMap } from "@/components/business-map/BusinessMap";
 import { BusinessMapData } from "@/lib/types/business-map";
 import { HealthScore } from "@/components/dashboard/HealthScore";
+import { SaveMapModal } from "@/components/auth/SaveMapModal";
+import { createClient } from "@/lib/supabase/client";
 
 interface DashboardClientProps {
   businessId: string;
   businessName: string;
+  showSaveModal?: boolean;
 }
 
 function SkeletonNode() {
@@ -34,8 +38,16 @@ function SkeletonNode() {
   );
 }
 
-export function DashboardClient({ businessId, businessName }: DashboardClientProps) {
+export function DashboardClient({ businessId, businessName, showSaveModal = false }: DashboardClientProps) {
+  const router = useRouter();
   const [isRegenerating, setIsRegenerating] = useState(false);
+
+  async function handleSignOut() {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/login");
+    router.refresh();
+  }
 
   const { data, isLoading, isError, error } = useQuery<BusinessMapData>({
     queryKey: ["business-map", businessId],
@@ -64,7 +76,7 @@ export function DashboardClient({ businessId, businessName }: DashboardClientPro
   }
 
   const deptCount = data?.departments?.length ?? 0;
-  const processCount = data?.departments?.reduce((sum, d) => sum + d.processes.length, 0) ?? 0;
+  const processCount = data?.departments?.reduce((sum, d) => sum + (d.processes?.length ?? 0), 0) ?? 0;
 
   return (
     <div className="flex flex-col h-full" style={{ backgroundColor: "#111319" }}>
@@ -111,6 +123,30 @@ export function DashboardClient({ businessId, businessName }: DashboardClientPro
           <div className="flex items-center gap-3">
             {!isLoading && data && <HealthScore businessId={businessId} />}
             <div className="w-px h-6 shrink-0" style={{ backgroundColor: "#282a30" }} />
+            {!showSaveModal && (
+              <button
+                id="sign-out-btn"
+                onClick={handleSignOut}
+                title="Sign out"
+                className="inline-flex items-center gap-1.5 rounded px-2.5 py-1.5 text-xs transition-all duration-150"
+                style={{
+                  fontFamily: "var(--font-inter)",
+                  backgroundColor: "transparent",
+                  border: "1px solid transparent",
+                  color: "#424754",
+                }}
+                onMouseEnter={e => {
+                  (e.currentTarget as HTMLElement).style.color = "#c2c6d6";
+                  (e.currentTarget as HTMLElement).style.borderColor = "#282a30";
+                }}
+                onMouseLeave={e => {
+                  (e.currentTarget as HTMLElement).style.color = "#424754";
+                  (e.currentTarget as HTMLElement).style.borderColor = "transparent";
+                }}
+              >
+                <LogOut className="w-3 h-3" strokeWidth={2} />
+              </button>
+            )}
             <Link
               href="/report"
               className="inline-flex items-center gap-1.5 rounded px-3 py-1.5 text-xs font-medium transition-all duration-150"
@@ -200,6 +236,7 @@ export function DashboardClient({ businessId, businessName }: DashboardClientPro
         )}
 
         {data && !isLoading && !isError && <BusinessMap data={data} />}
+        {showSaveModal && <SaveMapModal businessId={businessId} businessName={businessName} />}
 
         {!isLoading && !isError && data && data.departments.length === 0 && (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">

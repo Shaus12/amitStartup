@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { supabaseAdmin as supabase } from "@/lib/supabase-admin";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ChevronLeft, Clock, Users, Zap } from "lucide-react";
@@ -11,22 +11,51 @@ export default async function DepartmentPage({
 }) {
   const { id } = await params;
 
-  const dept = await prisma.department.findUnique({
-    where: { id },
-    include: {
-      processes: { orderBy: { sortOrder: "asc" } },
-      painPoints: true,
-      aiOpportunities: {
-        where: { dismissedAt: null },
-        orderBy: [{ pinned: "desc" }, { estimatedHoursSaved: "desc" }],
-      },
-    },
-  });
+  // Fetch department + its AI opportunities from real tables
+  const { data: dept } = await supabase
+    .from("departments")
+    .select("*, ai_opportunities(*)")
+    .eq("id", id)
+    .single();
 
   if (!dept) notFound();
 
-  const totalHrs = dept.processes.reduce(
-    (sum, p) => sum + (p.timeSpentHrsPerWeek ?? 0),
+  // Fetch processes and pain points from the onboarding_sessions JSONB snapshot
+  const { data: session } = await supabase
+    .from("onboarding_sessions")
+    .select("answers")
+    .eq("business_id", dept.business_id)
+    .limit(1)
+    .single();
+
+  const answers = (session?.answers as any) ?? {};
+  const allProcesses: any[] = answers.processes ?? [];
+  const painPointFields: string[] = [
+    answers.painPoint1,
+    answers.painPoint2,
+    answers.painPoint3,
+    answers.biggestHeadache,
+  ].filter(Boolean);
+
+  // Filter processes that belong to this department
+  const processes = allProcesses
+    .filter((p) => p.departmentName?.toLowerCase() === dept.name?.toLowerCase())
+    .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+
+  // Build pain points list
+  const painPoints = painPointFields.map((description, i) => ({
+    id: `pp-${i}`,
+    description,
+    severity: i === 0 || i === 3 ? "high" : "medium",
+  }));
+
+  // Sort AI opportunities by estimated_hours_saved desc
+  const aiOpportunities: any[] = (dept.ai_opportunities ?? []).sort(
+    (a: any, b: any) => (b.estimated_hours_saved || 0) - (a.estimated_hours_saved || 0)
+  );
+
+  const totalHrs = processes.reduce(
+    (sum: number, p: any) => sum + (p.hoursPerWeek ?? 0),
     0
   );
 
@@ -53,7 +82,6 @@ export default async function DepartmentPage({
             <Users className="w-4 h-4" /> {dept.headcount} people
           </span>
         )}
-        <StatusBadge status={dept.status} />
       </div>
 
       {/* Stats row */}
@@ -61,7 +89,7 @@ export default async function DepartmentPage({
         <StatCard
           icon={<Zap className="w-4 h-4 text-indigo-400" />}
           label="Processes"
-          value={dept.processes.length.toString()}
+          value={processes.length.toString()}
         />
         <StatCard
           icon={<Clock className="w-4 h-4 text-blue-400" />}
@@ -71,28 +99,23 @@ export default async function DepartmentPage({
         <StatCard
           icon={<span className="text-sm">💡</span>}
           label="AI Opportunities"
-          value={dept.aiOpportunities.length.toString()}
+          value={aiOpportunities.length.toString()}
         />
       </div>
 
       {/* Processes */}
       <Section title="Processes">
-        {dept.processes.length === 0 ? (
+        {processes.length === 0 ? (
           <Empty text="No processes added" />
         ) : (
           <div className="space-y-2">
-            {dept.processes.map((p) => (
+            {processes.map((p: any, i: number) => (
               <div
-                key={p.id}
+                key={i}
                 className="flex items-start justify-between bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-3"
               >
                 <div>
                   <p className="text-zinc-100 font-medium">{p.name}</p>
-                  {p.toolUsed && (
-                    <p className="text-zinc-500 text-xs mt-0.5">
-                      Tools: {p.toolUsed}
-                    </p>
-                  )}
                 </div>
                 <div className="flex items-center gap-2 shrink-0 ml-4">
                   {p.frequency && (
@@ -100,10 +123,10 @@ export default async function DepartmentPage({
                       {p.frequency}
                     </Badge>
                   )}
-                  {p.timeSpentHrsPerWeek && (
+                  {p.hoursPerWeek && (
                     <Badge variant="outline" className="text-xs border-blue-800 text-blue-400">
                       <Clock className="w-3 h-3 mr-1" />
-                      {p.timeSpentHrsPerWeek}h/wk
+                      {p.hoursPerWeek}h/wk
                     </Badge>
                   )}
                   {p.isManual && (
@@ -120,11 +143,11 @@ export default async function DepartmentPage({
 
       {/* Pain Points */}
       <Section title="Pain Points">
-        {dept.painPoints.length === 0 ? (
+        {painPoints.length === 0 ? (
           <Empty text="No pain points logged" />
         ) : (
           <div className="space-y-2">
-            {dept.painPoints.map((p) => (
+            {painPoints.map((p) => (
               <div
                 key={p.id}
                 className="flex items-start gap-3 bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-3"
@@ -139,45 +162,34 @@ export default async function DepartmentPage({
 
       {/* AI Opportunities */}
       <Section title="AI Opportunities for This Department">
-        {dept.aiOpportunities.length === 0 ? (
+        {aiOpportunities.length === 0 ? (
           <Empty text="No AI opportunities yet — run analysis from the dashboard" />
         ) : (
           <div className="space-y-3">
-            {dept.aiOpportunities.map((opp) => (
+            {aiOpportunities.map((opp: any) => (
               <div
                 key={opp.id}
                 className="bg-zinc-900 border border-zinc-800 rounded-xl p-5"
               >
                 <div className="flex items-center gap-2 mb-2">
-                  <ImpactBadge type={opp.impactType} />
-                  {opp.category === "ai_agent" && (
-                    <Badge className="bg-indigo-600/20 text-indigo-300 border-indigo-700 text-xs">
-                      🤖 AI Agent
-                    </Badge>
-                  )}
+                  <ImpactBadge type={opp.impact_type} />
                 </div>
                 <p className="text-zinc-100 font-semibold">{opp.title}</p>
                 <p className="text-zinc-400 text-sm mt-1">{opp.description}</p>
-                {opp.agentName && (
+                {opp.agent_name && (
                   <div className="mt-3 bg-zinc-800 rounded-lg p-3">
-                    <p className="text-indigo-400 font-medium text-sm">{opp.agentName}</p>
-                    {opp.agentDescription && (
-                      <p className="text-zinc-300 text-xs mt-1">{opp.agentDescription}</p>
-                    )}
-                    {opp.agentTools && (
-                      <p className="text-zinc-500 text-xs mt-1">Tools: {opp.agentTools}</p>
-                    )}
+                    <p className="text-indigo-400 font-medium text-sm">{opp.agent_name}</p>
                   </div>
                 )}
                 <div className="flex items-center gap-2 mt-3">
-                  {opp.estimatedHoursSaved && (
+                  {opp.estimated_hours_saved && (
                     <span className="text-xs bg-green-900/30 text-green-400 border border-green-800/50 rounded-full px-2 py-0.5">
-                      ~{opp.estimatedHoursSaved} hrs/wk saved
+                      ~{opp.estimated_hours_saved} hrs/wk saved
                     </span>
                   )}
-                  {opp.estimatedCostSaved && (
+                  {opp.estimated_cost_saved && (
                     <span className="text-xs bg-green-900/30 text-green-400 border border-green-800/50 rounded-full px-2 py-0.5">
-                      ~${opp.estimatedCostSaved.toLocaleString()}/mo saved
+                      ~${opp.estimated_cost_saved.toLocaleString()}/mo saved
                     </span>
                   )}
                 </div>
@@ -190,13 +202,7 @@ export default async function DepartmentPage({
   );
 }
 
-function Section({
-  title,
-  children,
-}: {
-  title: string;
-  children: React.ReactNode;
-}) {
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="mb-8">
       <h2 className="text-lg font-semibold text-zinc-100 mb-3">{title}</h2>
@@ -209,15 +215,7 @@ function Empty({ text }: { text: string }) {
   return <p className="text-zinc-600 text-sm">{text}</p>;
 }
 
-function StatCard({
-  icon,
-  label,
-  value,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-}) {
+function StatCard({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
     <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4">
       <div className="flex items-center gap-2 text-zinc-400 text-xs mb-1">
@@ -228,32 +226,13 @@ function StatCard({
   );
 }
 
-function StatusBadge({ status }: { status: string }) {
-  const map: Record<string, string> = {
-    active: "bg-green-900/30 text-green-400 border-green-800/50",
-    at_risk: "bg-red-900/30 text-red-400 border-red-800/50",
-    needs_attention: "bg-amber-900/30 text-amber-400 border-amber-800/50",
-  };
-  return (
-    <span
-      className={`text-xs rounded-full px-2 py-0.5 border ${map[status] ?? map.active}`}
-    >
-      {status.replace("_", " ")}
-    </span>
-  );
-}
-
 function SeverityDot({ severity }: { severity: string }) {
   const map: Record<string, string> = {
     high: "bg-red-500",
     medium: "bg-amber-500",
     low: "bg-blue-500",
   };
-  return (
-    <span
-      className={`mt-1.5 w-2 h-2 rounded-full shrink-0 ${map[severity] ?? map.medium}`}
-    />
-  );
+  return <span className={`mt-1.5 w-2 h-2 rounded-full shrink-0 ${map[severity] ?? map.medium}`} />;
 }
 
 function ImpactBadge({ type }: { type: string }) {

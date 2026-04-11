@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { supabaseAdmin as supabase } from "@/lib/supabase-admin";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -7,26 +7,76 @@ export async function GET(req: NextRequest) {
   if (!businessId) return NextResponse.json({ error: "businessId required" }, { status: 400 });
 
   try {
-    const departments = await prisma.department.findMany({
-      where: { businessId },
-      include: {
-        processes: { orderBy: { sortOrder: "asc" } },
-        painPoints: true,
-        aiOpportunities: {
-          where: { dismissedAt: null },
-          select: { id: true, title: true, impactType: true },
-        },
-      },
-      orderBy: { sortOrder: "asc" },
+    // Fetch business
+    const { data: business, error: bizError } = await supabase
+      .from("businesses")
+      .select("id, name, industry")
+      .eq("id", businessId)
+      .single();
+
+    if (bizError) throw bizError;
+
+    // Fetch departments with their AI opportunities
+    const { data: departments, error: depError } = await supabase
+      .from("departments")
+      .select("*, ai_opportunities(id, title, impact_type)")
+      .eq("business_id", businessId);
+
+    if (depError) throw depError;
+
+    // Fetch processes from the onboarding session JSONB snapshot
+    const { data: session } = await supabase
+      .from("onboarding_sessions")
+      .select("answers")
+      .eq("business_id", businessId)
+      .limit(1)
+      .single();
+
+    const answers = (session?.answers as any) ?? {};
+    const allProcesses: any[] = answers.processes ?? [];
+
+    // Normalize departments to camelCase for the UI components
+    const normalizedDepts = (departments ?? []).map((dept) => {
+      // Filter processes that belong to this department from the JSONB snapshot
+      const deptProcesses = allProcesses
+        .filter((p) => p.departmentName?.toLowerCase() === dept.name?.toLowerCase())
+        .map((p) => ({
+          id: `${dept.id}-${p.name}`,
+          name: p.name,
+          frequency: p.frequency ?? null,
+          timeSpentHrsPerWeek: p.hoursPerWeek ?? null,
+          isManual: p.isManual ?? false,
+          isRepetitive: false,
+        }));
+
+      return {
+        id: dept.id,
+        name: dept.name,
+        color: dept.color,
+        headcount: dept.headcount ?? null,
+        // camelCase aliases for React Flow / UI components
+        positionX: dept.position_x ?? 0,
+        positionY: dept.position_y ?? 0,
+        status: "active",
+        sortOrder: 0,
+        description: null,
+        icon: null,
+        // Processes from JSONB snapshot
+        processes: deptProcesses,
+        // Pain points placeholder (not stored in DB separately)
+        painPoints: [],
+        // AI opportunities — normalize to camelCase
+        aiOpportunities: (dept.ai_opportunities ?? []).map((o: any) => ({
+          id: o.id,
+          title: o.title,
+          impactType: o.impact_type,
+        })),
+      };
     });
 
-    const business = await prisma.business.findUnique({
-      where: { id: businessId },
-      select: { id: true, name: true, industry: true, businessType: true },
-    });
-
-    return NextResponse.json({ business, departments });
-  } catch {
+    return NextResponse.json({ business, departments: normalizedDepts });
+  } catch (err: any) {
+    console.error("Map route error:", err);
     return NextResponse.json({ error: "Failed to fetch" }, { status: 500 });
   }
 }
