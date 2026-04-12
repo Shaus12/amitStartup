@@ -104,7 +104,10 @@ export async function POST(req: NextRequest) {
         .from("ai_opportunities")
         .insert(oppsToInsert);
 
-      if (insertError) console.error("Failed to insert opportunities:", insertError);
+      if (insertError) {
+        console.error("Failed to insert opportunities:", insertError);
+        throw new Error(`Database insert failed: ${insertError.message || JSON.stringify(insertError)}`);
+      }
     }
 
     return NextResponse.json({

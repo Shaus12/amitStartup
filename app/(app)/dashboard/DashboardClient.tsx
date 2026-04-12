@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { RotateCcw, Network, FileText, LogOut } from "lucide-react";
 import { useState } from "react";
@@ -40,6 +40,7 @@ function SkeletonNode() {
 
 export function DashboardClient({ businessId, businessName, showSaveModal = false }: DashboardClientProps) {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [isRegenerating, setIsRegenerating] = useState(false);
 
   async function handleSignOut() {
@@ -67,7 +68,14 @@ export function DashboardClient({ businessId, businessName, showSaveModal = fals
         body: JSON.stringify({ businessId }),
       });
       if (!res.ok) throw new Error(await res.text() || "Failed");
-      toast.success("AI analysis updated");
+      
+      const result = await res.json();
+      if (result.error) throw new Error(result.error);
+      
+      await queryClient.invalidateQueries({ queryKey: ["business-map", businessId] });
+      await queryClient.invalidateQueries({ queryKey: ["opportunities", businessId] });
+      
+      toast.success(`AI analysis updated (${result.count || 0} opportunities found)`);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Something went wrong");
     } finally {
