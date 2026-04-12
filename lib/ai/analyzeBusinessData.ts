@@ -173,7 +173,7 @@ export async function analyzeBusinessData(
   const prompt = buildAnalysisPrompt(businessContext);
 
   const message = await client.messages.create({
-    model: "claude-4-6-sonnet-20260217",
+    model: "claude-3-7-sonnet-20250219",
     max_tokens: 4096,
     messages: [{ role: "user", content: prompt }],
   });
