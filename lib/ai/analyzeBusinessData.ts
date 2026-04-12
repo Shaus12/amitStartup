@@ -166,7 +166,8 @@ export async function analyzeBusinessData(
     return STUB_RESULT;
   }
 
-  const { default: Anthropic } = await import("@anthropic-ai/sdk");
+  const sdk = await import("@anthropic-ai/sdk");
+  const Anthropic = sdk.Anthropic || (sdk as any).default;
   const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
   const prompt = buildAnalysisPrompt(businessContext);

@@ -111,8 +111,11 @@ export async function POST(req: NextRequest) {
       count: result.opportunities.length,
       summary: result.summary,
     });
-  } catch (err) {
-    console.error("Analysis error:", err);
-    return NextResponse.json({ error: "Analysis failed" }, { status: 500 });
+  } catch (err: any) {
+    console.error("Analysis error details:", err);
+    return NextResponse.json({ 
+      error: "Analysis failed", 
+      details: err.message ?? String(err) 
+    }, { status: 500 });
   }
 }
