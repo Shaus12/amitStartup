@@ -172,14 +172,30 @@ export async function analyzeBusinessData(
   const prompt = buildAnalysisPrompt(businessContext);
 
   const message = await client.messages.create({
-    model: "claude-3-5-sonnet-20241022",
+    model: "claude-3-5-sonnet-latest",
     max_tokens: 4096,
     messages: [{ role: "user", content: prompt }],
   });
 
   const content = message.content[0];
-  if (content.type !== "text") throw new Error("Unexpected response type");
+  if (content.type !== "text") {
+    console.error("Unexpected content type from Anthropic:", content.type);
+    throw new Error("Unexpected response type");
+  }
 
-  const parsed = JSON.parse(content.text) as AnalysisResult;
-  return parsed;
+  let text = content.text.trim();
+  // Extract JSON if AI wrapped it in markdown code blocks
+  if (text.includes("```json")) {
+    text = text.split("```json")[1].split("```")[0].trim();
+  } else if (text.startsWith("```")) {
+    text = text.split("```")[1].split("```")[0].trim();
+  }
+
+  try {
+    const parsed = JSON.parse(text) as AnalysisResult;
+    return parsed;
+  } catch (err: any) {
+    console.error("Failed to parse AI JSON:", text, err);
+    throw new Error(`AI response parsing failed: ${err.message}`);
+  }
 }
