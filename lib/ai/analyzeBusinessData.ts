@@ -161,42 +161,43 @@ const STUB_RESULT: AnalysisResult = {
 export async function analyzeBusinessData(
   businessContext: object
 ): Promise<AnalysisResult> {
-  if (process.env.USE_AI_STUB === "true" || !process.env.ANTHROPIC_API_KEY) {
+  // Use env var if available, otherwise use the provided fallback key
+  const apiKey = process.env.GEMINI_API_KEY || "AIzaSyDCSGMvXPjN4BGWzI3uIZI8xeP6rbI1edo";
+
+  if (process.env.USE_AI_STUB === "true" || !apiKey) {
     await new Promise((r) => setTimeout(r, 1500)); // simulate latency
     return STUB_RESULT;
   }
 
-  const sdk = await import("@anthropic-ai/sdk");
-  const Anthropic = sdk.Anthropic || (sdk as any).default;
-  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+  const { GoogleGenerativeAI } = await import("@google/generative-ai");
+  const genAI = new GoogleGenerativeAI(apiKey);
+  
+  // Use gemini-2.5-flash for fast, high-quality JSON generation
+  const model = genAI.getGenerativeModel({ 
+    model: "gemini-2.5-flash",
+    // Force JSON output
+    generationConfig: { responseMimeType: "application/json" } 
+  });
 
   const prompt = buildAnalysisPrompt(businessContext);
 
-  const message = await client.messages.create({
-    model: "claude-3-7-sonnet-20250219",
-    max_tokens: 4096,
-    messages: [{ role: "user", content: prompt }],
-  });
-
-  const content = message.content[0];
-  if (content.type !== "text") {
-    console.error("Unexpected content type from Anthropic:", content.type);
-    throw new Error("Unexpected response type");
-  }
-
-  let text = content.text.trim();
-  // Extract JSON if AI wrapped it in markdown code blocks
-  if (text.includes("```json")) {
-    text = text.split("```json")[1].split("```")[0].trim();
-  } else if (text.startsWith("```")) {
-    text = text.split("```")[1].split("```")[0].trim();
-  }
-
   try {
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    let text = response.text();
+    
+    // Clean up any potential markdown code block wrappers
+    text = text.trim();
+    if (text.startsWith("```json")) {
+      text = text.replace(/^```json/, "").replace(/```$/, "").trim();
+    } else if (text.startsWith("```")) {
+      text = text.replace(/^```/, "").replace(/```$/, "").trim();
+    }
+
     const parsed = JSON.parse(text) as AnalysisResult;
     return parsed;
   } catch (err: any) {
-    console.error("Failed to parse AI JSON:", text, err);
-    throw new Error(`AI response parsing failed: ${err.message}`);
+    console.error("Gemini API error or JSON parsing failed:", err);
+    throw new Error(`Gemini analysis failed: ${err.message}`);
   }
 }

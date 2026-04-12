@@ -97,7 +97,7 @@ export async function POST(req: NextRequest) {
         implementation_effort: opp.implementationEffort,
         category: opp.category,
         roadmap_status: "backlog",
-        source: process.env.ANTHROPIC_API_KEY ? "claude" : "stub",
+        source: "gemini",
       }));
 
       const { error: insertError } = await supabase
