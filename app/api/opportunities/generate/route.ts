@@ -91,11 +91,6 @@ export async function POST(req: NextRequest) {
         estimated_hours_saved: opp.estimatedHoursSaved,
         estimated_cost_saved: opp.estimatedCostSaved,
         agent_name: opp.agentName,
-        agent_description: opp.agentDescription,
-        agent_tools: opp.agentTools,
-        setup_complexity: opp.setupComplexity,
-        implementation_effort: opp.implementationEffort,
-        category: opp.category,
         roadmap_status: "backlog",
         source: "gemini",
       }));
