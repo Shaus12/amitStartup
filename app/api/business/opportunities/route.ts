@@ -15,7 +15,25 @@ export async function GET(req: NextRequest) {
 
     if (error) throw error;
 
-    return NextResponse.json(opportunities || []);
+    const mapped = (opportunities || []).map((o) => ({
+      ...o,
+      businessId: o.business_id,
+      departmentId: o.department_id,
+      impactType: o.impact_type,
+      estimatedHoursSaved: o.estimated_hours_saved,
+      estimatedCostSaved: o.estimated_cost_saved,
+      agentName: o.agent_name,
+      agentDescription: o.agent_description,
+      agentTools: o.agent_tools,
+      setupComplexity: o.setup_complexity,
+      implementationEffort: o.implementation_effort,
+      category: o.category || (o.agent_name ? "ai_agent" : "automation"),
+      dismissedAt: o.dismissed_at,
+      generatedAt: o.generated_at,
+      roadmapStatus: o.roadmap_status,
+    }));
+
+    return NextResponse.json(mapped);
   } catch (err: any) {
     console.error("Opportunities route error:", err);
     return NextResponse.json({ error: "Failed to fetch" }, { status: 500 });
@@ -24,11 +42,16 @@ export async function GET(req: NextRequest) {
 
 export async function PATCH(req: NextRequest) {
   try {
-    const { id, roadmapStatus } = await req.json();
+    const { id, roadmapStatus, pinned, dismissedAt } = await req.json();
+
+    const updates: any = {};
+    if (roadmapStatus !== undefined) updates.roadmap_status = roadmapStatus;
+    if (pinned !== undefined) updates.pinned = pinned;
+    if (dismissedAt !== undefined) updates.dismissed_at = dismissedAt;
 
     const { data: opp, error } = await supabase
       .from("ai_opportunities")
-      .update({ roadmap_status: roadmapStatus })
+      .update(updates)
       .eq("id", id)
       .select()
       .single();
