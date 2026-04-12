@@ -1,16 +1,29 @@
 import { redirect } from "next/navigation";
 import { supabaseAdmin as supabase } from "@/lib/supabase-admin";
+import { createClient } from "@/lib/supabase/server";
 import { ReportClient } from "./ReportClient";
 
 export default async function ReportPage() {
-  // Fetch business
-  const { data: business } = await supabase
+  const authClient = await createClient();
+  const {
+    data: { user },
+  } = await authClient.auth.getUser();
+
+  let businessQuery = supabase
     .from("businesses")
     .select("*")
     .eq("onboarding_completed", true)
     .order("created_at", { ascending: false })
-    .limit(1)
-    .single();
+    .limit(1);
+
+  if (user) {
+    businessQuery = businessQuery.eq("user_id", user.id);
+  } else {
+    businessQuery = businessQuery.is("user_id", null);
+  }
+
+  // Fetch business
+  const { data: business } = await businessQuery.single();
 
   if (!business) redirect("/onboarding");
 

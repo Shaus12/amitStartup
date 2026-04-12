@@ -1,9 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin as supabase } from "@/lib/supabase-admin";
+import { createClient } from "@/lib/supabase/server";
+import { verifyBusinessAccess } from "@/lib/supabase/verify-business-access";
 
 export async function GET(req: NextRequest) {
   const businessId = req.nextUrl.searchParams.get("businessId");
   if (!businessId) return NextResponse.json({ error: "Missing businessId" }, { status: 400 });
+
+  const authClient = await createClient();
+  const {
+    data: { user },
+  } = await authClient.auth.getUser();
+
+  const owned = await verifyBusinessAccess(supabase, businessId, user);
+  if (!owned) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   // Fetch business, departments, AI opportunities, and the onboarding snapshot
   const [

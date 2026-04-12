@@ -10,14 +10,21 @@ export default async function DashboardPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Fetch the most recent completed business using the admin client (bypasses RLS)
-  const { data: business } = await supabaseAdmin
+  // Fetch the business that belongs to this user (or the most recent unclaimed one for anonymous sessions)
+  let businessQuery = supabaseAdmin
     .from("businesses")
     .select("id, name, user_id")
     .eq("onboarding_completed", true)
     .order("created_at", { ascending: false })
-    .limit(1)
-    .single();
+    .limit(1);
+
+  if (user) {
+    businessQuery = businessQuery.eq("user_id", user.id);
+  } else {
+    businessQuery = businessQuery.is("user_id", null);
+  }
+
+  const { data: business } = await businessQuery.single();
 
   if (!business) redirect("/onboarding");
 

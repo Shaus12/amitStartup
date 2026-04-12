@@ -1,10 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin as supabase } from "@/lib/supabase-admin";
+import { createClient } from "@/lib/supabase/server";
+import { verifyBusinessAccess } from "@/lib/supabase/verify-business-access";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const businessId = searchParams.get("businessId");
   if (!businessId) return NextResponse.json({ error: "businessId required" }, { status: 400 });
+
+  const authClient = await createClient();
+  const {
+    data: { user },
+  } = await authClient.auth.getUser();
+
+  const owned = await verifyBusinessAccess(supabase, businessId, user);
+  if (!owned) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   try {
     const { data: opportunities, error } = await supabase
@@ -41,6 +51,11 @@ export async function GET(req: NextRequest) {
 }
 
 export async function PATCH(req: NextRequest) {
+  const authClient = await createClient();
+  const {
+    data: { user },
+  } = await authClient.auth.getUser();
+
   try {
     const { id, roadmapStatus, pinned, dismissedAt } = await req.json();
 
@@ -48,6 +63,18 @@ export async function PATCH(req: NextRequest) {
     if (roadmapStatus !== undefined) updates.roadmap_status = roadmapStatus;
     if (pinned !== undefined) updates.pinned = pinned;
     if (dismissedAt !== undefined) updates.dismissed_at = dismissedAt;
+
+    // Fetch the opportunity to get its business_id for ownership check
+    const { data: existing } = await supabase
+      .from("ai_opportunities")
+      .select("id, business_id")
+      .eq("id", id)
+      .single();
+
+    if (!existing) return NextResponse.json({ error: "Not found" }, { status: 404 });
+
+    const owned = await verifyBusinessAccess(supabase, existing.business_id, user);
+    if (!owned) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
     const { data: opp, error } = await supabase
       .from("ai_opportunities")

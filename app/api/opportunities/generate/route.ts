@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 import { supabaseAdmin as supabase } from "@/lib/supabase-admin";
 import { analyzeBusinessData } from "@/lib/ai/analyzeBusinessData";
+import { createClient } from "@/lib/supabase/server";
+import { verifyBusinessAccess } from "@/lib/supabase/verify-business-access";
 
 export async function POST(req: NextRequest) {
   try {
@@ -9,6 +11,14 @@ export async function POST(req: NextRequest) {
     if (!businessId) {
       return NextResponse.json({ error: "businessId required" }, { status: 400 });
     }
+
+    const authClient = await createClient();
+    const {
+      data: { user },
+    } = await authClient.auth.getUser();
+
+    const owned = await verifyBusinessAccess(supabase, businessId, user);
+    if (!owned) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
     // Fetch business, departments, and the full onboarding snapshot
     const [
