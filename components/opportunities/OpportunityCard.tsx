@@ -29,6 +29,13 @@ function ImpactBadge({ type }: { type: AiOpportunityItem["impactType"] }) {
     },
   };
   const item = map[type];
+  if (!item) {
+    return (
+      <span className="inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium bg-zinc-500/20 text-zinc-400 border-zinc-500/20">
+        {type ? type.replace(/_/g, " ") : "Impact"}
+      </span>
+    );
+  }
   return (
     <span
       className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${item.className}`}
