@@ -4,53 +4,23 @@ import { Mail, Phone, MessageSquare, FileText, Users } from "lucide-react";
 import { useOnboardingStore } from "@/lib/hooks/useOnboardingStore";
 import { StepCard } from "@/components/onboarding/StepCard";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n";
 
 interface Props {
   onNext: () => void;
   onBack: () => void;
 }
 
-const PRIMARY_CONTACTS = [
-  { label: "Email", icon: Mail },
-  { label: "Phone", icon: Phone },
-  { label: "Live Chat", icon: MessageSquare },
-  { label: "Contact Form", icon: FileText },
-  { label: "In Person", icon: Users },
-];
-
-const INQUIRY_VOLUMES = [
-  "Less than 10/week",
-  "10–50/week",
-  "50–200/week",
-  "200+/week",
-];
-
-const KNOWLEDGE_BASE_OPTIONS = [
-  "Yes, documented",
-  "Partial / informal",
-  "No",
-];
-
-const RESPONSE_TIMES = [
-  "Within 1 hour",
-  "Same day",
-  "1–2 days",
-  "3+ days",
-];
-
-const SALES_PROCESSES = [
-  "No formal process",
-  "We use a pipeline/stages",
-  "Automated sequences",
-];
+const CONTACT_ICONS = [Mail, Phone, MessageSquare, FileText, Users];
 
 export function Step09_CustomerInteraction({ onNext, onBack }: Props) {
   const { answers, updateAnswers } = useOnboardingStore();
+  const t = useT();
 
   return (
     <StepCard
-      title="How do you interact with customers?"
-      subtitle="Understanding your customer touchpoints helps us identify where AI can improve responsiveness and experience."
+      title={t.step09.title}
+      subtitle={t.step09.subtitle}
       onNext={onNext}
       onBack={onBack}
     >
@@ -58,16 +28,17 @@ export function Step09_CustomerInteraction({ onNext, onBack }: Props) {
         {/* Primary Contact */}
         <div>
           <p className="text-zinc-300 text-sm font-medium mb-3">
-            How do most customers first contact you?
+            {t.step09.primaryContactLabel}
           </p>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
-            {PRIMARY_CONTACTS.map(({ label, icon: Icon }) => {
-              const selected = answers.primaryContact === label;
+            {t.step09.contacts.map(({ value, label }, i) => {
+              const Icon = CONTACT_ICONS[i];
+              const selected = answers.primaryContact === value;
               return (
                 <button
-                  key={label}
+                  key={value}
                   type="button"
-                  onClick={() => updateAnswers({ primaryContact: label })}
+                  onClick={() => updateAnswers({ primaryContact: value })}
                   className={cn(
                     "flex flex-col items-center gap-2 p-3 rounded-xl border text-center transition-all",
                     selected
@@ -86,16 +57,16 @@ export function Step09_CustomerInteraction({ onNext, onBack }: Props) {
         {/* Inquiry Volume */}
         <div>
           <p className="text-zinc-300 text-sm font-medium mb-3">
-            How many customer inquiries do you receive?
+            {t.step09.inquiryVolumeLabel}
           </p>
           <div className="flex flex-wrap gap-2">
-            {INQUIRY_VOLUMES.map((vol) => {
-              const selected = answers.inquiryVolume === vol;
+            {t.step09.inquiryVolumes.map((iv) => {
+              const selected = answers.inquiryVolume === iv.value;
               return (
                 <button
-                  key={vol}
+                  key={iv.value}
                   type="button"
-                  onClick={() => updateAnswers({ inquiryVolume: vol })}
+                  onClick={() => updateAnswers({ inquiryVolume: iv.value })}
                   className={cn(
                     "px-4 py-2 rounded-lg border text-sm font-medium transition-all",
                     selected
@@ -103,7 +74,7 @@ export function Step09_CustomerInteraction({ onNext, onBack }: Props) {
                       : "border-zinc-700 bg-zinc-800/50 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200"
                   )}
                 >
-                  {vol}
+                  {iv.label}
                 </button>
               );
             })}
@@ -113,16 +84,16 @@ export function Step09_CustomerInteraction({ onNext, onBack }: Props) {
         {/* Knowledge Base */}
         <div>
           <p className="text-zinc-300 text-sm font-medium mb-3">
-            Do you have a knowledge base or documented FAQs?
+            {t.step09.knowledgeBaseLabel}
           </p>
           <div className="flex flex-wrap gap-2">
-            {KNOWLEDGE_BASE_OPTIONS.map((opt) => {
-              const selected = answers.hasKnowledgeBase === opt;
+            {t.step09.knowledgeBaseOptions.map((kbo) => {
+              const selected = answers.hasKnowledgeBase === kbo.value;
               return (
                 <button
-                  key={opt}
+                  key={kbo.value}
                   type="button"
-                  onClick={() => updateAnswers({ hasKnowledgeBase: opt })}
+                  onClick={() => updateAnswers({ hasKnowledgeBase: kbo.value })}
                   className={cn(
                     "px-4 py-2 rounded-lg border text-sm font-medium transition-all",
                     selected
@@ -130,7 +101,7 @@ export function Step09_CustomerInteraction({ onNext, onBack }: Props) {
                       : "border-zinc-700 bg-zinc-800/50 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200"
                   )}
                 >
-                  {opt}
+                  {kbo.label}
                 </button>
               );
             })}
@@ -140,16 +111,16 @@ export function Step09_CustomerInteraction({ onNext, onBack }: Props) {
         {/* Avg Response Time */}
         <div>
           <p className="text-zinc-300 text-sm font-medium mb-3">
-            What's your typical response time?
+            {t.step09.responseTimeLabel}
           </p>
           <div className="flex flex-wrap gap-2">
-            {RESPONSE_TIMES.map((rt) => {
-              const selected = answers.avgResponseTime === rt;
+            {t.step09.responseTimes.map((rt) => {
+              const selected = answers.avgResponseTime === rt.value;
               return (
                 <button
-                  key={rt}
+                  key={rt.value}
                   type="button"
-                  onClick={() => updateAnswers({ avgResponseTime: rt })}
+                  onClick={() => updateAnswers({ avgResponseTime: rt.value })}
                   className={cn(
                     "px-4 py-2 rounded-lg border text-sm font-medium transition-all",
                     selected
@@ -157,7 +128,7 @@ export function Step09_CustomerInteraction({ onNext, onBack }: Props) {
                       : "border-zinc-700 bg-zinc-800/50 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200"
                   )}
                 >
-                  {rt}
+                  {rt.label}
                 </button>
               );
             })}
@@ -167,16 +138,16 @@ export function Step09_CustomerInteraction({ onNext, onBack }: Props) {
         {/* Sales Process */}
         <div>
           <p className="text-zinc-300 text-sm font-medium mb-3">
-            How would you describe your sales process?
+            {t.step09.salesProcessLabel}
           </p>
           <div className="flex flex-wrap gap-2">
-            {SALES_PROCESSES.map((sp) => {
-              const selected = answers.salesProcess === sp;
+            {t.step09.salesProcesses.map((sp) => {
+              const selected = answers.salesProcess === sp.value;
               return (
                 <button
-                  key={sp}
+                  key={sp.value}
                   type="button"
-                  onClick={() => updateAnswers({ salesProcess: sp })}
+                  onClick={() => updateAnswers({ salesProcess: sp.value })}
                   className={cn(
                     "px-4 py-2 rounded-lg border text-sm font-medium transition-all",
                     selected
@@ -184,7 +155,7 @@ export function Step09_CustomerInteraction({ onNext, onBack }: Props) {
                       : "border-zinc-700 bg-zinc-800/50 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200"
                   )}
                 >
-                  {sp}
+                  {sp.label}
                 </button>
               );
             })}

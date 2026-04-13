@@ -7,6 +7,7 @@ import { ProcessInput } from "@/lib/types/onboarding";
 import { cn } from "@/lib/utils";
 import { X } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { useT } from "@/lib/i18n";
 
 interface Props {
   onNext: () => void;
@@ -86,8 +87,6 @@ const DEFAULT_SUGGESTIONS = [
   "Documentation",
 ];
 
-const FREQUENCY_OPTIONS = ["Daily", "Weekly", "Monthly", "Ad-hoc"];
-
 function getSuggestions(deptName: string): string[] {
   const key = Object.keys(PROCESS_SUGGESTIONS).find(
     (k) => k.toLowerCase() === deptName.toLowerCase()
@@ -98,6 +97,7 @@ function getSuggestions(deptName: string): string[] {
 export function Step06_Processes({ onNext, onBack }: Props) {
   const { answers, updateAnswers } = useOnboardingStore();
   const [customInputs, setCustomInputs] = useState<Record<string, string>>({});
+  const t = useT();
 
   const processNames = answers.processes.map((p) => p.name + "|" + p.departmentName);
 
@@ -178,8 +178,8 @@ export function Step06_Processes({ onNext, onBack }: Props) {
 
   return (
     <StepCard
-      title="Key processes per department"
-      subtitle="Select or add the main recurring processes each team is responsible for."
+      title={t.step06.title}
+      subtitle={t.step06.subtitle}
       onNext={onNext}
       onBack={onBack}
       nextDisabled={answers.processes.length === 0}
@@ -187,7 +187,7 @@ export function Step06_Processes({ onNext, onBack }: Props) {
       <div className="space-y-8">
         {answers.departments.length === 0 ? (
           <p className="text-zinc-500 text-sm">
-            No departments added yet. Go back and add departments first.
+            {t.step06.noDepts}
           </p>
         ) : (
           answers.departments.map((dept) => {
@@ -202,7 +202,7 @@ export function Step06_Processes({ onNext, onBack }: Props) {
                   <div className="h-px flex-1 bg-zinc-800" />
                   {deptProcs.length > 0 && (
                     <span className="text-blue-400 text-xs">
-                      {deptProcs.length} added
+                      {t.step06.addedCount(deptProcs.length)}
                     </span>
                   )}
                 </div>
@@ -240,7 +240,7 @@ export function Step06_Processes({ onNext, onBack }: Props) {
                     }))
                   }
                   onKeyDown={(e) => handleCustomKeyDown(e, dept.name)}
-                  placeholder={`Add a custom ${dept.name} process and press Enter`}
+                  placeholder={t.step06.customPlaceholder(dept.name)}
                   className="bg-zinc-800 border-zinc-700 text-zinc-100 placeholder:text-zinc-500 text-sm focus:border-blue-500 focus:ring-blue-500/20 h-9"
                 />
 
@@ -266,9 +266,9 @@ export function Step06_Processes({ onNext, onBack }: Props) {
                           }
                           className="bg-zinc-700 border border-zinc-600 text-zinc-300 text-xs rounded-md px-2 py-1 focus:outline-none focus:border-blue-500"
                         >
-                          {FREQUENCY_OPTIONS.map((f) => (
-                            <option key={f} value={f}>
-                              {f}
+                          {t.step06.frequencies.map(({ value, label }) => (
+                            <option key={value} value={value}>
+                              {label}
                             </option>
                           ))}
                         </select>
@@ -288,7 +288,7 @@ export function Step06_Processes({ onNext, onBack }: Props) {
                               : "border-zinc-600 text-zinc-500 hover:text-zinc-300"
                           )}
                         >
-                          {proc.isManual ? "Manual ✓" : "Manual?"}
+                          {proc.isManual ? t.step06.manualConfirmed : t.step06.manualQuestion}
                         </button>
 
                         <button

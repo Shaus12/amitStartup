@@ -5,13 +5,15 @@ import { StepCard } from "@/components/onboarding/StepCard";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n";
 
 interface Props {
   onNext: () => void;
   onBack: () => void;
 }
 
-const BOTTLENECK_OPTIONS = [
+// English values used for storage/comparison with answers.bottlenecks
+const BOTTLENECK_VALUES = [
   "Approval chains slow things down",
   "Missing information to move forward",
   "Manual handoffs between people",
@@ -24,33 +26,34 @@ const BOTTLENECK_OPTIONS = [
 
 export function Step12_Bottlenecks({ onNext, onBack }: Props) {
   const { answers, updateAnswers } = useOnboardingStore();
+  const t = useT();
 
-  function toggleBottleneck(item: string) {
-    const isSelected = answers.bottlenecks.includes(item);
+  function toggleBottleneck(val: string) {
+    const isSelected = answers.bottlenecks.includes(val);
     if (isSelected) {
-      updateAnswers({ bottlenecks: answers.bottlenecks.filter((b) => b !== item) });
+      updateAnswers({ bottlenecks: answers.bottlenecks.filter((b) => b !== val) });
     } else {
-      updateAnswers({ bottlenecks: [...answers.bottlenecks, item] });
+      updateAnswers({ bottlenecks: [...answers.bottlenecks, val] });
     }
   }
 
   return (
     <StepCard
-      title="Where do things get stuck?"
-      subtitle="Select everything that causes friction or slowdowns in your day-to-day operations."
+      title={t.step12.title}
+      subtitle={t.step12.subtitle}
       onNext={onNext}
       onBack={onBack}
     >
       <div className="space-y-7">
         {/* Bottleneck Multi-select */}
         <div className="space-y-2">
-          {BOTTLENECK_OPTIONS.map((item) => {
-            const selected = answers.bottlenecks.includes(item);
+          {BOTTLENECK_VALUES.map((val, i) => {
+            const selected = answers.bottlenecks.includes(val);
             return (
               <button
-                key={item}
+                key={val}
                 type="button"
-                onClick={() => toggleBottleneck(item)}
+                onClick={() => toggleBottleneck(val)}
                 className={cn(
                   "w-full flex items-center gap-4 text-left px-4 py-3.5 rounded-xl border transition-all",
                   selected
@@ -80,7 +83,7 @@ export function Step12_Bottlenecks({ onNext, onBack }: Props) {
                     </svg>
                   )}
                 </span>
-                <span className="text-sm">{item}</span>
+                <span className="text-sm">{t.step12.bottleneckLabels[i]}</span>
               </button>
             );
           })}
@@ -88,8 +91,7 @@ export function Step12_Bottlenecks({ onNext, onBack }: Props) {
 
         {answers.bottlenecks.length > 0 && (
           <p className="text-blue-400/80 text-xs">
-            {answers.bottlenecks.length} bottleneck
-            {answers.bottlenecks.length !== 1 ? "s" : ""} selected
+            {t.step12.selectedCount(answers.bottlenecks.length)}
           </p>
         )}
 
@@ -99,14 +101,14 @@ export function Step12_Bottlenecks({ onNext, onBack }: Props) {
             htmlFor="biggestHeadache"
             className="text-zinc-300 text-sm font-medium"
           >
-            In your own words, what's your #1 operational headache?{" "}
-            <span className="text-zinc-500 font-normal">(optional)</span>
+            {t.step12.headacheLabel}{" "}
+            <span className="text-zinc-500 font-normal">{t.optional}</span>
           </Label>
           <Textarea
             id="biggestHeadache"
             value={answers.biggestHeadache}
             onChange={(e) => updateAnswers({ biggestHeadache: e.target.value })}
-            placeholder="In your own words: what's the #1 operational headache in your business right now?"
+            placeholder={t.step12.headachePlaceholder}
             rows={4}
             className="bg-zinc-800 border-zinc-700 text-zinc-100 placeholder:text-zinc-500 focus:border-blue-500 focus:ring-blue-500/20 resize-none"
           />

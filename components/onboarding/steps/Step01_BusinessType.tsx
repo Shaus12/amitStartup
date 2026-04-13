@@ -15,34 +15,25 @@ import { StepCard } from "@/components/onboarding/StepCard";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n";
 
 interface Props {
   onNext: () => void;
   onBack: () => void;
 }
 
-const BUSINESS_TYPES = [
-  { label: "SaaS / Software", icon: Globe },
-  { label: "Service Business", icon: Briefcase },
-  { label: "E-commerce / Product", icon: ShoppingBag },
-  { label: "Agency", icon: Users },
-  { label: "Marketplace", icon: Store },
-  { label: "Retail / Physical", icon: MapPin },
-  { label: "Manufacturing", icon: Factory },
-  { label: "Other", icon: MoreHorizontal },
-];
-
-const TARGET_CUSTOMERS = ["B2B", "B2C", "Both"];
+const ICONS = [Globe, Briefcase, ShoppingBag, Users, Store, MapPin, Factory, MoreHorizontal];
 
 export function Step01_BusinessType({ onNext, onBack }: Props) {
   const { answers, updateAnswers } = useOnboardingStore();
+  const t = useT();
 
   const nextDisabled = !answers.businessType || !answers.industry.trim();
 
   return (
     <StepCard
-      title="What kind of business are you?"
-      subtitle="This helps us tailor the questions and recommendations to your specific context."
+      title={t.step01.title}
+      subtitle={t.step01.subtitle}
       onNext={onNext}
       onBack={onBack}
       nextDisabled={nextDisabled}
@@ -51,16 +42,17 @@ export function Step01_BusinessType({ onNext, onBack }: Props) {
         {/* Business Type Grid */}
         <div>
           <p className="text-zinc-300 text-sm font-medium mb-3">
-            Business type <span className="text-blue-400">*</span>
+            {t.step01.businessTypeLabel} <span className="text-blue-400">*</span>
           </p>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-            {BUSINESS_TYPES.map(({ label, icon: Icon }) => {
-              const selected = answers.businessType === label;
+            {t.step01.businessTypes.map(({ value, label }, i) => {
+              const Icon = ICONS[i];
+              const selected = answers.businessType === value;
               return (
                 <button
-                  key={label}
+                  key={value}
                   type="button"
-                  onClick={() => updateAnswers({ businessType: label })}
+                  onClick={() => updateAnswers({ businessType: value })}
                   className={cn(
                     "flex flex-col items-center gap-2 p-3 rounded-xl border text-center transition-all",
                     selected
@@ -79,28 +71,28 @@ export function Step01_BusinessType({ onNext, onBack }: Props) {
         {/* Industry */}
         <div className="space-y-1.5">
           <Label htmlFor="industry" className="text-zinc-300 text-sm font-medium">
-            Industry <span className="text-blue-400">*</span>
+            {t.step01.industryLabel} <span className="text-blue-400">*</span>
           </Label>
           <Input
             id="industry"
             value={answers.industry}
             onChange={(e) => updateAnswers({ industry: e.target.value })}
-            placeholder="e.g. Real estate, Healthcare, Legal, Tech..."
+            placeholder={t.step01.industryPlaceholder}
             className="bg-zinc-800 border-zinc-700 text-zinc-100 placeholder:text-zinc-500 focus:border-blue-500 focus:ring-blue-500/20"
           />
         </div>
 
         {/* Target Customer */}
         <div>
-          <p className="text-zinc-300 text-sm font-medium mb-3">Who do you sell to?</p>
+          <p className="text-zinc-300 text-sm font-medium mb-3">{t.step01.targetLabel}</p>
           <div className="flex gap-2">
-            {TARGET_CUSTOMERS.map((tc) => {
-              const selected = answers.targetCustomer === tc;
+            {t.step01.targetCustomers.map(({ value, label }) => {
+              const selected = answers.targetCustomer === value;
               return (
                 <button
-                  key={tc}
+                  key={value}
                   type="button"
-                  onClick={() => updateAnswers({ targetCustomer: tc })}
+                  onClick={() => updateAnswers({ targetCustomer: value })}
                   className={cn(
                     "flex-1 py-2.5 rounded-lg border text-sm font-medium transition-all",
                     selected
@@ -108,7 +100,7 @@ export function Step01_BusinessType({ onNext, onBack }: Props) {
                       : "border-zinc-700 bg-zinc-800/50 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200"
                   )}
                 >
-                  {tc}
+                  {label}
                 </button>
               );
             })}

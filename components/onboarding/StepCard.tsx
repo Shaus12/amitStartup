@@ -1,4 +1,7 @@
+"use client";
+
 import { ArrowLeft, ArrowRight } from "lucide-react";
+import { useT } from "@/lib/i18n";
 
 interface StepCardProps {
   title: string;
@@ -17,21 +20,19 @@ export function StepCard({
   children,
   onNext,
   onBack,
-  nextLabel = "Continue",
+  nextLabel,
   nextDisabled = false,
   showBack = true,
 }: StepCardProps) {
+  const t = useT();
+  const label = nextLabel ?? t.continue;
+
   return (
     <div className="w-full">
-      {/* Heading block */}
       <div className="mb-9">
         <h2
           className="text-[2rem] font-bold leading-tight mb-3"
-          style={{
-            fontFamily: "var(--font-manrope)",
-            color: "#e2e2eb",
-            letterSpacing: "-0.02em",
-          }}
+          style={{ fontFamily: "var(--font-manrope)", color: "#e2e2eb", letterSpacing: "-0.02em" }}
         >
           {title}
         </h2>
@@ -45,10 +46,8 @@ export function StepCard({
         )}
       </div>
 
-      {/* Content */}
       <div className="mb-10">{children}</div>
 
-      {/* Navigation */}
       <div className="flex items-center justify-between pt-6" style={{ borderTop: "1px solid #282a30" }}>
         <div>
           {showBack && (
@@ -61,7 +60,7 @@ export function StepCard({
               onMouseLeave={e => (e.currentTarget.style.color = "#8c909f")}
             >
               <ArrowLeft className="w-3.5 h-3.5 transition-transform duration-150 group-hover:-translate-x-0.5" strokeWidth={2} />
-              Back
+              {t.back}
             </button>
           )}
         </div>
@@ -72,15 +71,13 @@ export function StepCard({
           className="inline-flex items-center gap-2 px-5 py-2.5 rounded text-sm font-semibold transition-all duration-150 active:scale-[0.98]"
           style={{
             fontFamily: "var(--font-inter)",
-            background: nextDisabled
-              ? "#282a30"
-              : "linear-gradient(135deg, #4d8eff, #adc6ff)",
+            background: nextDisabled ? "#282a30" : "linear-gradient(135deg, #4d8eff, #adc6ff)",
             color: nextDisabled ? "#424754" : "#001a42",
             cursor: nextDisabled ? "not-allowed" : "pointer",
             boxShadow: nextDisabled ? "none" : "0 4px 16px rgba(77,142,255,0.25)",
           }}
         >
-          {nextLabel}
+          {label}
           {!nextDisabled && <ArrowRight className="w-3.5 h-3.5" strokeWidth={2} />}
         </button>
       </div>

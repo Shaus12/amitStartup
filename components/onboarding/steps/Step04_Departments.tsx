@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { DepartmentInput } from "@/lib/types/onboarding";
 import { cn } from "@/lib/utils";
 import { X } from "lucide-react";
+import { useT } from "@/lib/i18n";
 
 interface Props {
   onNext: () => void;
@@ -55,6 +56,7 @@ function getSuggestions(businessType: string): string[] {
 export function Step04_Departments({ onNext, onBack }: Props) {
   const { answers, updateAnswers } = useOnboardingStore();
   const [customInput, setCustomInput] = useState("");
+  const t = useT();
 
   const suggestions = getSuggestions(answers.businessType);
   const deptNames = answers.departments.map((d) => d.name);
@@ -107,8 +109,8 @@ export function Step04_Departments({ onNext, onBack }: Props) {
 
   return (
     <StepCard
-      title="Your departments"
-      subtitle="Select the teams that exist in your business. We'll use these to map your processes."
+      title={t.step04.title}
+      subtitle={t.step04.subtitle}
       onNext={onNext}
       onBack={onBack}
       nextDisabled={answers.departments.length === 0}
@@ -116,7 +118,7 @@ export function Step04_Departments({ onNext, onBack }: Props) {
       <div className="space-y-6">
         {/* Suggested chips */}
         <div>
-          <p className="text-zinc-300 text-sm font-medium mb-3">Suggested departments</p>
+          <p className="text-zinc-300 text-sm font-medium mb-3">{t.step04.suggestedLabel}</p>
           <div className="flex flex-wrap gap-2">
             {suggestions.map((name) => {
               const selected = deptNames.includes(name);
@@ -142,12 +144,12 @@ export function Step04_Departments({ onNext, onBack }: Props) {
 
         {/* Custom input */}
         <div>
-          <p className="text-zinc-300 text-sm font-medium mb-2">Add a custom department</p>
+          <p className="text-zinc-300 text-sm font-medium mb-2">{t.step04.customLabel}</p>
           <Input
             value={customInput}
             onChange={(e) => setCustomInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Type a department name and press Enter"
+            placeholder={t.step04.customPlaceholder}
             className="bg-zinc-800 border-zinc-700 text-zinc-100 placeholder:text-zinc-500 focus:border-blue-500 focus:ring-blue-500/20"
           />
         </div>
@@ -156,7 +158,7 @@ export function Step04_Departments({ onNext, onBack }: Props) {
         {answers.departments.length > 0 && (
           <div>
             <p className="text-zinc-300 text-sm font-medium mb-3">
-              Added departments ({answers.departments.length})
+              {t.step04.addedLabel(answers.departments.length)}
             </p>
             <div className="space-y-2">
               {answers.departments.map((dept: DepartmentInput) => (
@@ -178,7 +180,7 @@ export function Step04_Departments({ onNext, onBack }: Props) {
                         val ? parseInt(val, 10) : undefined
                       );
                     }}
-                    placeholder="# people"
+                    placeholder={t.step04.peoplePlaceholder}
                     className="w-24 h-8 bg-zinc-700/50 border-zinc-600 text-zinc-200 placeholder:text-zinc-500 text-sm focus:border-blue-500 focus:ring-blue-500/20"
                   />
                   <button

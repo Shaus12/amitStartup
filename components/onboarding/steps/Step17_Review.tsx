@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { useOnboardingStore } from "@/lib/hooks/useOnboardingStore";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n";
 
 interface Props {
   onNext?: () => void;
@@ -74,6 +75,7 @@ export function Step17_Review({ onBack }: Props) {
   const router = useRouter();
   const { answers, setBusinessId } = useOnboardingStore();
   const [loading, setLoading] = useState(false);
+  const t = useT();
 
   async function handleSubmit() {
     setLoading(true);
@@ -87,7 +89,7 @@ export function Step17_Review({ onBack }: Props) {
 
       if (!onboardingRes.ok) {
         const err = await onboardingRes.json().catch(() => ({}));
-        throw new Error(err.message ?? "Failed to save your answers. Please try again.");
+        throw new Error(err.message ?? t.step17.errorFallback);
       }
 
       const { businessId } = await onboardingRes.json();
@@ -111,12 +113,11 @@ export function Step17_Review({ onBack }: Props) {
       router.push("/dashboard");
     } catch (err: unknown) {
       const message =
-        err instanceof Error ? err.message : "Something went wrong. Please try again.";
+        err instanceof Error ? err.message : t.step17.errorFallback;
       toast.error(message);
       setLoading(false);
     }
   }
-
 
   const departmentNames = answers.departments.map((d) => d.name);
   const processCount = answers.processes.length;
@@ -129,33 +130,32 @@ export function Step17_Review({ onBack }: Props) {
     <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8 w-full max-w-2xl mx-auto">
       <div className="mb-6">
         <h2 className="text-2xl font-bold text-zinc-100">
-          Review your business profile
+          {t.step17.title}
         </h2>
         <p className="mt-2 text-zinc-400 text-sm leading-relaxed">
-          Here's what we've captured. Hit the button below to generate your personalised
-          business overview and AI opportunity map.
+          {t.step17.subtitle}
         </p>
       </div>
 
       <div className="space-y-3 mb-8">
         {/* Business */}
-        <SummarySection title="Business">
-          <SummaryRow label="Name" value={answers.businessName} />
-          <SummaryRow label="Type" value={answers.businessType} />
-          <SummaryRow label="Industry" value={answers.industry} />
-          <SummaryRow label="Team size" value={answers.employeeRange} />
-          <SummaryRow label="Revenue" value={answers.revenueRange} />
+        <SummarySection title={t.step17.sections.business}>
+          <SummaryRow label={t.step17.labels.name} value={answers.businessName} />
+          <SummaryRow label={t.step17.labels.type} value={answers.businessType} />
+          <SummaryRow label={t.step17.labels.industry} value={answers.industry} />
+          <SummaryRow label={t.step17.labels.teamSize} value={answers.employeeRange} />
+          <SummaryRow label={t.step17.labels.revenue} value={answers.revenueRange} />
         </SummarySection>
 
         {/* Departments */}
         {answers.departments.length > 0 && (
-          <SummarySection title="Departments">
+          <SummarySection title={t.step17.sections.departments}>
             {answers.departments.map((dept) => (
               <div key={dept.name} className="flex items-center gap-2 text-sm">
                 <span className="text-zinc-200">{dept.name}</span>
                 {dept.headcount !== undefined && dept.headcount > 0 && (
                   <span className="text-zinc-500 text-xs">
-                    — {dept.headcount} {dept.headcount === 1 ? "person" : "people"}
+                    — {dept.headcount} {dept.headcount === 1 ? t.step17.person : t.step17.people}
                   </span>
                 )}
               </div>
@@ -165,24 +165,23 @@ export function Step17_Review({ onBack }: Props) {
 
         {/* Processes */}
         {processCount > 0 && (
-          <SummarySection title="Processes">
+          <SummarySection title={t.step17.sections.processes}>
             <div className="text-sm text-zinc-200">
-              {processCount} process{processCount !== 1 ? "es" : ""} documented across{" "}
-              {departmentNames.length} department{departmentNames.length !== 1 ? "s" : ""}
+              {t.step17.processCount(processCount, departmentNames.length)}
             </div>
           </SummarySection>
         )}
 
         {/* Tools */}
         {toolNames.length > 0 && (
-          <SummarySection title="Tools">
-            <SummaryList label="Current stack" items={toolNames} />
+          <SummarySection title={t.step17.sections.tools}>
+            <SummaryList label={t.step17.labels.currentStack} items={toolNames} />
           </SummarySection>
         )}
 
         {/* Pain Points */}
         {painPoints.length > 0 && (
-          <SummarySection title="Pain Points">
+          <SummarySection title={t.step17.sections.painPoints}>
             <div className="space-y-2">
               {painPoints.map((point, i) => (
                 <p key={i} className="text-sm text-zinc-300 leading-relaxed">
@@ -195,11 +194,11 @@ export function Step17_Review({ onBack }: Props) {
 
         {/* Goals */}
         {answers.goals.length > 0 && (
-          <SummarySection title="Goals">
-            <SummaryList label="Priorities" items={answers.goals} />
+          <SummarySection title={t.step17.sections.goals}>
+            <SummaryList label={t.step17.labels.priorities} items={answers.goals} />
             {answers.topPriority90Days && (
               <div className="mt-2 text-sm text-zinc-300 leading-relaxed pt-2 border-t border-zinc-800">
-                <span className="text-zinc-500 text-xs block mb-1">Top priority (90 days)</span>
+                <span className="text-zinc-500 text-xs block mb-1">{t.step17.labels.top90}</span>
                 {answers.topPriority90Days}
               </div>
             )}
@@ -215,7 +214,7 @@ export function Step17_Review({ onBack }: Props) {
           disabled={loading}
           className="text-zinc-400 hover:text-zinc-100 text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          ← Back
+          {t.step17.backBtn}
         </button>
 
         <button
@@ -232,10 +231,10 @@ export function Step17_Review({ onBack }: Props) {
           {loading ? (
             <>
               <Loader2 className="h-4 w-4 animate-spin" />
-              Generating your business map...
+              {t.step17.generatingBtn}
             </>
           ) : (
-            "Generate My Business Overview"
+            t.step17.generateBtn
           )}
         </button>
       </div>

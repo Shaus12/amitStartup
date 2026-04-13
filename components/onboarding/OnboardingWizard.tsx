@@ -1,6 +1,7 @@
 "use client";
 
 import { useOnboardingStore, TOTAL_STEPS } from "@/lib/hooks/useOnboardingStore";
+import { useT } from "@/lib/i18n";
 import { Step00_Welcome } from "@/components/onboarding/steps/Step00_Welcome";
 import { Step01_BusinessType } from "@/components/onboarding/steps/Step01_BusinessType";
 import { Step02_TeamSize } from "@/components/onboarding/steps/Step02_TeamSize";
@@ -30,25 +31,34 @@ const STEPS: React.ComponentType<StepProps>[] = [
   Step14_PriorAI, Step15_Budget, Step16_Goals, Step17_Review,
 ] as React.ComponentType<StepProps>[];
 
-const STEP_GROUPS = [
-  { label: "Foundation", range: [0, 3] },
-  { label: "Structure", range: [4, 6] },
-  { label: "Operations", range: [7, 11] },
-  { label: "Challenges", range: [12, 13] },
-  { label: "AI Readiness", range: [14, 16] },
-  { label: "Review", range: [17, 17] },
-];
+const GROUP_STEP_RANGES = [[0, 3], [4, 6], [7, 11], [12, 13], [14, 16], [17, 17]];
 
 function getCurrentGroupIndex(step: number) {
-  return STEP_GROUPS.findIndex(g => step >= g.range[0] && step <= g.range[1]);
+  return GROUP_STEP_RANGES.findIndex(([s, e]) => step >= s && step <= e);
+}
+
+const PANEL_HEADING_INDICES = [
+  [0, 3],   // "Tell us about your business."
+  [4, 6],   // "Map out your teams."
+  [7, 11],  // "Where does time go?"
+  [12, 13], // "Surface your friction."
+  [14, 16], // "Define your AI goals."
+  [17, 17], // "Review everything."
+];
+
+function getPanelHeadingIndex(step: number) {
+  return PANEL_HEADING_INDICES.findIndex(([s, e]) => step >= s && step <= e);
 }
 
 export function OnboardingWizard() {
   const { currentStep, nextStep, prevStep } = useOnboardingStore();
+  const t = useT();
   const progressPercent = Math.round((currentStep / (TOTAL_STEPS - 1)) * 100);
   const StepComponent = STEPS[currentStep] ?? STEPS[0];
   const groupIndex = getCurrentGroupIndex(currentStep);
-  const currentGroup = STEP_GROUPS[groupIndex];
+  const headingIndex = getPanelHeadingIndex(currentStep);
+  const groupLabel = t.wizard.groups[groupIndex] ?? "";
+  const panelHeading = t.wizard.panelHeadings[headingIndex] ?? "";
 
   return (
     <div className="min-h-[100dvh] flex" style={{ backgroundColor: "#111319" }}>
@@ -58,7 +68,6 @@ export function OnboardingWizard() {
         className="hidden md:flex md:w-[320px] lg:w-[380px] shrink-0 flex-col justify-between px-10 py-12 relative overflow-hidden"
         style={{ backgroundColor: "#191b22" }}
       >
-        {/* Ambient glow */}
         <div
           className="pointer-events-none absolute -top-40 -left-40 w-[500px] h-[500px] rounded-full"
           style={{ background: "radial-gradient(circle, rgba(77,142,255,0.08) 0%, transparent 65%)" }}
@@ -68,9 +77,7 @@ export function OnboardingWizard() {
           style={{ background: "radial-gradient(circle, rgba(173,198,255,0.04) 0%, transparent 70%)" }}
         />
 
-        {/* Top: logo + phase info */}
         <div className="relative">
-          {/* Logo */}
           <div className="flex items-center gap-3 mb-14">
             <div
               className="w-8 h-8 rounded-md flex items-center justify-center"
@@ -91,53 +98,41 @@ export function OnboardingWizard() {
             </span>
           </div>
 
-          {/* Current phase */}
           <div className="mb-2">
             <span
               className="text-[10px] font-bold tracking-[0.12em] uppercase"
               style={{ color: "#4d8eff" }}
             >
-              {currentGroup?.label}
+              {groupLabel}
             </span>
           </div>
           <h2
             className="text-2xl font-bold leading-snug mb-3"
             style={{ fontFamily: "var(--font-manrope)", color: "#e2e2eb", letterSpacing: "-0.02em" }}
           >
-            {currentStep < 4 && "Tell us about your business."}
-            {currentStep >= 4 && currentStep < 7 && "Map out your teams."}
-            {currentStep >= 7 && currentStep < 12 && "Where does time go?"}
-            {currentStep >= 12 && currentStep < 14 && "Surface your friction."}
-            {currentStep >= 14 && currentStep < 17 && "Define your AI goals."}
-            {currentStep >= 17 && "Review everything."}
+            {panelHeading}
           </h2>
           <p
             className="text-sm leading-relaxed max-w-[240px]"
             style={{ color: "#8c909f" }}
           >
-            The more detail you provide, the sharper your AI recommendations will be.
+            {t.wizard.panelSubtitle}
           </p>
         </div>
 
-        {/* Bottom: phase stepper + step counter */}
         <div className="relative">
           <div className="flex flex-col gap-0 mb-10">
-            {STEP_GROUPS.map((g, i) => {
+            {t.wizard.groups.map((groupLbl, i) => {
               const done = i < groupIndex;
               const active = i === groupIndex;
               return (
-                <div
-                  key={g.label}
-                  className="flex items-center gap-3 py-2.5 relative"
-                >
-                  {/* Connector line */}
-                  {i < STEP_GROUPS.length - 1 && (
+                <div key={groupLbl} className="flex items-center gap-3 py-2.5 relative">
+                  {i < t.wizard.groups.length - 1 && (
                     <div
                       className="absolute left-[5px] top-[26px] w-[1px] h-full"
                       style={{ backgroundColor: done ? "#4d8eff" : "#282a30" }}
                     />
                   )}
-                  {/* Dot */}
                   <div
                     className="w-3 h-3 rounded-full shrink-0 flex items-center justify-center transition-all duration-300 relative z-10"
                     style={{
@@ -159,7 +154,7 @@ export function OnboardingWizard() {
                       color: active ? "#e2e2eb" : done ? "#4d8eff" : "#424754",
                     }}
                   >
-                    {g.label}
+                    {groupLbl}
                   </span>
                 </div>
               );
@@ -170,25 +165,20 @@ export function OnboardingWizard() {
             className="text-[11px] font-medium tabular-nums"
             style={{ color: "#424754", fontFamily: "var(--font-inter)" }}
           >
-            Step {currentStep + 1} of {TOTAL_STEPS}
+            {t.wizard.stepOf(currentStep + 1, TOTAL_STEPS)}
           </p>
         </div>
       </aside>
 
       {/* ── Right form area ── */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Progress bar */}
         <div className="h-[2px] shrink-0" style={{ backgroundColor: "#191b22" }}>
           <div
             className="h-full transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
-            style={{
-              width: `${progressPercent}%`,
-              background: "linear-gradient(90deg, #4d8eff, #adc6ff)",
-            }}
+            style={{ width: `${progressPercent}%`, background: "linear-gradient(90deg, #4d8eff, #adc6ff)" }}
           />
         </div>
 
-        {/* Mobile logo bar */}
         <div
           className="flex md:hidden items-center justify-between px-5 py-3 border-b"
           style={{ borderColor: "#282a30" }}
@@ -212,7 +202,6 @@ export function OnboardingWizard() {
           </span>
         </div>
 
-        {/* Step content */}
         <div className="flex-1 flex items-center justify-center px-5 py-10 md:py-16 md:px-12 lg:px-20">
           <div className="w-full max-w-[540px]">
             <StepComponent onNext={() => nextStep()} onBack={() => prevStep()} />

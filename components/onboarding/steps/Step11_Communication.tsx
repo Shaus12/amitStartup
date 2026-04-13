@@ -3,49 +3,21 @@
 import { useOnboardingStore } from "@/lib/hooks/useOnboardingStore";
 import { StepCard } from "@/components/onboarding/StepCard";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n";
 
 interface Props {
   onNext: () => void;
   onBack: () => void;
 }
 
-const INTERNAL_COMMS = [
-  "Slack",
-  "Microsoft Teams",
-  "WhatsApp",
-  "Email primarily",
-  "In-person / mixed",
-];
-
-const MEETING_HOURS = [
-  { label: "Less than 2 hrs", description: "Mostly async" },
-  { label: "2–5 hrs", description: "A few standups or syncs" },
-  { label: "5–10 hrs", description: "Regular meeting cadence" },
-  { label: "10+ hrs", description: "Heavy meeting culture" },
-];
-
-const SOP_OPTIONS = [
-  {
-    label: "Yes, everything is documented",
-    description: "We have written SOPs, wikis, or runbooks for our processes.",
-  },
-  {
-    label: "Partial — some things written down",
-    description: "Key processes are documented but plenty lives in people's heads.",
-  },
-  {
-    label: "No — it's all in people's heads",
-    description: "Knowledge is tribal and undocumented.",
-  },
-];
-
 export function Step11_Communication({ onNext, onBack }: Props) {
   const { answers, updateAnswers } = useOnboardingStore();
+  const t = useT();
 
   return (
     <StepCard
-      title="How does your team communicate and operate?"
-      subtitle="Internal communication patterns reveal a lot about where information gets lost or duplicated."
+      title={t.step11.title}
+      subtitle={t.step11.subtitle}
       onNext={onNext}
       onBack={onBack}
     >
@@ -53,16 +25,16 @@ export function Step11_Communication({ onNext, onBack }: Props) {
         {/* Internal Comms */}
         <div>
           <p className="text-zinc-300 text-sm font-medium mb-3">
-            Primary internal communication tool
+            {t.step11.internalCommsLabel}
           </p>
           <div className="flex flex-wrap gap-2">
-            {INTERNAL_COMMS.map((tool) => {
-              const selected = answers.internalComms === tool;
+            {t.step11.internalComms.map((ic) => {
+              const selected = answers.internalComms === ic.value;
               return (
                 <button
-                  key={tool}
+                  key={ic.value}
                   type="button"
-                  onClick={() => updateAnswers({ internalComms: tool })}
+                  onClick={() => updateAnswers({ internalComms: ic.value })}
                   className={cn(
                     "px-4 py-2 rounded-lg border text-sm font-medium transition-all",
                     selected
@@ -70,7 +42,7 @@ export function Step11_Communication({ onNext, onBack }: Props) {
                       : "border-zinc-700 bg-zinc-800/50 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200"
                   )}
                 >
-                  {tool}
+                  {ic.label}
                 </button>
               );
             })}
@@ -80,16 +52,16 @@ export function Step11_Communication({ onNext, onBack }: Props) {
         {/* Meeting Hours */}
         <div>
           <p className="text-zinc-300 text-sm font-medium mb-3">
-            How many hours per week does your team spend in meetings?
+            {t.step11.meetingHoursLabel}
           </p>
           <div className="grid grid-cols-2 gap-3">
-            {MEETING_HOURS.map(({ label, description }) => {
-              const selected = answers.meetingHoursPerWeek === label;
+            {t.step11.meetingHours.map((mh) => {
+              const selected = answers.meetingHoursPerWeek === mh.value;
               return (
                 <button
-                  key={label}
+                  key={mh.value}
                   type="button"
-                  onClick={() => updateAnswers({ meetingHoursPerWeek: label })}
+                  onClick={() => updateAnswers({ meetingHoursPerWeek: mh.value })}
                   className={cn(
                     "flex flex-col items-start gap-1 p-4 rounded-xl border text-left transition-all",
                     selected
@@ -103,10 +75,10 @@ export function Step11_Communication({ onNext, onBack }: Props) {
                       selected ? "text-blue-300" : "text-zinc-200"
                     )}
                   >
-                    {label}
+                    {mh.label}
                   </span>
                   <span className="text-xs text-zinc-500 leading-snug">
-                    {description}
+                    {mh.desc}
                   </span>
                 </button>
               );
@@ -117,16 +89,16 @@ export function Step11_Communication({ onNext, onBack }: Props) {
         {/* Documented SOPs */}
         <div>
           <p className="text-zinc-300 text-sm font-medium mb-3">
-            Are your processes and procedures documented?
+            {t.step11.sopLabel}
           </p>
           <div className="space-y-2">
-            {SOP_OPTIONS.map(({ label, description }) => {
-              const selected = answers.hasDocumentedSOPs === label;
+            {t.step11.sopOptions.map((sop) => {
+              const selected = answers.hasDocumentedSOPs === sop.value;
               return (
                 <button
-                  key={label}
+                  key={sop.value}
                   type="button"
-                  onClick={() => updateAnswers({ hasDocumentedSOPs: label })}
+                  onClick={() => updateAnswers({ hasDocumentedSOPs: sop.value })}
                   className={cn(
                     "w-full flex flex-col items-start gap-1 p-4 rounded-xl border text-left transition-all",
                     selected
@@ -140,10 +112,10 @@ export function Step11_Communication({ onNext, onBack }: Props) {
                       selected ? "text-blue-300" : "text-zinc-200"
                     )}
                   >
-                    {label}
+                    {sop.label}
                   </span>
                   <span className="text-xs text-zinc-500 leading-snug">
-                    {description}
+                    {sop.desc}
                   </span>
                 </button>
               );

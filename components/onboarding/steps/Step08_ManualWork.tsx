@@ -3,13 +3,15 @@
 import { useOnboardingStore } from "@/lib/hooks/useOnboardingStore";
 import { StepCard } from "@/components/onboarding/StepCard";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n";
 
 interface Props {
   onNext: () => void;
   onBack: () => void;
 }
 
-const MANUAL_TASKS = [
+// English values used for storage/comparison with answers.manualTasks
+const MANUAL_TASK_VALUES = [
   "Copy-paste data between tools",
   "Send similar emails or messages repeatedly",
   "Create weekly or monthly reports manually",
@@ -24,6 +26,7 @@ const MANUAL_TASKS = [
 
 export function Step08_ManualWork({ onNext, onBack }: Props) {
   const { answers, updateAnswers } = useOnboardingStore();
+  const t = useT();
 
   function toggleTask(task: string) {
     const isSelected = answers.manualTasks.includes(task);
@@ -40,20 +43,20 @@ export function Step08_ManualWork({ onNext, onBack }: Props) {
 
   return (
     <StepCard
-      title="Which of these does your team do regularly?"
-      subtitle="Select all that apply — these are prime candidates for AI automation."
+      title={t.step08.title}
+      subtitle={t.step08.subtitle}
       onNext={onNext}
       onBack={onBack}
       nextLabel="Continue"
     >
       <div className="space-y-2">
-        {MANUAL_TASKS.map((task) => {
-          const selected = answers.manualTasks.includes(task);
+        {MANUAL_TASK_VALUES.map((taskValue, i) => {
+          const selected = answers.manualTasks.includes(taskValue);
           return (
             <button
-              key={task}
+              key={taskValue}
               type="button"
-              onClick={() => toggleTask(task)}
+              onClick={() => toggleTask(taskValue)}
               className={cn(
                 "w-full flex items-center gap-4 text-left px-4 py-3.5 rounded-xl border transition-all",
                 selected
@@ -84,7 +87,7 @@ export function Step08_ManualWork({ onNext, onBack }: Props) {
                   </svg>
                 )}
               </span>
-              <span className="text-sm">{task}</span>
+              <span className="text-sm">{t.step08.taskLabels[i]}</span>
             </button>
           );
         })}
@@ -92,8 +95,7 @@ export function Step08_ManualWork({ onNext, onBack }: Props) {
 
       {answers.manualTasks.length > 0 && (
         <p className="mt-4 text-blue-400/80 text-xs">
-          {answers.manualTasks.length} task
-          {answers.manualTasks.length !== 1 ? "s" : ""} selected
+          {t.step08.selectedCount(answers.manualTasks.length)}
         </p>
       )}
     </StepCard>

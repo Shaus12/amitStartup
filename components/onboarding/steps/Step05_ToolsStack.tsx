@@ -4,6 +4,7 @@ import { useOnboardingStore } from "@/lib/hooks/useOnboardingStore";
 import { StepCard } from "@/components/onboarding/StepCard";
 import { ToolInput } from "@/lib/types/onboarding";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n";
 
 interface Props {
   onNext: () => void;
@@ -49,15 +50,9 @@ const TOOL_CATEGORIES: { category: string; tools: string[] }[] = [
   },
 ];
 
-const SOFTWARE_SPEND_OPTIONS = [
-  "Under $500/mo",
-  "$500–$2k/mo",
-  "$2k–$10k/mo",
-  "$10k+/mo",
-];
-
 export function Step05_ToolsStack({ onNext, onBack }: Props) {
   const { answers, updateAnswers } = useOnboardingStore();
+  const t = useT();
 
   function isSelected(toolName: string) {
     return answers.tools.some((t) => t.name === toolName);
@@ -95,8 +90,8 @@ export function Step05_ToolsStack({ onNext, onBack }: Props) {
 
   return (
     <StepCard
-      title="Your tools & tech stack"
-      subtitle="Select the tools your team uses. This helps us spot integration gaps and manual workarounds."
+      title={t.step05.title}
+      subtitle={t.step05.subtitle}
       onNext={onNext}
       onBack={onBack}
       nextLabel="Continue"
@@ -136,7 +131,7 @@ export function Step05_ToolsStack({ onNext, onBack }: Props) {
                             : "border-zinc-700 bg-zinc-800/50 text-zinc-500 hover:text-zinc-300"
                         )}
                       >
-                        {entry?.isManualProcess ? "✓ Mostly manual" : "Mostly manual?"}
+                        {entry?.isManualProcess ? t.step05.manualConfirmed : t.step05.manualLabel}
                       </button>
                     )}
                   </div>
@@ -149,18 +144,18 @@ export function Step05_ToolsStack({ onNext, onBack }: Props) {
         {/* Software Spend */}
         <div>
           <p className="text-zinc-300 text-sm font-medium mb-3">
-            Approximate monthly software spend
+            {t.step05.spendLabel}
           </p>
           <div className="flex flex-wrap gap-2">
-            {SOFTWARE_SPEND_OPTIONS.map((option) => {
-              const selected = answers.softwareSpend === option;
+            {t.step05.spendRanges.map((sr) => {
+              const selected = answers.softwareSpend === sr.value;
               return (
                 <button
-                  key={option}
+                  key={sr.value}
                   type="button"
                   onClick={() =>
                     updateAnswers({
-                      softwareSpend: selected ? "" : option,
+                      softwareSpend: selected ? "" : sr.value,
                     })
                   }
                   className={cn(
@@ -170,7 +165,7 @@ export function Step05_ToolsStack({ onNext, onBack }: Props) {
                       : "border-zinc-700 bg-zinc-800/50 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200"
                   )}
                 >
-                  {option}
+                  {sr.label}
                 </button>
               );
             })}
@@ -180,9 +175,9 @@ export function Step05_ToolsStack({ onNext, onBack }: Props) {
         {/* Selected tools summary */}
         {answers.tools.length > 0 && (
           <p className="text-zinc-500 text-xs">
-            {answers.tools.length} tool{answers.tools.length !== 1 ? "s" : ""} selected
-            {answers.tools.filter((t) => t.isManualProcess).length > 0 &&
-              ` · ${answers.tools.filter((t) => t.isManualProcess).length} flagged as mostly manual`}
+            {t.step05.toolsSelected(answers.tools.length)}
+            {answers.tools.filter((tool) => tool.isManualProcess).length > 0 &&
+              ` · ${t.step05.manualFlagged(answers.tools.filter((tool) => tool.isManualProcess).length)}`}
           </p>
         )}
       </div>

@@ -6,6 +6,7 @@ import { StepCard } from "@/components/onboarding/StepCard";
 import { TimeAuditEntry } from "@/lib/types/onboarding";
 import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
+import { useT } from "@/lib/i18n";
 
 interface Props {
   onNext: () => void;
@@ -14,6 +15,7 @@ interface Props {
 
 export function Step07_TimeAudit({ onNext, onBack }: Props) {
   const { answers, updateAnswers } = useOnboardingStore();
+  const t = useT();
 
   // Pre-populate timeAudit from processes if not already set
   useEffect(() => {
@@ -102,8 +104,8 @@ export function Step07_TimeAudit({ onNext, onBack }: Props) {
 
   return (
     <StepCard
-      title="Time audit"
-      subtitle="This helps us calculate exactly how much time AI can save you each week."
+      title={t.step07.title}
+      subtitle={t.step07.subtitle}
       onNext={onNext}
       onBack={onBack}
       nextLabel="Continue"
@@ -111,7 +113,7 @@ export function Step07_TimeAudit({ onNext, onBack }: Props) {
       <div className="space-y-6">
         {displayEntries.length === 0 ? (
           <p className="text-zinc-500 text-sm">
-            No processes added yet. Go back and add some processes first.
+            {t.step07.noProcesses}
           </p>
         ) : (
           <>
@@ -134,7 +136,7 @@ export function Step07_TimeAudit({ onNext, onBack }: Props) {
                   {/* Hours per week slider */}
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between">
-                      <label className="text-zinc-400 text-xs">Hours per week</label>
+                      <label className="text-zinc-400 text-xs">{t.step07.hoursLabel}</label>
                       <span className="text-blue-300 text-xs font-semibold">
                         {entry.hoursPerWeek}h
                       </span>
@@ -160,7 +162,7 @@ export function Step07_TimeAudit({ onNext, onBack }: Props) {
                   {/* People involved */}
                   <div className="flex items-center gap-3">
                     <label className="text-zinc-400 text-xs shrink-0">
-                      People involved
+                      {t.step07.peopleLabel}
                     </label>
                     <Input
                       type="number"
@@ -178,7 +180,7 @@ export function Step07_TimeAudit({ onNext, onBack }: Props) {
                       className="w-20 h-8 bg-zinc-700/50 border-zinc-600 text-zinc-200 text-sm focus:border-blue-500 focus:ring-blue-500/20"
                     />
                     <span className="text-zinc-500 text-xs">
-                      = {(entry.hoursPerWeek * entry.peopleInvolved).toFixed(1)}h total/wk
+                      {t.step07.totalWk((entry.hoursPerWeek * entry.peopleInvolved).toFixed(1))}
                     </span>
                   </div>
                 </div>
@@ -188,11 +190,10 @@ export function Step07_TimeAudit({ onNext, onBack }: Props) {
             {totalHours > 0 && (
               <div className="bg-blue-600/10 border border-blue-500/30 rounded-xl p-4">
                 <p className="text-blue-300 text-sm font-semibold">
-                  {totalHours.toFixed(1)} total team-hours per week
+                  {t.step07.totalHours(totalHours.toFixed(1))}
                 </p>
                 <p className="text-blue-400/70 text-xs mt-0.5">
-                  across {displayEntries.length} tracked process
-                  {displayEntries.length !== 1 ? "es" : ""}
+                  {t.step07.acrossProcesses(displayEntries.length)}
                 </p>
               </div>
             )}

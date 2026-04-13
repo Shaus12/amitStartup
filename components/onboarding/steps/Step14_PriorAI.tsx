@@ -3,26 +3,12 @@
 import { useOnboardingStore } from "@/lib/hooks/useOnboardingStore";
 import { StepCard } from "@/components/onboarding/StepCard";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n";
 
 interface Props {
   onNext: () => void;
   onBack: () => void;
 }
-
-const PRIOR_AI_USAGE = [
-  {
-    label: "Yes, we use AI tools regularly",
-    description: "AI is part of our day-to-day workflow.",
-  },
-  {
-    label: "We've tried a few things",
-    description: "Experimented here and there but nothing consistent.",
-  },
-  {
-    label: "Never used AI in the business",
-    description: "This is new territory for us.",
-  },
-];
 
 const AI_TOOLS = [
   "ChatGPT",
@@ -34,23 +20,9 @@ const AI_TOOLS = [
   "Other",
 ];
 
-const AI_COMFORT_LEVELS = [
-  {
-    label: "Low",
-    description: "I need plug-and-play solutions, no tech setup",
-  },
-  {
-    label: "Medium",
-    description: "I can handle some configuration and setup",
-  },
-  {
-    label: "High",
-    description: "I'm open to custom-built AI agents and integrations",
-  },
-];
-
 export function Step14_PriorAI({ onNext, onBack }: Props) {
   const { answers, updateAnswers } = useOnboardingStore();
+  const t = useT();
 
   const showToolPicker = answers.priorAiUsage !== "Never used AI in the business";
 
@@ -65,24 +37,24 @@ export function Step14_PriorAI({ onNext, onBack }: Props) {
 
   return (
     <StepCard
-      title="Have you used AI in your business before?"
-      subtitle="Knowing your starting point helps us calibrate our recommendations — no right or wrong answers."
+      title={t.step14.title}
+      subtitle={t.step14.subtitle}
       onNext={onNext}
       onBack={onBack}
     >
       <div className="space-y-7">
         {/* Prior AI Usage */}
         <div className="space-y-2">
-          {PRIOR_AI_USAGE.map(({ label, description }) => {
-            const selected = answers.priorAiUsage === label;
+          {t.step14.priorUsageOptions.map((opt) => {
+            const selected = answers.priorAiUsage === opt.value;
             return (
               <button
-                key={label}
+                key={opt.value}
                 type="button"
                 onClick={() => {
-                  updateAnswers({ priorAiUsage: label });
+                  updateAnswers({ priorAiUsage: opt.value });
                   // Clear tools if switching to "Never"
-                  if (label === "Never used AI in the business") {
+                  if (opt.value === "Never used AI in the business") {
                     updateAnswers({ priorAiTools: [] });
                   }
                 }}
@@ -99,9 +71,9 @@ export function Step14_PriorAI({ onNext, onBack }: Props) {
                     selected ? "text-blue-300" : "text-zinc-200"
                   )}
                 >
-                  {label}
+                  {opt.label}
                 </span>
-                <span className="text-xs text-zinc-500 leading-snug">{description}</span>
+                <span className="text-xs text-zinc-500 leading-snug">{opt.desc}</span>
               </button>
             );
           })}
@@ -111,7 +83,7 @@ export function Step14_PriorAI({ onNext, onBack }: Props) {
         {showToolPicker && answers.priorAiUsage && (
           <div>
             <p className="text-zinc-300 text-sm font-medium mb-3">
-              Which AI tools have you used? <span className="text-zinc-500 font-normal">(select all that apply)</span>
+              {t.step14.toolsLabel}
             </p>
             <div className="flex flex-wrap gap-2">
               {AI_TOOLS.map((tool) => {
@@ -139,16 +111,16 @@ export function Step14_PriorAI({ onNext, onBack }: Props) {
         {/* AI Comfort Level */}
         <div>
           <p className="text-zinc-300 text-sm font-medium mb-3">
-            How would you rate your technical comfort level with AI?
+            {t.step14.comfortLabel}
           </p>
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
-            {AI_COMFORT_LEVELS.map(({ label, description }) => {
-              const selected = answers.aiComfortLevel === label;
+            {t.step14.comfortLevels.map((cl) => {
+              const selected = answers.aiComfortLevel === cl.value;
               return (
                 <button
-                  key={label}
+                  key={cl.value}
                   type="button"
-                  onClick={() => updateAnswers({ aiComfortLevel: label })}
+                  onClick={() => updateAnswers({ aiComfortLevel: cl.value })}
                   className={cn(
                     "flex flex-col items-start gap-1 p-4 rounded-xl border text-left transition-all",
                     selected
@@ -162,9 +134,9 @@ export function Step14_PriorAI({ onNext, onBack }: Props) {
                       selected ? "text-blue-300" : "text-zinc-200"
                     )}
                   >
-                    {label}
+                    {cl.label}
                   </span>
-                  <span className="text-xs text-zinc-500 leading-snug">{description}</span>
+                  <span className="text-xs text-zinc-500 leading-snug">{cl.desc}</span>
                 </button>
               );
             })}

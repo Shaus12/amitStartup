@@ -129,10 +129,181 @@
   }
 }
 
+/* ── Cosmic Parallax Background ──────────────────────────────── */
+:root {
+  --animation-iteration: infinite;
+}
+
+@keyframes animStar {
+  from { transform: translateY(0px); }
+  to   { transform: translateY(-2000px); }
+}
+
+@keyframes animGravity {
+  0%        { transform: translateY(-26px); opacity: 0; }
+  30%, 80%  { letter-spacing: 40px; padding-left: 40px; transform: translateY(0px); opacity: 1; }
+  92%, 100% { letter-spacing: 35px; padding-left: 35px; transform: translateY(-4px); opacity: 0; }
+}
+
+@keyframes animDont {
+  0%, 15%   { transform: translateY(-26px); opacity: 0; }
+  35%, 80%  { transform: translateY(0px); opacity: 1; }
+  92%, 100% { transform: translateY(-4px); opacity: 0; }
+}
+
+@keyframes animLet {
+  0%, 25%   { transform: translateY(-26px); opacity: 0; }
+  45%, 80%  { transform: translateY(0px); opacity: 1; }
+  92%, 100% { transform: translateY(-4px); opacity: 0; }
+}
+
+@keyframes animGo {
+  0%, 35%   { transform: translateY(-26px); opacity: 0; }
+  55%, 80%  { transform: translateY(0px); opacity: 1; }
+  92%, 100% { transform: translateY(-4px); opacity: 0; }
+}
+
+/* Container */
+.cosmic-parallax-container {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: radial-gradient(ellipse at 50% 100%, #191b22 0%, #111319 40%, #0c0e14 100%);
+}
+
+/* Star layers — box-shadow via CSS custom property so ::after can duplicate for seamless loop */
+.cosmic-stars {
+  position: absolute;
+  top: 0; left: 0;
+  width: 1px; height: 1px;
+  background: transparent;
+  box-shadow: var(--small-stars);
+  animation: animStar 80s linear var(--animation-iteration);
+  border-radius: 50%;
+}
+.cosmic-stars::after {
+  content: " ";
+  position: absolute;
+  top: 2000px; left: 0;
+  width: 1px; height: 1px;
+  background: transparent;
+  box-shadow: var(--small-stars);
+  border-radius: 50%;
+}
+
+.cosmic-stars-medium {
+  position: absolute;
+  top: 0; left: 0;
+  width: 2px; height: 2px;
+  background: transparent;
+  box-shadow: var(--medium-stars);
+  animation: animStar 150s linear var(--animation-iteration);
+  border-radius: 50%;
+}
+.cosmic-stars-medium::after {
+  content: " ";
+  position: absolute;
+  top: 2000px; left: 0;
+  width: 2px; height: 2px;
+  background: transparent;
+  box-shadow: var(--medium-stars);
+  border-radius: 50%;
+}
+
+.cosmic-stars-large {
+  position: absolute;
+  top: 0; left: 0;
+  width: 3px; height: 3px;
+  background: transparent;
+  box-shadow: var(--large-stars);
+  animation: animStar 250s linear var(--animation-iteration);
+  border-radius: 50%;
+}
+.cosmic-stars-large::after {
+  content: " ";
+  position: absolute;
+  top: 2000px; left: 0;
+  width: 3px; height: 3px;
+  background: transparent;
+  box-shadow: var(--large-stars);
+  border-radius: 50%;
+}
+
+/* Horizon — thin blue glowing line at the bottom */
+#horizon {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(to right, transparent 0%, #4d8eff 30%, #adc6ff 50%, #4d8eff 70%, transparent 100%);
+  opacity: 0.55;
+  z-index: 1;
+}
+.glow {
+  position: absolute;
+  bottom: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  height: 120px;
+  background: radial-gradient(ellipse at bottom, rgba(77,142,255,0.18) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* Earth — blue-tinted planet peeking from the bottom */
+#earth {
+  position: absolute;
+  bottom: -260px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 560px;
+  height: 560px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 40% 30%, #1e2d45 0%, #131a27 40%, #0c0e14 80%);
+  border: 1px solid rgba(77,142,255,0.12);
+  box-shadow:
+    0 0 80px rgba(77,142,255,0.10),
+    inset 0 20px 60px rgba(77,142,255,0.06);
+  z-index: 1;
+}
+
+/* Optional built-in title / subtitle */
+#cosmic-title {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  color: #e2e2eb;
+  font-family: var(--font-manrope, system-ui);
+  font-size: clamp(2.5rem, 8vw, 5rem);
+  font-weight: 800;
+  letter-spacing: 0.25em;
+  text-align: center;
+  z-index: 2;
+}
+#cosmic-subtitle {
+  position: absolute;
+  top: calc(50% + 90px); left: 50%;
+  transform: translateX(-50%);
+  color: #adc6ff;
+  font-family: var(--font-inter, system-ui);
+  font-size: 1rem;
+  letter-spacing: 0.12em;
+  text-align: center;
+  z-index: 2;
+}
+.subtitle-part-1 { display: inline-block; animation: animGravity 10s ease-in-out var(--animation-iteration); }
+.subtitle-part-2 { display: inline-block; animation: animDont    10s ease-in-out var(--animation-iteration); }
+.subtitle-part-3 { display: inline-block; animation: animLet     10s ease-in-out var(--animation-iteration); }
+.subtitle-part-4 { display: inline-block; animation: animGo      10s ease-in-out var(--animation-iteration); }
+
 /* ── Landing page animations ─────────────────────────────────── */
 @keyframes bv-marquee {
   from { transform: translateX(0); }
   to   { transform: translateX(-50%); }
+}
+
+@keyframes bv-marquee-rtl {
+  from { transform: translateX(-50%); }
+  to   { transform: translateX(0); }
 }
 
 @keyframes bv-fade-up {
@@ -155,6 +326,24 @@
   50%       { transform: translateY(-8px); }
 }
 
+/* Shimmer sweep across gradient headline */
+@keyframes bv-shimmer-sweep {
+  0%   { background-position: 200% center; }
+  100% { background-position: -200% center; }
+}
+
+/* Typewriter cursor blink */
+@keyframes bv-cursor-blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+/* Card glow pulse (used for feature card hover ring) */
+@keyframes bv-glow-ring {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(77,142,255,0); }
+  50%       { box-shadow: 0 0 20px 4px rgba(77,142,255,0.18); }
+}
+
 /* Scroll reveal */
 .bv-reveal {
   opacity: 0;
@@ -171,8 +360,12 @@
 
 /* Feature card hover */
 .bv-feat-card {
-  transition: border-color 0.2s ease, transform 0.2s cubic-bezier(0.16,1,0.3,1), box-shadow 0.2s ease;
+  transition: border-color 0.2s ease, transform 0.2s cubic-bezier(0.16,1,0.3,1), box-shadow 0.2s ease, background-color 0.2s ease;
 }
 .bv-feat-card:hover {
   transform: translateX(4px);
+  background-color: rgba(77,142,255,0.03);
+}
+[dir="rtl"] .bv-feat-card:hover {
+  transform: translateX(-4px);
 }

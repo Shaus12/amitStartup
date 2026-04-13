@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Manrope, Inter } from "next/font/google";
 import "./globals.css";
 import { QueryProvider } from "@/components/providers/QueryProvider";
+import { LanguageProvider } from "@/lib/i18n";
 import { Toaster } from "sonner";
 
 const manrope = Manrope({
@@ -32,9 +33,11 @@ export default function RootLayout({
       className={`${manrope.variable} ${inter.variable} h-full antialiased`}
     >
       <body className="min-h-full text-[#e2e2eb]" style={{ backgroundColor: "#111319", fontFamily: "var(--font-inter), system-ui, sans-serif" }}>
-        <QueryProvider>
-          {children}
-        </QueryProvider>
+        <LanguageProvider>
+          <QueryProvider>
+            {children}
+          </QueryProvider>
+        </LanguageProvider>
         <Toaster theme="dark" position="bottom-right" />
       </body>
     </html>

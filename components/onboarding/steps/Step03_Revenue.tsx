@@ -3,35 +3,21 @@
 import { useOnboardingStore } from "@/lib/hooks/useOnboardingStore";
 import { StepCard } from "@/components/onboarding/StepCard";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n";
 
 interface Props {
   onNext: () => void;
   onBack: () => void;
 }
 
-const REVENUE_RANGES = [
-  "Pre-revenue",
-  "Under $50k/yr",
-  "$50k–$200k/yr",
-  "$200k–$1M/yr",
-  "$1M+/yr",
-];
-
-const BUSINESS_AGES = ["Less than 1 year", "1–3 years", "3+ years"];
-
-const GROWTH_TRAJECTORIES = [
-  { value: "scaling-fast", label: "Scaling fast" },
-  { value: "steady-growth", label: "Steady growth" },
-  { value: "flat", label: "Flat / stabilizing" },
-];
-
 export function Step03_Revenue({ onNext, onBack }: Props) {
   const { answers, updateAnswers } = useOnboardingStore();
+  const t = useT();
 
   return (
     <StepCard
-      title="Revenue & business stage"
-      subtitle="This context shapes which AI opportunities will have the biggest impact for you."
+      title={t.step03.title}
+      subtitle={t.step03.subtitle}
       onNext={onNext}
       onBack={onBack}
       nextDisabled={!answers.revenueRange}
@@ -40,16 +26,16 @@ export function Step03_Revenue({ onNext, onBack }: Props) {
         {/* Revenue Range */}
         <div>
           <p className="text-zinc-300 text-sm font-medium mb-3">
-            Annual revenue <span className="text-blue-400">*</span>
+            {t.step03.revenueLabel} <span className="text-blue-400">*</span>
           </p>
           <div className="space-y-2">
-            {REVENUE_RANGES.map((range) => {
-              const selected = answers.revenueRange === range;
+            {t.step03.revenueRanges.map((r) => {
+              const selected = answers.revenueRange === r.value;
               return (
                 <button
-                  key={range}
+                  key={r.value}
                   type="button"
-                  onClick={() => updateAnswers({ revenueRange: range })}
+                  onClick={() => updateAnswers({ revenueRange: r.value })}
                   className={cn(
                     "w-full text-left px-4 py-3 rounded-xl border text-sm font-medium transition-all",
                     selected
@@ -57,7 +43,7 @@ export function Step03_Revenue({ onNext, onBack }: Props) {
                       : "border-zinc-700 bg-zinc-800/50 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200"
                   )}
                 >
-                  {range}
+                  {r.label}
                 </button>
               );
             })}
@@ -66,15 +52,15 @@ export function Step03_Revenue({ onNext, onBack }: Props) {
 
         {/* Business Age */}
         <div>
-          <p className="text-zinc-300 text-sm font-medium mb-3">How long have you been operating?</p>
+          <p className="text-zinc-300 text-sm font-medium mb-3">{t.step03.businessAgeLabel}</p>
           <div className="flex gap-2">
-            {BUSINESS_AGES.map((age) => {
-              const selected = answers.businessAge === age;
+            {t.step03.businessAges.map((ba) => {
+              const selected = answers.businessAge === ba.value;
               return (
                 <button
-                  key={age}
+                  key={ba.value}
                   type="button"
-                  onClick={() => updateAnswers({ businessAge: age })}
+                  onClick={() => updateAnswers({ businessAge: ba.value })}
                   className={cn(
                     "flex-1 py-3 px-2 rounded-xl border text-xs font-medium text-center transition-all",
                     selected
@@ -82,7 +68,7 @@ export function Step03_Revenue({ onNext, onBack }: Props) {
                       : "border-zinc-700 bg-zinc-800/50 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200"
                   )}
                 >
-                  {age}
+                  {ba.label}
                 </button>
               );
             })}
@@ -91,15 +77,15 @@ export function Step03_Revenue({ onNext, onBack }: Props) {
 
         {/* Growth Trajectory */}
         <div>
-          <p className="text-zinc-300 text-sm font-medium mb-3">Current growth trajectory</p>
+          <p className="text-zinc-300 text-sm font-medium mb-3">{t.step03.growthLabel}</p>
           <div className="flex gap-2">
-            {GROWTH_TRAJECTORIES.map(({ value, label }) => {
-              const selected = answers.growthTrajectory === value;
+            {t.step03.growthOptions.map((go) => {
+              const selected = answers.growthTrajectory === go.value;
               return (
                 <button
-                  key={value}
+                  key={go.value}
                   type="button"
-                  onClick={() => updateAnswers({ growthTrajectory: value })}
+                  onClick={() => updateAnswers({ growthTrajectory: go.value })}
                   className={cn(
                     "flex-1 py-3 px-2 rounded-xl border text-xs font-medium text-center transition-all",
                     selected
@@ -107,7 +93,7 @@ export function Step03_Revenue({ onNext, onBack }: Props) {
                       : "border-zinc-700 bg-zinc-800/50 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200"
                   )}
                 >
-                  {label}
+                  {go.label}
                 </button>
               );
             })}
