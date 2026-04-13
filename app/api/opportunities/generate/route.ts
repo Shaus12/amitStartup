@@ -102,7 +102,7 @@ export async function POST(req: NextRequest) {
         estimated_cost_saved: opp.estimatedCostSaved,
         agent_name: opp.agentName,
         roadmap_status: "backlog",
-        source: "gemini",
+        source: "claude",
       }));
 
       const { error: insertError } = await supabase

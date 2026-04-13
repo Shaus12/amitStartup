@@ -1,3 +1,4 @@
+import Anthropic from "@anthropic-ai/sdk";
 import { buildAnalysisPrompt } from "./prompts";
 
 export interface OpportunityResult {
@@ -161,33 +162,29 @@ const STUB_RESULT: AnalysisResult = {
 export async function analyzeBusinessData(
   businessContext: object
 ): Promise<AnalysisResult> {
-  // Use env var if available, otherwise use the provided fallback key
-  const apiKey = process.env.GEMINI_API_KEY || "AIzaSyDCSGMvXPjN4BGWzI3uIZI8xeP6rbI1edo";
+  const apiKey = process.env.ANTHROPIC_API_KEY;
 
   if (process.env.USE_AI_STUB === "true" || !apiKey) {
-    await new Promise((r) => setTimeout(r, 1500)); // simulate latency
+    await new Promise((r) => setTimeout(r, 1500));
     return STUB_RESULT;
   }
 
-  const { GoogleGenerativeAI } = await import("@google/generative-ai");
-  const genAI = new GoogleGenerativeAI(apiKey);
-  
-  // Use gemini-2.5-flash for fast, high-quality JSON generation
-  const model = genAI.getGenerativeModel({ 
-    model: "gemini-2.5-flash",
-    // Force JSON output
-    generationConfig: { responseMimeType: "application/json" } 
-  });
-
+  const client = new Anthropic({ apiKey });
   const prompt = buildAnalysisPrompt(businessContext);
 
   try {
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    let text = response.text();
-    
-    // Clean up any potential markdown code block wrappers
-    text = text.trim();
+    const message = await client.messages.create({
+      model: "claude-sonnet-4-6",
+      max_tokens: 4096,
+      messages: [{ role: "user", content: prompt }],
+    });
+
+    const textBlock = message.content.find((b) => b.type === "text");
+    if (!textBlock || textBlock.type !== "text") {
+      throw new Error("No text response from Claude");
+    }
+
+    let text = textBlock.text.trim();
     if (text.startsWith("```json")) {
       text = text.replace(/^```json/, "").replace(/```$/, "").trim();
     } else if (text.startsWith("```")) {
@@ -197,7 +194,7 @@ export async function analyzeBusinessData(
     const parsed = JSON.parse(text) as AnalysisResult;
     return parsed;
   } catch (err: any) {
-    console.error("Gemini API error or JSON parsing failed:", err);
-    throw new Error(`Gemini analysis failed: ${err.message}`);
+    console.error("Claude API error or JSON parsing failed:", err);
+    throw new Error(`Claude analysis failed: ${err.message}`);
   }
 }
