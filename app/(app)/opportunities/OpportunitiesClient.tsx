@@ -5,7 +5,6 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Sparkles } from "lucide-react";
 import { ImpactSummary } from "@/components/opportunities/ImpactSummary";
 import { OpportunityList } from "@/components/opportunities/OpportunityList";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { AiOpportunityItem } from "@/lib/types/opportunities";
 
 interface OpportunitiesClientProps {
@@ -15,8 +14,20 @@ interface OpportunitiesClientProps {
 
 type FilterTab = "all" | "ai_agents" | "time_savings" | "cost_savings";
 
+const FILTER_TABS: { value: FilterTab; label: string }[] = [
+  { value: "all", label: "All" },
+  { value: "ai_agents", label: "AI Agents" },
+  { value: "time_savings", label: "Time Savings" },
+  { value: "cost_savings", label: "Cost Savings" },
+];
+
 function SkeletonCard() {
-  return <div className="rounded-xl bg-zinc-800 border border-zinc-700 h-40 animate-pulse" />;
+  return (
+    <div
+      className="rounded-xl h-28 animate-pulse"
+      style={{ backgroundColor: "#191b22", border: "1px solid #282a30" }}
+    />
+  );
 }
 
 export function OpportunitiesClient({ businessId, businessName }: OpportunitiesClientProps) {
@@ -36,11 +47,11 @@ export function OpportunitiesClient({ businessId, businessName }: OpportunitiesC
         const text = await res.text();
         throw new Error(text || "Failed to load opportunities");
       }
-      return res.json();
+      const body = await res.json();
+      return Array.isArray(body) ? body : (body.opportunities ?? []);
     },
   });
 
-  // Optimistic pin mutation
   const pinMutation = useMutation({
     mutationFn: async ({ id, pinned }: { id: string; pinned: boolean }) => {
       const res = await fetch(`/api/business/opportunities`, {
@@ -61,16 +72,11 @@ export function OpportunitiesClient({ businessId, businessName }: OpportunitiesC
       return { previous };
     },
     onError: (_err, _vars, context) => {
-      if (context?.previous) {
-        queryClient.setQueryData(["opportunities", businessId], context.previous);
-      }
+      if (context?.previous) queryClient.setQueryData(["opportunities", businessId], context.previous);
     },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["opportunities", businessId] });
-    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ["opportunities", businessId] }),
   });
 
-  // Optimistic dismiss mutation
   const dismissMutation = useMutation({
     mutationFn: async ({ id }: { id: string }) => {
       const res = await fetch(`/api/business/opportunities`, {
@@ -94,13 +100,9 @@ export function OpportunitiesClient({ businessId, businessName }: OpportunitiesC
       return { previous };
     },
     onError: (_err, _vars, context) => {
-      if (context?.previous) {
-        queryClient.setQueryData(["opportunities", businessId], context.previous);
-      }
+      if (context?.previous) queryClient.setQueryData(["opportunities", businessId], context.previous);
     },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["opportunities", businessId] });
-    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ["opportunities", businessId] }),
   });
 
   function handlePin(id: string) {
@@ -113,65 +115,58 @@ export function OpportunitiesClient({ businessId, businessName }: OpportunitiesC
     dismissMutation.mutate({ id });
   }
 
-  // Filter out dismissed opportunities
   const activeOpportunities = useMemo(
     () => opportunities.filter((o) => !o.dismissedAt),
     [opportunities]
   );
 
-  // Compute impact summary
-  const summary = useMemo(() => {
-    return {
-      totalHoursSaved: activeOpportunities.reduce(
-        (sum, o) => sum + (o.estimatedHoursSaved ?? 0),
-        0
-      ),
-      totalCostSaved: activeOpportunities.reduce(
-        (sum, o) => sum + (o.estimatedCostSaved ?? 0),
-        0
-      ),
-      agentCount: activeOpportunities.filter((o) => o.category === "ai_agent").length,
-      opportunityCount: activeOpportunities.length,
-    };
-  }, [activeOpportunities]);
+  const summary = useMemo(() => ({
+    totalHoursSaved: activeOpportunities.reduce((s, o) => s + (o.estimatedHoursSaved ?? 0), 0),
+    totalCostSaved: activeOpportunities.reduce((s, o) => s + (o.estimatedCostSaved ?? 0), 0),
+    agentCount: activeOpportunities.filter((o) => o.category === "ai_agent").length,
+    opportunityCount: activeOpportunities.length,
+  }), [activeOpportunities]);
 
-  // Filter by tab
   const filteredOpportunities = useMemo(() => {
     switch (activeTab) {
-      case "ai_agents":
-        return activeOpportunities.filter((o) => o.category === "ai_agent");
-      case "time_savings":
-        return activeOpportunities.filter((o) => o.impactType === "time_savings");
-      case "cost_savings":
-        return activeOpportunities.filter((o) => o.impactType === "cost_savings");
-      default:
-        return activeOpportunities;
+      case "ai_agents": return activeOpportunities.filter((o) => o.category === "ai_agent");
+      case "time_savings": return activeOpportunities.filter((o) => o.impactType === "time_savings");
+      case "cost_savings": return activeOpportunities.filter((o) => o.impactType === "cost_savings");
+      default: return activeOpportunities;
     }
   }, [activeOpportunities, activeTab]);
 
   return (
-    <div className="min-h-full bg-zinc-950 py-8 px-4 sm:px-6">
-      <div className="max-w-4xl mx-auto">
-        {/* Page header */}
+    <div className="min-h-full py-8 px-4 sm:px-6" style={{ backgroundColor: "#111319" }}>
+      <div className="max-w-3xl mx-auto">
+
+        {/* Header */}
         <div className="mb-6">
           <div className="flex items-center gap-2 mb-1">
-            <h1 className="text-2xl font-bold text-zinc-100">AI Opportunities</h1>
-            <span className="inline-flex items-center gap-1 rounded-full bg-indigo-600/20 border border-indigo-600/30 px-2.5 py-0.5 text-xs font-medium text-indigo-400">
-              <Sparkles className="w-3 h-3" />
+            <h1
+              className="text-xl font-bold"
+              style={{ color: "#e2e2eb", fontFamily: "var(--font-manrope)" }}
+            >
+              AI Opportunities
+            </h1>
+            <span
+              className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold"
+              style={{ backgroundColor: "rgba(77,142,255,0.12)", color: "#4d8eff", border: "1px solid rgba(77,142,255,0.2)" }}
+            >
+              <Sparkles className="w-2.5 h-2.5" />
               AI-Powered
             </span>
           </div>
-          <p className="text-sm text-zinc-400">
-            AI-identified opportunities to save time, reduce costs, and grow{" "}
-            <span className="text-zinc-300 font-medium">{businessName}</span>
+          <p className="text-xs" style={{ color: "#424754", fontFamily: "var(--font-inter)" }}>
+            {businessName}
           </p>
         </div>
 
-        {/* Loading state */}
+        {/* Loading */}
         {isLoading && (
           <>
-            <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-5 mb-6 h-24 animate-pulse" />
-            <div className="space-y-4">
+            <div className="rounded-xl h-20 animate-pulse mb-6" style={{ backgroundColor: "#191b22", border: "1px solid #282a30" }} />
+            <div className="space-y-3">
               <SkeletonCard />
               <SkeletonCard />
               <SkeletonCard />
@@ -179,9 +174,12 @@ export function OpportunitiesClient({ businessId, businessName }: OpportunitiesC
           </>
         )}
 
-        {/* Error state */}
+        {/* Error */}
         {isError && (
-          <div className="rounded-xl bg-red-950/30 border border-red-800/40 px-5 py-4 text-sm text-red-400">
+          <div
+            className="rounded-xl px-4 py-3.5 text-sm"
+            style={{ backgroundColor: "rgba(248,113,113,0.06)", border: "1px solid rgba(248,113,113,0.2)", color: "#f87171" }}
+          >
             {error instanceof Error ? error.message : "Failed to load opportunities"}
           </div>
         )}
@@ -191,25 +189,51 @@ export function OpportunitiesClient({ businessId, businessName }: OpportunitiesC
           <>
             <ImpactSummary {...summary} />
 
-            <Tabs
-              value={activeTab}
-              onValueChange={(val) => setActiveTab(val as FilterTab)}
-            >
-              <TabsList className="mb-6 bg-zinc-900 border border-zinc-800">
-                <TabsTrigger value="all">All</TabsTrigger>
-                <TabsTrigger value="ai_agents">AI Agents</TabsTrigger>
-                <TabsTrigger value="time_savings">Time Savings</TabsTrigger>
-                <TabsTrigger value="cost_savings">Cost Savings</TabsTrigger>
-              </TabsList>
+            {/* Filter pills */}
+            <div className="flex items-center gap-2 mb-5 flex-wrap">
+              {FILTER_TABS.map((tab) => {
+                const isActive = activeTab === tab.value;
+                const count = tab.value === "all"
+                  ? activeOpportunities.length
+                  : tab.value === "ai_agents"
+                  ? activeOpportunities.filter((o) => o.category === "ai_agent").length
+                  : tab.value === "time_savings"
+                  ? activeOpportunities.filter((o) => o.impactType === "time_savings").length
+                  : activeOpportunities.filter((o) => o.impactType === "cost_savings").length;
+                return (
+                  <button
+                    key={tab.value}
+                    onClick={() => setActiveTab(tab.value)}
+                    className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-all duration-150"
+                    style={{
+                      backgroundColor: isActive ? "rgba(77,142,255,0.15)" : "#1e1f26",
+                      border: isActive ? "1px solid rgba(77,142,255,0.35)" : "1px solid #282a30",
+                      color: isActive ? "#4d8eff" : "#8c909f",
+                      fontFamily: "var(--font-inter)",
+                    }}
+                  >
+                    {tab.label}
+                    {count > 0 && (
+                      <span
+                        className="rounded-full px-1.5 py-0.5 text-[9px] font-bold tabular-nums"
+                        style={{
+                          backgroundColor: isActive ? "rgba(77,142,255,0.25)" : "#282a30",
+                          color: isActive ? "#4d8eff" : "#424754",
+                        }}
+                      >
+                        {count}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
 
-              <TabsContent value={activeTab}>
-                <OpportunityList
-                  opportunities={filteredOpportunities}
-                  onPin={handlePin}
-                  onDismiss={handleDismiss}
-                />
-              </TabsContent>
-            </Tabs>
+            <OpportunityList
+              opportunities={filteredOpportunities}
+              onPin={handlePin}
+              onDismiss={handleDismiss}
+            />
           </>
         )}
       </div>

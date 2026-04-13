@@ -62,6 +62,8 @@ export function OnboardingWizard() {
   const [showSocialProof, setShowSocialProof] = useState(false);
   const [socialProofDismissed, setSocialProofDismissed] = useState(false);
   const [insightOverlay, setInsightOverlay] = useState<null | { emoji: string; title: string; body: string }>(null);
+  const [stepDirection, setStepDirection] = useState<"forward" | "back">("forward");
+  const [animKey, setAnimKey] = useState(0);
 
   useEffect(() => {
     if (currentStep >= 5 && currentStep <= 7 && !socialProofDismissed) {
@@ -251,9 +253,18 @@ export function OnboardingWizard() {
           </span>
         </div>
 
-        <div className="flex-1 flex items-center justify-center px-5 py-10 md:py-16 md:px-12 lg:px-20">
-          <div className="w-full max-w-[540px]">
-            <StepComponent onNext={() => nextStep()} onBack={() => prevStep()} />
+        <div className="flex-1 flex items-center justify-center px-5 py-10 md:py-16 md:px-12 lg:px-20 overflow-hidden">
+          <div
+            key={animKey}
+            className="w-full max-w-[540px]"
+            style={{
+              animation: `${stepDirection === "forward" ? "bv-step-in" : "bv-step-in-back"} 0.3s cubic-bezier(0.16,1,0.3,1) both`,
+            }}
+          >
+            <StepComponent
+              onNext={() => { setStepDirection("forward"); setAnimKey((k) => k + 1); nextStep(); }}
+              onBack={() => { setStepDirection("back"); setAnimKey((k) => k + 1); prevStep(); }}
+            />
           </div>
         </div>
       </div>

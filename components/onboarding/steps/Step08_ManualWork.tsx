@@ -4,6 +4,7 @@ import { useOnboardingStore } from "@/lib/hooks/useOnboardingStore";
 import { StepCard } from "@/components/onboarding/StepCard";
 import { cn } from "@/lib/utils";
 import { useT } from "@/lib/i18n";
+import { AlertTriangle, Flame } from "lucide-react";
 
 interface Props {
   onNext: () => void;
@@ -41,6 +42,10 @@ export function Step08_ManualWork({ onNext, onBack }: Props) {
     }
   }
 
+  const selectedCount = answers.manualTasks.length;
+  const isHigh = selectedCount >= 5;
+  const isCritical = selectedCount >= 8;
+
   return (
     <StepCard
       title={t.step08.title}
@@ -57,32 +62,34 @@ export function Step08_ManualWork({ onNext, onBack }: Props) {
               key={taskValue}
               type="button"
               onClick={() => toggleTask(taskValue)}
-              className={cn(
-                "w-full flex items-center gap-4 text-left px-4 py-3.5 rounded-xl border transition-all",
-                selected
-                  ? "border-blue-500 bg-blue-600/10 text-zinc-100"
-                  : "border-zinc-700 bg-zinc-800/50 text-zinc-300 hover:border-zinc-600 hover:text-zinc-100"
-              )}
+              className="w-full flex items-center gap-4 text-left px-4 py-3.5 rounded-xl border transition-all duration-150"
+              style={{
+                backgroundColor: selected ? "rgba(77,142,255,0.08)" : "rgba(39,39,42,0.5)",
+                borderColor: selected ? "rgba(77,142,255,0.5)" : "rgba(63,63,70,0.5)",
+                color: selected ? "#e2e2eb" : "#a1a1aa",
+              }}
+              onMouseEnter={(e) => {
+                if (!selected) {
+                  (e.currentTarget as HTMLElement).style.borderColor = "rgba(63,63,70,0.9)";
+                  (e.currentTarget as HTMLElement).style.color = "#e2e2eb";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!selected) {
+                  (e.currentTarget as HTMLElement).style.borderColor = "rgba(63,63,70,0.5)";
+                  (e.currentTarget as HTMLElement).style.color = "#a1a1aa";
+                }
+              }}
             >
-              {/* Checkbox indicator */}
               <span
-                className={cn(
-                  "h-5 w-5 shrink-0 rounded border-2 flex items-center justify-center transition-all",
-                  selected
-                    ? "border-blue-500 bg-blue-600"
-                    : "border-zinc-600 bg-transparent"
-                )}
+                className="h-5 w-5 shrink-0 rounded border-2 flex items-center justify-center transition-all"
+                style={{
+                  borderColor: selected ? "#4d8eff" : "rgba(63,63,70,0.8)",
+                  backgroundColor: selected ? "#4d8eff" : "transparent",
+                }}
               >
                 {selected && (
-                  <svg
-                    className="h-3 w-3 text-white"
-                    viewBox="0 0 12 12"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
+                  <svg className="h-3 w-3 text-white" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <polyline points="2,6 5,9 10,3" />
                   </svg>
                 )}
@@ -93,9 +100,42 @@ export function Step08_ManualWork({ onNext, onBack }: Props) {
         })}
       </div>
 
-      {answers.manualTasks.length > 0 && (
-        <p className="mt-4 text-blue-400/80 text-xs">
-          {t.step08.selectedCount(answers.manualTasks.length)}
+      {/* Dynamic urgency banner */}
+      {isCritical && (
+        <div
+          className="mt-4 flex items-start gap-3 rounded-xl px-4 py-3.5"
+          style={{ backgroundColor: "rgba(248,113,113,0.08)", border: "1px solid rgba(248,113,113,0.25)" }}
+        >
+          <Flame className="w-4 h-4 shrink-0 mt-0.5" style={{ color: "#f87171" }} />
+          <div>
+            <p className="text-xs font-bold" style={{ color: "#f87171" }}>
+              {selectedCount} תהליכים ידניים — עסק זה מאבד שעות רבות בשבוע
+            </p>
+            <p className="text-[11px] mt-0.5" style={{ color: "rgba(248,113,113,0.7)" }}>
+              עסקים עם רמת ידניות כזו חסכו בממוצע 30-45 שעות שבועיות לאחר יישום AI
+            </p>
+          </div>
+        </div>
+      )}
+      {isHigh && !isCritical && (
+        <div
+          className="mt-4 flex items-start gap-3 rounded-xl px-4 py-3.5"
+          style={{ backgroundColor: "rgba(251,146,60,0.08)", border: "1px solid rgba(251,146,60,0.25)" }}
+        >
+          <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" style={{ color: "#fb923c" }} />
+          <div>
+            <p className="text-xs font-bold" style={{ color: "#fb923c" }}>
+              {selectedCount} תהליכים ידניים זוהו
+            </p>
+            <p className="text-[11px] mt-0.5" style={{ color: "rgba(251,146,60,0.7)" }}>
+              יש כאן פוטנציאל חיסכון משמעותי — האנליזה שלנו תזהה בדיוק מה ניתן לאוטמט
+            </p>
+          </div>
+        </div>
+      )}
+      {selectedCount > 0 && !isHigh && (
+        <p className="mt-3 text-xs" style={{ color: "rgba(77,142,255,0.7)" }}>
+          {t.step08.selectedCount(selectedCount)}
         </p>
       )}
     </StepCard>

@@ -1,6 +1,6 @@
 "use client";
 
-import { Star, X } from "lucide-react";
+import { Star, X, Clock, DollarSign, Bot, Zap, ArrowRight, Layers } from "lucide-react";
 import { AiOpportunityItem } from "@/lib/types/opportunities";
 
 interface OpportunityCardProps {
@@ -9,191 +9,185 @@ interface OpportunityCardProps {
   onDismiss: () => void;
 }
 
-function ImpactBadge({ type }: { type: AiOpportunityItem["impactType"] }) {
-  const map: Record<AiOpportunityItem["impactType"], { label: string; className: string }> = {
-    time_savings: {
-      label: "Time Savings",
-      className: "bg-blue-500/20 text-blue-400 border-blue-500/20",
-    },
-    cost_savings: {
-      label: "Cost Savings",
-      className: "bg-green-500/20 text-green-400 border-green-500/20",
-    },
-    revenue: {
-      label: "Revenue",
-      className: "bg-yellow-500/20 text-yellow-400 border-yellow-500/20",
-    },
-    quality: {
-      label: "Quality",
-      className: "bg-purple-500/20 text-purple-400 border-purple-500/20",
-    },
-  };
-  const item = map[type];
-  if (!item) {
-    return (
-      <span className="inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium bg-zinc-500/20 text-zinc-400 border-zinc-500/20">
-        {type ? type.replace(/_/g, " ") : "Impact"}
-      </span>
-    );
-  }
-  return (
-    <span
-      className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${item.className}`}
-    >
-      {item.label}
-    </span>
-  );
-}
+const CATEGORY_STYLE: Record<string, { color: string; bg: string; label: string; icon: React.ReactNode }> = {
+  ai_agent: { color: "#a78bfa", bg: "rgba(167,139,250,0.12)", label: "AI Agent", icon: <Bot className="w-3 h-3" /> },
+  automation: { color: "#4d8eff", bg: "rgba(77,142,255,0.12)", label: "Automation", icon: <Zap className="w-3 h-3" /> },
+  ai_tool: { color: "#34d399", bg: "rgba(52,211,153,0.12)", label: "AI Tool", icon: <Zap className="w-3 h-3" /> },
+  process_change: { color: "#fb923c", bg: "rgba(251,146,60,0.12)", label: "Process", icon: <Layers className="w-3 h-3" /> },
+};
 
-function EffortBadge({ effort }: { effort: AiOpportunityItem["implementationEffort"] }) {
-  if (!effort) return null;
-  const map: Record<string, { label: string; className: string }> = {
-    low: { label: "Low Effort", className: "bg-green-500/20 text-green-400" },
-    medium: { label: "Medium Effort", className: "bg-amber-500/20 text-amber-400" },
-    high: { label: "High Effort", className: "bg-red-500/20 text-red-400" },
-  };
-  const item = map[effort];
-  if (!item) return null;
-  return (
-    <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${item.className}`}>
-      {item.label}
-    </span>
-  );
-}
+const EFFORT_STYLE: Record<string, { color: string; label: string }> = {
+  low: { color: "#34d399", label: "Easy win" },
+  medium: { color: "#fbbf24", label: "Medium effort" },
+  high: { color: "#f87171", label: "Big project" },
+};
 
-function ComplexityBadge({ complexity }: { complexity: AiOpportunityItem["setupComplexity"] }) {
-  if (!complexity) return null;
-  const map: Record<string, string> = {
-    plug_and_play: "Plug & Play",
-    some_setup: "Some Setup",
-    custom_build: "Custom Build",
-  };
-  return (
-    <span className="inline-flex items-center rounded-full bg-zinc-700 px-2 py-0.5 text-xs text-zinc-300">
-      {map[complexity] ?? complexity}
-    </span>
-  );
-}
+const IMPACT_COLOR: Record<string, string> = {
+  time_savings: "#4d8eff",
+  cost_savings: "#34d399",
+  revenue: "#fbbf24",
+  quality: "#a78bfa",
+};
 
 export function OpportunityCard({ opportunity, onPin, onDismiss }: OpportunityCardProps) {
   const isPinned = opportunity.pinned;
-  const isAgent = opportunity.category === "ai_agent";
+  const cat = CATEGORY_STYLE[opportunity.category ?? "automation"] ?? CATEGORY_STYLE.automation;
+  const effort = opportunity.implementationEffort ? EFFORT_STYLE[opportunity.implementationEffort] : null;
+  const accentColor = IMPACT_COLOR[opportunity.impactType] ?? "#4d8eff";
 
   const agentTools = opportunity.agentTools
-    ? opportunity.agentTools.split(",").map((t) => t.trim()).filter(Boolean)
+    ? opportunity.agentTools.split(",").map((t) => t.trim()).filter(Boolean).slice(0, 3)
     : [];
 
   return (
     <div
-      className={`bg-zinc-900 border rounded-xl p-5 hover:border-zinc-700 transition-colors ${
-        isPinned ? "border-yellow-500/40 ring-1 ring-yellow-500/20" : "border-zinc-800"
-      }`}
+      className="relative rounded-xl overflow-hidden transition-all duration-150 group"
+      style={{
+        backgroundColor: "#191b22",
+        border: isPinned ? `1px solid rgba(251,191,36,0.35)` : "1px solid #282a30",
+        boxShadow: isPinned ? "0 0 0 1px rgba(251,191,36,0.1)" : "none",
+      }}
+      onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = isPinned ? "rgba(251,191,36,0.5)" : "#424754"; }}
+      onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = isPinned ? "rgba(251,191,36,0.35)" : "#282a30"; }}
     >
-      {/* Badge row */}
-      <div className="flex flex-wrap items-center gap-2 mb-3">
-        <ImpactBadge type={opportunity.impactType} />
-        <EffortBadge effort={opportunity.implementationEffort} />
-        {opportunity.category && (
-          <span className="inline-flex items-center rounded-full bg-zinc-700 px-2 py-0.5 text-xs text-zinc-300">
-            {opportunity.category.replace(/_/g, " ")}
-          </span>
-        )}
-        {isAgent && (
-          <span className="inline-flex items-center gap-1 rounded-full bg-blue-600/20 border border-blue-500/30 px-2 py-0.5 text-xs font-medium text-blue-400">
-            🤖 AI Agent
-          </span>
-        )}
-        {opportunity.department && (
-          <span
-            className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium"
-            style={{
-              backgroundColor: opportunity.department.color + "20",
-              color: opportunity.department.color,
-            }}
+      {/* Left accent bar */}
+      <div
+        className="absolute left-0 top-0 bottom-0 w-[3px]"
+        style={{ backgroundColor: accentColor, opacity: 0.7 }}
+      />
+
+      <div className="pl-5 pr-4 py-4">
+        {/* Top row: category + dept + actions */}
+        <div className="flex items-start justify-between gap-2 mb-2.5">
+          <div className="flex flex-wrap items-center gap-1.5">
+            {/* Category badge */}
+            <span
+              className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold"
+              style={{ backgroundColor: cat.bg, color: cat.color }}
+            >
+              {cat.icon}
+              {cat.label}
+            </span>
+
+            {/* Department chip */}
+            {opportunity.department && (
+              <span
+                className="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium"
+                style={{
+                  backgroundColor: (opportunity.department.color ?? "#4d8eff") + "20",
+                  color: opportunity.department.color ?? "#4d8eff",
+                }}
+              >
+                {opportunity.department.name}
+              </span>
+            )}
+
+            {/* Effort */}
+            {effort && (
+              <span
+                className="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium"
+                style={{ backgroundColor: effort.color + "15", color: effort.color }}
+              >
+                {effort.label}
+              </span>
+            )}
+          </div>
+
+          {/* Actions */}
+          <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+            <button
+              onClick={onPin}
+              aria-label={isPinned ? "Unpin" : "Pin"}
+              className="p-1.5 rounded-md transition-colors"
+              style={{ color: isPinned ? "#fbbf24" : "#424754" }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "#fbbf24"; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = isPinned ? "#fbbf24" : "#424754"; }}
+            >
+              <Star className={`w-3.5 h-3.5 ${isPinned ? "fill-current" : ""}`} />
+            </button>
+            <button
+              onClick={onDismiss}
+              aria-label="Dismiss"
+              className="p-1.5 rounded-md transition-colors"
+              style={{ color: "#424754" }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "#f87171"; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "#424754"; }}
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
+
+        {/* Title */}
+        <h3
+          className="text-sm font-semibold mb-1 leading-snug"
+          style={{ color: "#e2e2eb", fontFamily: "var(--font-manrope)" }}
+        >
+          {opportunity.title}
+        </h3>
+
+        {/* Description — 2 lines max */}
+        <p
+          className="text-xs leading-relaxed mb-3 line-clamp-2"
+          style={{ color: "#8c909f", fontFamily: "var(--font-inter)" }}
+        >
+          {opportunity.description}
+        </p>
+
+        {/* Agent name pill */}
+        {opportunity.agentName && (
+          <div
+            className="flex items-center gap-1.5 mb-3 px-2.5 py-1.5 rounded-lg"
+            style={{ backgroundColor: "rgba(167,139,250,0.08)", border: "1px solid rgba(167,139,250,0.2)" }}
           >
-            {opportunity.department.name}
-          </span>
-        )}
-      </div>
-
-      {/* Title */}
-      <h3 className="text-lg font-semibold text-zinc-100 mb-1.5 leading-snug">
-        {opportunity.title}
-      </h3>
-
-      {/* Description */}
-      <p className="text-sm text-zinc-400 mb-4 leading-relaxed">
-        {opportunity.description}
-      </p>
-
-      {/* Agent details */}
-      {opportunity.agentName && (
-        <div className="rounded-lg bg-blue-950/60 border border-blue-800/40 px-3.5 py-3 mb-4">
-          <p className="text-sm font-bold text-blue-200 mb-1">
-            {opportunity.agentName}
-          </p>
-          {opportunity.agentDescription && (
-            <p className="text-sm text-zinc-300 mb-2 leading-relaxed">
-              {opportunity.agentDescription}
-            </p>
-          )}
-          {agentTools.length > 0 && (
-            <div className="flex flex-wrap gap-1.5">
-              {agentTools.map((tool) => (
-                <span
-                  key={tool}
-                  className="inline-flex items-center rounded-md bg-zinc-800 px-2 py-0.5 text-xs text-zinc-400"
-                >
-                  {tool}
+            <Bot className="w-3 h-3 shrink-0" style={{ color: "#a78bfa" }} />
+            <span className="text-[11px] font-semibold" style={{ color: "#a78bfa" }}>
+              {opportunity.agentName}
+            </span>
+            {agentTools.length > 0 && (
+              <>
+                <span style={{ color: "#424754" }}>·</span>
+                <span className="text-[10px]" style={{ color: "#8c909f" }}>
+                  {agentTools.join(", ")}
+                  {(opportunity.agentTools?.split(",").length ?? 0) > 3 ? " +more" : ""}
                 </span>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
+              </>
+            )}
+          </div>
+        )}
 
-      {/* Savings row */}
-      {(opportunity.estimatedHoursSaved || opportunity.estimatedCostSaved) && (
-        <div className="flex flex-wrap gap-2 mb-4">
-          {opportunity.estimatedHoursSaved && (
-            <span className="inline-flex items-center rounded-full bg-green-500/10 border border-green-500/20 px-2.5 py-0.5 text-xs font-medium text-green-400">
-              ~{opportunity.estimatedHoursSaved} hrs/week saved
+        {/* Metrics row */}
+        <div className="flex items-center gap-2 flex-wrap">
+          {(opportunity.estimatedHoursSaved ?? 0) > 0 && (
+            <span
+              className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold"
+              style={{ backgroundColor: "rgba(77,142,255,0.1)", color: "#4d8eff" }}
+            >
+              <Clock className="w-3 h-3" />
+              {opportunity.estimatedHoursSaved}h/wk saved
             </span>
           )}
-          {opportunity.estimatedCostSaved && (
-            <span className="inline-flex items-center rounded-full bg-green-500/10 border border-green-500/20 px-2.5 py-0.5 text-xs font-medium text-green-400">
-              ~${opportunity.estimatedCostSaved}/month saved
+          {(opportunity.estimatedCostSaved ?? 0) > 0 && (
+            <span
+              className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold"
+              style={{ backgroundColor: "rgba(52,211,153,0.1)", color: "#34d399" }}
+            >
+              <DollarSign className="w-3 h-3" />
+              ₪{(opportunity.estimatedCostSaved ?? 0).toLocaleString()}/mo
             </span>
           )}
-        </div>
-      )}
+          {opportunity.setupComplexity && (
+            <span
+              className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-[10px]"
+              style={{ backgroundColor: "#1e1f26", color: "#424754", border: "1px solid #282a30" }}
+            >
+              {opportunity.setupComplexity === "plug_and_play" ? "Plug & Play" :
+               opportunity.setupComplexity === "some_setup" ? "Some Setup" : "Custom Build"}
+            </span>
+          )}
 
-      {/* Setup complexity + actions */}
-      <div className="flex items-center justify-between gap-3 pt-1">
-        <ComplexityBadge complexity={opportunity.setupComplexity} />
-
-        <div className="flex items-center gap-2 ml-auto">
-          {/* Pin button */}
-          <button
-            onClick={onPin}
-            aria-label={isPinned ? "Unpin opportunity" : "Pin opportunity"}
-            className="rounded-lg p-1.5 transition-colors hover:bg-zinc-800"
-          >
-            <Star
-              className={`w-4 h-4 transition-colors ${
-                isPinned ? "fill-yellow-400 text-yellow-400" : "text-zinc-500 hover:text-yellow-400"
-              }`}
-            />
-          </button>
-
-          {/* Dismiss button */}
-          <button
-            onClick={onDismiss}
-            aria-label="Dismiss opportunity"
-            className="rounded-lg p-1.5 text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800 transition-colors"
-          >
-            <X className="w-4 h-4" />
-          </button>
+          {/* Spacer + view arrow */}
+          <ArrowRight className="w-3 h-3 ml-auto opacity-0 group-hover:opacity-40 transition-opacity" style={{ color: "#8c909f" }} />
         </div>
       </div>
     </div>

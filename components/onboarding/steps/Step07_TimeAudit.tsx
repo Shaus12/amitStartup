@@ -6,6 +6,7 @@ import { StepCard } from "@/components/onboarding/StepCard";
 import { TimeAuditEntry } from "@/lib/types/onboarding";
 import { Input } from "@/components/ui/input";
 import { useT } from "@/lib/i18n";
+import { AlertTriangle, Flame } from "lucide-react";
 
 interface Props {
   onNext: () => void;
@@ -118,18 +119,35 @@ export function Step07_TimeAudit({ onNext, onBack }: Props) {
           <>
             {displayEntries.map((item) => {
               const entry = getEntry(item.processName, item.departmentName);
+              const weeklyTotal = entry.hoursPerWeek * entry.peopleInvolved;
+              const isHigh = entry.hoursPerWeek >= 15;
+              const isCritical = entry.hoursPerWeek >= 25;
               return (
                 <div
                   key={`${item.departmentName}|${item.processName}`}
-                  className="bg-zinc-800/50 border border-zinc-700/50 rounded-xl p-4 space-y-3"
+                  className="rounded-xl p-4 space-y-3 transition-all duration-200"
+                  style={{
+                    backgroundColor: isCritical ? "rgba(248,113,113,0.06)" : isHigh ? "rgba(251,146,60,0.06)" : "rgba(39,39,42,0.5)",
+                    border: isCritical ? "1px solid rgba(248,113,113,0.3)" : isHigh ? "1px solid rgba(251,146,60,0.25)" : "1px solid rgba(63,63,70,0.5)",
+                  }}
                 >
                   <div className="flex items-start gap-2">
                     <span className="inline-block px-2 py-0.5 rounded-full bg-zinc-700 text-zinc-400 text-xs shrink-0">
                       {item.departmentName}
                     </span>
-                    <span className="text-zinc-200 text-sm font-medium leading-tight">
+                    <span className="text-zinc-200 text-sm font-medium leading-tight flex-1">
                       {item.processName}
                     </span>
+                    {isCritical && (
+                      <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold shrink-0" style={{ backgroundColor: "rgba(248,113,113,0.15)", color: "#f87171" }}>
+                        <Flame className="w-3 h-3" /> בעיה קריטית
+                      </span>
+                    )}
+                    {isHigh && !isCritical && (
+                      <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold shrink-0" style={{ backgroundColor: "rgba(251,146,60,0.15)", color: "#fb923c" }}>
+                        <AlertTriangle className="w-3 h-3" /> עומס גבוה
+                      </span>
+                    )}
                   </div>
 
                   {/* Hours per week slider */}
@@ -152,8 +170,18 @@ export function Step07_TimeAudit({ onNext, onBack }: Props) {
                         })
                       }
                       className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
-                      style={{ accentColor: "#4d8eff" }}
+                      style={{ accentColor: isCritical ? "#f87171" : isHigh ? "#fb923c" : "#4d8eff" }}
                     />
+                    {isCritical && (
+                      <p className="text-[10px] leading-relaxed" style={{ color: "#f87171" }}>
+                        🔥 תהליך זה לוקח יותר מ-25 שעות בשבוע — זה מועמד ראשון לאוטומציה מלאה
+                      </p>
+                    )}
+                    {isHigh && !isCritical && (
+                      <p className="text-[10px] leading-relaxed" style={{ color: "#fb923c" }}>
+                        ⚡ עומס גבוה — עסקים דומים חסכו כאן 60-80% מהזמן עם AI
+                      </p>
+                    )}
                     <div className="flex justify-between text-zinc-600 text-xs">
                       <span>0h</span>
                       <span>40h</span>

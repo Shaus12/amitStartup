@@ -61,7 +61,7 @@ export function DashboardClient({ businessId, businessName, showSaveModal = fals
       const r = await fetch(`/api/business/opportunities?businessId=${businessId}`);
       if (!r.ok) return [];
       const body = await r.json();
-      return body.opportunities ?? [];
+      return Array.isArray(body) ? body : (body.opportunities ?? []);
     },
   });
 
