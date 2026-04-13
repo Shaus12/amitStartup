@@ -4,7 +4,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { OnboardingAnswers, EMPTY_ANSWERS } from "@/lib/types/onboarding";
 
-export const TOTAL_STEPS = 18; // 0-17
+export const TOTAL_STEPS = 20; // 0-19
 
 interface OnboardingStore {
   currentStep: number;

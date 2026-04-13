@@ -38,10 +38,36 @@ function SkeletonNode() {
   );
 }
 
+const DAILY_TIPS = [
+  "בדוק אילו תהליכים חוזרים על עצמם — אלה ראשונים לאוטומציה",
+  "תהליכים שכוללים 3+ אנשים הם בדרך כלל צוואר בקבוק — תעדף אותם",
+  "כל שעה שחוסכים בשבוע = ~200 שעות בשנה. חשב את הערך הכספי",
+  "עסקים שמיישמים 2-3 סוכני AI ראשונים חוסכים 40% מהזמן הידני",
+  "סקור את דוח ההזדמנויות שלך — ייתכן שיש שם כסף מונח על השולחן",
+  "תיעוד תהליכים ידנית הוא סימן שאפשר להפוך אותם לאוטומטיים",
+  "מה לוקח לך הכי הרבה זמן ביום? זה המקום הראשון להתחיל",
+];
+
 export function DashboardClient({ businessId, businessName, showSaveModal = false }: DashboardClientProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [isRegenerating, setIsRegenerating] = useState(false);
+
+  const todayTip = DAILY_TIPS[Math.floor(Date.now() / 86400000) % DAILY_TIPS.length];
+
+  const { data: opportunitiesSummary = [] } = useQuery<Array<{ estimatedHoursSaved: number | null; estimatedCostSaved: number | null; roadmapStatus: string }>>({
+    queryKey: ["opportunities-summary", businessId],
+    queryFn: async () => {
+      const r = await fetch(`/api/business/opportunities?businessId=${businessId}`);
+      if (!r.ok) return [];
+      const body = await r.json();
+      return body.opportunities ?? [];
+    },
+  });
+
+  const doneOpps = opportunitiesSummary.filter((o) => o.roadmapStatus === "done");
+  const totalHrsSaved = doneOpps.reduce((s, o) => s + (o.estimatedHoursSaved ?? 0), 0);
+  const totalCostSaved = doneOpps.reduce((s, o) => s + (o.estimatedCostSaved ?? 0), 0);
 
   async function handleSignOut() {
     const supabase = createClient();
@@ -131,30 +157,31 @@ export function DashboardClient({ businessId, businessName, showSaveModal = fals
           <div className="flex items-center gap-3">
             {!isLoading && data && <HealthScore businessId={businessId} />}
             <div className="w-px h-6 shrink-0" style={{ backgroundColor: "#282a30" }} />
-            {!showSaveModal && (
-              <button
-                id="sign-out-btn"
-                onClick={handleSignOut}
-                title="Sign out"
-                className="inline-flex items-center gap-1.5 rounded px-2.5 py-1.5 text-xs transition-all duration-150"
-                style={{
-                  fontFamily: "var(--font-inter)",
-                  backgroundColor: "transparent",
-                  border: "1px solid transparent",
-                  color: "#424754",
-                }}
-                onMouseEnter={e => {
-                  (e.currentTarget as HTMLElement).style.color = "#c2c6d6";
-                  (e.currentTarget as HTMLElement).style.borderColor = "#282a30";
-                }}
-                onMouseLeave={e => {
-                  (e.currentTarget as HTMLElement).style.color = "#424754";
-                  (e.currentTarget as HTMLElement).style.borderColor = "transparent";
-                }}
-              >
-                <LogOut className="w-3 h-3" strokeWidth={2} />
-              </button>
-            )}
+            <button
+              id="sign-out-btn"
+              onClick={handleSignOut}
+              title="התנתק"
+              className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-all duration-150"
+              style={{
+                fontFamily: "var(--font-inter)",
+                backgroundColor: "transparent",
+                border: "1px solid #282a30",
+                color: "#8c909f",
+              }}
+              onMouseEnter={e => {
+                (e.currentTarget as HTMLElement).style.color = "#f87171";
+                (e.currentTarget as HTMLElement).style.borderColor = "#f8717130";
+                (e.currentTarget as HTMLElement).style.backgroundColor = "#f8717108";
+              }}
+              onMouseLeave={e => {
+                (e.currentTarget as HTMLElement).style.color = "#8c909f";
+                (e.currentTarget as HTMLElement).style.borderColor = "#282a30";
+                (e.currentTarget as HTMLElement).style.backgroundColor = "transparent";
+              }}
+            >
+              <LogOut className="w-3 h-3" strokeWidth={2} />
+              <span className="hidden sm:inline">התנתק</span>
+            </button>
             <Link
               href="/report"
               className="inline-flex items-center gap-1.5 rounded px-3 py-1.5 text-xs font-medium transition-all duration-150"
@@ -207,6 +234,39 @@ export function DashboardClient({ businessId, businessName, showSaveModal = fals
           </div>
         )}
       </header>
+
+      {/* Daily tip + savings banner */}
+      <div className="shrink-0" style={{ borderBottom: "1px solid #1e1f26" }}>
+        {totalHrsSaved > 0 && (
+          <div
+            className="px-6 py-2 flex items-center gap-3 flex-wrap"
+            style={{ backgroundColor: "#111319", borderBottom: "1px solid #1e1f26" }}
+          >
+            <div className="flex items-center gap-1.5">
+              <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: "#34d399" }} />
+              <span className="text-xs font-semibold" style={{ color: "#34d399", fontFamily: "var(--font-inter)" }}>
+                חסכת {totalHrsSaved.toFixed(0)} שעות
+              </span>
+            </div>
+            {totalCostSaved > 0 && (
+              <span className="text-xs" style={{ color: "#8c909f", fontFamily: "var(--font-inter)" }}>
+                · ₪{totalCostSaved.toLocaleString()} חיסכון כספי מוערך
+              </span>
+            )}
+          </div>
+        )}
+        <div
+          className="px-6 py-2 flex items-start gap-2"
+          style={{ backgroundColor: "#111319" }}
+        >
+          <span className="text-[9px] font-bold uppercase tracking-widest shrink-0 mt-px" style={{ color: "#4d8eff", fontFamily: "var(--font-inter)" }}>
+            טיפ יומי
+          </span>
+          <span className="text-[11px] leading-relaxed" style={{ color: "#8c909f", fontFamily: "var(--font-inter)" }}>
+            {todayTip}
+          </span>
+        </div>
+      </div>
 
       {/* Map / loading / error */}
       <div className="flex-1 relative overflow-hidden">

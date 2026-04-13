@@ -87,13 +87,38 @@ const CONTENT = {
       pricing: "תמחור", signIn: "התחבר", cta: "התחל בחינם",
     },
     hero: {
-      badge: "500+ עסקים כבר חוסכים זמן",
-      h1: "גלה בדיוק איפה העסק שלך",
-      h2: "מפסיד כסף — תוך 15 דקות.",
-      sub: "BizView ממפה כל מחלקה, תהליך וזרימת עבודה. ואז מספר לך בדיוק אילו סוכני AI לפרוס כדי לחסוך ביותר שעות וכסף — ראשון.",
-      cta1: "קבל את המפה שלי בחינם",
+      badge: "מרבית בעלי עסקים מבזבזים 20+ שעות בשבוע בלי לדעת על מה",
+      h1: "פתחת עסק כדי להיות חופשי.",
+      h2: "אז למה אתה טובע בוואטסאפ, אקסל ושריפות?",
+      sub: "BizView ממפה את כל הפעילות שלך תוך 15 דקות ומראה לך בדיוק אילו סוכני AI יחזירו לך את הזמן — ואת הכסף. ללא יועצים. ללא ניחושים.",
+      cta1: "הראה לי לאן הזמן שלי הולך",
       cta2: "ראה דוגמה אמיתית",
       proof: ["15 דקות בלבד", "חוסך ~23 שעות/שבוע", "ללא כרטיס אשראי"],
+    },
+    pain: {
+      tag: "למה זה קורה",
+      h2: "אתה לא לבד. זה קורה לכל בעל עסק.",
+      avatars: [
+        { icon: "🍕", type: "מסעדה / קייטרינג", problem: "מבזבז 3 שעות ביום על הזמנות ידניות, ניהול משמרות ומלאי שמתקלקל" },
+        { icon: "💈", type: "שירות / קליניקה", problem: "45% מהזמן הולך על תיאומים, תזכורות ודוחות במקום על הלקוחות עצמם" },
+        { icon: "🛒", type: "קמעונאות / מכירות", problem: "עוקב אחר מלאי, הזמנות וספקים ב-4 כלים שלא מדברים אחד עם השני" },
+      ],
+    },
+    anchor: {
+      tag: "השוואת ערך",
+      h2: "יועץ עסקי גובה ₪3,000–₪8,000 לחודש.",
+      sub: "מיפינו את כל העסק שלך. בחינם.",
+      items: [
+        { label: "יועץ עסקי", cost: "₪3,000–8,000/חודש", note: "לפגישות שבועיות ודוח", bad: true },
+        { label: "BizView", cost: "חינם", note: "מפה מלאה + תוכנית AI + המלצות ספציפיות", bad: false },
+      ],
+    },
+    insight: {
+      tag: "מה הנתונים מראים",
+      stat: "23",
+      statUnit: "שעות/שבוע",
+      statLabel: "ממוצע הזמן שעסקי שירות מבזבזים על עבודה ידנית",
+      body: "ניתחנו מאות עסקים. עסק שירות ממוצע מוציא 23 שעות בשבוע על משימות שסוכן AI יכול לבצע תוך דקות. זה 2.5 ימי עבודה שבועיים שנגנבים ממך.",
     },
     marquee: "מוסמך על ידי עסקים חדשניים",
     companies: [
@@ -175,12 +200,37 @@ const CONTENT = {
        ✓ Final CTA creates urgency via competitive framing */
     hero: {
       badge: "Join 500+ businesses already saving 23h/week",
-      h1: "Find the hidden costs",
-      h2: "bleeding your business dry.",
-      sub: "BizView maps every department, process, and workflow — then tells you exactly which AI agents to deploy to recover $4,200+/month. No consultants. No guesswork. 15 minutes.",
-      cta1: "Get my free business analysis",
+      h1: "You started a business to be free.",
+      h2: "So why are you drowning in WhatsApp, spreadsheets, and fires?",
+      sub: "BizView maps your entire operation in 15 minutes and shows you exactly which AI agents will recover your time — and your money. No consultants. No guesswork.",
+      cta1: "Show me where my time is going",
       cta2: "Watch a 2-min demo",
       proof: ["Takes just 15 minutes", "Saves ~23 hours/week on average", "No credit card required"],
+    },
+    pain: {
+      tag: "Why this happens",
+      h2: "You're not alone. Every business owner faces this.",
+      avatars: [
+        { icon: "🍕", type: "Restaurant / Catering", problem: "Spends 3 hours a day on manual orders, shift management, and inventory that keeps spoiling" },
+        { icon: "💈", type: "Service / Clinic", problem: "45% of working time goes to scheduling, reminders, and reports instead of serving clients" },
+        { icon: "🛒", type: "Retail / Sales", problem: "Tracking inventory, orders, and suppliers across 4 tools that don't talk to each other" },
+      ],
+    },
+    anchor: {
+      tag: "Value comparison",
+      h2: "Business consultants charge $800–$3,000/month.",
+      sub: "We mapped your entire business. Free.",
+      items: [
+        { label: "Business consultant", cost: "$800–3,000/mo", note: "For weekly meetings and a report", bad: true },
+        { label: "BizView", cost: "Free", note: "Full map + AI plan + specific recommendations", bad: false },
+      ],
+    },
+    insight: {
+      tag: "What the data shows",
+      stat: "23",
+      statUnit: "hrs/week",
+      statLabel: "Average time service businesses waste on manual work",
+      body: "We've analyzed hundreds of businesses. The average service business spends 23 hours a week on tasks an AI agent can do in minutes. That's 2.5 workdays every week stolen from you.",
     },
     marquee: "Trusted by forward-thinking businesses",
     companies: [
@@ -999,6 +1049,94 @@ function Stats() {
   );
 }
 
+/* ─── Pain Section ──────────────────────────────────────────────────── */
+function PainSection() {
+  const { t } = useLang();
+  return (
+    <section className="py-20 px-6" style={{ backgroundColor: C.s0 }}>
+      <div className="max-w-[1100px] mx-auto">
+        <div className="text-center mb-12 bv-reveal">
+          <span className="text-[10px] font-bold tracking-[0.15em] uppercase" style={{ ...IF, color: C.blue }}>{t.pain.tag}</span>
+          <h2 className="text-3xl md:text-4xl font-bold mt-3" style={{ ...MF, color: C.text }}>{t.pain.h2}</h2>
+        </div>
+        <div className="grid md:grid-cols-3 gap-5">
+          {t.pain.avatars.map((a) => (
+            <div key={a.type} className="rounded-2xl p-6 bv-reveal" style={{ backgroundColor: C.s1, border: `1px solid ${C.s3}` }}>
+              <div className="text-3xl mb-3">{a.icon}</div>
+              <p className="text-xs font-bold uppercase tracking-wider mb-2" style={{ ...IF, color: C.blue }}>{a.type}</p>
+              <p className="text-sm leading-relaxed" style={{ ...IF, color: C.muted }}>{a.problem}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─── Insight Section ───────────────────────────────────────────────── */
+function InsightSection() {
+  const { t } = useLang();
+  const ref = useRef<HTMLDivElement>(null);
+  const [triggered, setTriggered] = useState(false);
+  const count = useCountUp(parseInt(t.insight.stat), 1800, triggered);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) { setTriggered(true); io.disconnect(); }
+    }, { threshold: 0.3 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  return (
+    <section ref={ref} className="py-24 px-6" style={{ backgroundColor: C.bg }}>
+      <div className="max-w-[860px] mx-auto text-center bv-reveal">
+        <span className="text-[10px] font-bold tracking-[0.15em] uppercase" style={{ ...IF, color: C.blue }}>{t.insight.tag}</span>
+        <div className="mt-6 mb-4">
+          <span className="text-[5rem] md:text-[7rem] font-extrabold tabular-nums leading-none" style={{ ...MF, background: `linear-gradient(135deg, ${C.blue}, ${C.glow})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+            {count}
+          </span>
+          <span className="text-2xl font-bold ml-2" style={{ ...MF, color: C.sub }}>{t.insight.statUnit}</span>
+        </div>
+        <p className="text-sm font-semibold mb-6" style={{ ...IF, color: C.muted }}>{t.insight.statLabel}</p>
+        <p className="text-base leading-relaxed max-w-[52ch] mx-auto" style={{ ...IF, color: C.muted }}>{t.insight.body}</p>
+      </div>
+    </section>
+  );
+}
+
+/* ─── Price Anchor Section ──────────────────────────────────────────── */
+function PriceAnchorSection() {
+  const { t } = useLang();
+  return (
+    <section className="py-20 px-6" style={{ backgroundColor: C.s0 }}>
+      <div className="max-w-[700px] mx-auto text-center bv-reveal">
+        <span className="text-[10px] font-bold tracking-[0.15em] uppercase" style={{ ...IF, color: C.blue }}>{t.anchor.tag}</span>
+        <h2 className="text-2xl md:text-3xl font-bold mt-3 mb-2" style={{ ...MF, color: C.text }}>{t.anchor.h2}</h2>
+        <p className="text-sm mb-10" style={{ ...IF, color: C.muted }}>{t.anchor.sub}</p>
+        <div className="grid grid-cols-2 gap-4">
+          {t.anchor.items.map((item) => (
+            <div
+              key={item.label}
+              className="rounded-2xl p-6 text-left"
+              style={{
+                backgroundColor: item.bad ? `${C.red}08` : `${C.green}08`,
+                border: `1px solid ${item.bad ? `${C.red}20` : `${C.green}20`}`,
+              }}
+            >
+              <p className="text-sm font-bold mb-1" style={{ ...IF, color: item.bad ? "#f87171" : C.green }}>{item.label}</p>
+              <p className="text-2xl font-extrabold mb-2" style={{ ...MF, color: C.text }}>{item.cost}</p>
+              <p className="text-xs" style={{ ...IF, color: C.muted }}>{item.note}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 /* ─── Final CTA ─────────────────────────────────────────────────────── */
 function FinalCTA() {
   const { t } = useLang();
@@ -1135,10 +1273,13 @@ export function LandingPage() {
         <Nav />
         <Hero />
         <LogoMarquee />
+        <PainSection />
         <FeatureMap />
         <FeatureAI />
+        <InsightSection />
         <FeatureHowItWorks />
         <Stats />
+        <PriceAnchorSection />
         <FinalCTA />
         <Footer />
       </div>

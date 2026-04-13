@@ -137,6 +137,20 @@ export function RoadmapClient({ businessId, businessName }: Props) {
         </div>
       </header>
 
+      {/* Continue where you left off */}
+      {activeOpps.length > 0 && (
+        <div
+          className="shrink-0 mx-6 mt-4 flex items-center gap-3 px-4 py-3 rounded-xl"
+          style={{ backgroundColor: `${C.blue}08`, border: `1px solid ${C.blue}20` }}
+        >
+          <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: C.blue }} />
+          <p className="text-xs" style={{ ...IF, color: C.sub }}>
+            <span className="font-semibold" style={{ color: C.blue }}>{activeOpps.length} {activeOpps.length === 1 ? "agent" : "agents"} in progress</span>
+            {" "}— continue where you left off
+          </p>
+        </div>
+      )}
+
       {/* Kanban */}
       <div className="flex-1 overflow-x-auto">
         {isLoading ? (

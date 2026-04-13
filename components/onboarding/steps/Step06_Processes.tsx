@@ -7,97 +7,176 @@ import { ProcessInput } from "@/lib/types/onboarding";
 import { cn } from "@/lib/utils";
 import { X } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { useT } from "@/lib/i18n";
+import { useT, useLanguage } from "@/lib/i18n";
 
 interface Props {
   onNext: () => void;
   onBack: () => void;
 }
 
-const PROCESS_SUGGESTIONS: Record<string, string[]> = {
+// English values are stored in DB; Hebrew labels are display-only
+type SuggestionPair = { value: string; label: string };
+
+const PROCESS_SUGGESTIONS_EN: Record<string, SuggestionPair[]> = {
   Sales: [
-    "Lead generation",
-    "Prospect outreach",
-    "Demo calls",
-    "Proposal creation",
-    "Contract signing",
-    "CRM updates",
-    "Pipeline review",
+    { value: "Lead generation", label: "Lead generation" },
+    { value: "Prospect outreach", label: "Prospect outreach" },
+    { value: "Demo calls", label: "Demo calls" },
+    { value: "Proposal creation", label: "Proposal creation" },
+    { value: "Contract signing", label: "Contract signing" },
+    { value: "CRM updates", label: "CRM updates" },
+    { value: "Pipeline review", label: "Pipeline review" },
   ],
   Marketing: [
-    "Content creation",
-    "Social media posting",
-    "Email campaigns",
-    "Ad management",
-    "SEO updates",
-    "Analytics reporting",
+    { value: "Content creation", label: "Content creation" },
+    { value: "Social media posting", label: "Social media posting" },
+    { value: "Email campaigns", label: "Email campaigns" },
+    { value: "Ad management", label: "Ad management" },
+    { value: "SEO updates", label: "SEO updates" },
+    { value: "Analytics reporting", label: "Analytics reporting" },
   ],
   Operations: [
-    "Onboarding new clients",
-    "Project tracking",
-    "Vendor management",
-    "Process documentation",
-    "Inventory management",
+    { value: "Onboarding new clients", label: "Onboarding new clients" },
+    { value: "Project tracking", label: "Project tracking" },
+    { value: "Vendor management", label: "Vendor management" },
+    { value: "Process documentation", label: "Process documentation" },
+    { value: "Inventory management", label: "Inventory management" },
   ],
   Finance: [
-    "Invoicing",
-    "Expense tracking",
-    "Payroll",
-    "Monthly reporting",
-    "Budget reviews",
-    "Collections",
+    { value: "Invoicing", label: "Invoicing" },
+    { value: "Expense tracking", label: "Expense tracking" },
+    { value: "Payroll", label: "Payroll" },
+    { value: "Monthly reporting", label: "Monthly reporting" },
+    { value: "Budget reviews", label: "Budget reviews" },
+    { value: "Collections", label: "Collections" },
   ],
   "Customer Support": [
-    "Handling inquiries",
-    "Ticket management",
-    "Refund processing",
-    "Knowledge base updates",
-    "Follow-up outreach",
+    { value: "Handling inquiries", label: "Handling inquiries" },
+    { value: "Ticket management", label: "Ticket management" },
+    { value: "Refund processing", label: "Refund processing" },
+    { value: "Knowledge base updates", label: "Knowledge base updates" },
+    { value: "Follow-up outreach", label: "Follow-up outreach" },
   ],
   "Customer Success": [
-    "Onboarding calls",
-    "Health check-ins",
-    "Renewal management",
-    "Upsell outreach",
-    "Churn analysis",
+    { value: "Onboarding calls", label: "Onboarding calls" },
+    { value: "Health check-ins", label: "Health check-ins" },
+    { value: "Renewal management", label: "Renewal management" },
+    { value: "Upsell outreach", label: "Upsell outreach" },
+    { value: "Churn analysis", label: "Churn analysis" },
   ],
   Engineering: [
-    "Code reviews",
-    "Bug triage",
-    "Deployment",
-    "Sprint planning",
-    "Technical documentation",
-    "On-call / incident response",
+    { value: "Code reviews", label: "Code reviews" },
+    { value: "Bug triage", label: "Bug triage" },
+    { value: "Deployment", label: "Deployment" },
+    { value: "Sprint planning", label: "Sprint planning" },
+    { value: "Technical documentation", label: "Technical documentation" },
+    { value: "On-call / incident response", label: "On-call / incident response" },
   ],
   HR: [
-    "Recruiting",
-    "Interviewing",
-    "Onboarding new hires",
-    "Performance reviews",
-    "Payroll",
-    "Benefits administration",
+    { value: "Recruiting", label: "Recruiting" },
+    { value: "Interviewing", label: "Interviewing" },
+    { value: "Onboarding new hires", label: "Onboarding new hires" },
+    { value: "Performance reviews", label: "Performance reviews" },
+    { value: "Payroll", label: "Payroll" },
+    { value: "Benefits administration", label: "Benefits administration" },
   ],
 };
 
-const DEFAULT_SUGGESTIONS = [
-  "Planning meetings",
-  "Status updates",
-  "Reporting",
-  "Communication",
-  "Documentation",
+const PROCESS_SUGGESTIONS_HE: Record<string, SuggestionPair[]> = {
+  Sales: [
+    { value: "Lead generation", label: "יצירת לידים" },
+    { value: "Prospect outreach", label: "פנייה ללקוחות פוטנציאליים" },
+    { value: "Demo calls", label: "שיחות הדגמה" },
+    { value: "Proposal creation", label: "כתיבת הצעות מחיר" },
+    { value: "Contract signing", label: "חתימת חוזים" },
+    { value: "CRM updates", label: "עדכון CRM" },
+    { value: "Pipeline review", label: "סקירת צינור מכירות" },
+  ],
+  Marketing: [
+    { value: "Content creation", label: "יצירת תוכן" },
+    { value: "Social media posting", label: "פרסום ברשתות חברתיות" },
+    { value: "Email campaigns", label: "קמפיינים באימייל" },
+    { value: "Ad management", label: "ניהול פרסום" },
+    { value: "SEO updates", label: "עדכוני SEO" },
+    { value: "Analytics reporting", label: "דיווח אנליטיקה" },
+  ],
+  Operations: [
+    { value: "Onboarding new clients", label: "קליטת לקוחות חדשים" },
+    { value: "Project tracking", label: "מעקב פרויקטים" },
+    { value: "Vendor management", label: "ניהול ספקים" },
+    { value: "Process documentation", label: "תיעוד תהליכים" },
+    { value: "Inventory management", label: "ניהול מלאי" },
+  ],
+  Finance: [
+    { value: "Invoicing", label: "הנפקת חשבוניות" },
+    { value: "Expense tracking", label: "מעקב הוצאות" },
+    { value: "Payroll", label: "שכר" },
+    { value: "Monthly reporting", label: "דיווח חודשי" },
+    { value: "Budget reviews", label: "סקירת תקציב" },
+    { value: "Collections", label: "גבייה" },
+  ],
+  "Customer Support": [
+    { value: "Handling inquiries", label: "טיפול בפניות" },
+    { value: "Ticket management", label: "ניהול טיקטים" },
+    { value: "Refund processing", label: "עיבוד החזרים" },
+    { value: "Knowledge base updates", label: "עדכון בסיס ידע" },
+    { value: "Follow-up outreach", label: "פנייה מעקב" },
+  ],
+  "Customer Success": [
+    { value: "Onboarding calls", label: "שיחות קליטה" },
+    { value: "Health check-ins", label: "בדיקות מצב" },
+    { value: "Renewal management", label: "ניהול חידושים" },
+    { value: "Upsell outreach", label: "פנייה להרחבת שירות" },
+    { value: "Churn analysis", label: "ניתוח נטישה" },
+  ],
+  Engineering: [
+    { value: "Code reviews", label: "סקירות קוד" },
+    { value: "Bug triage", label: "סיווג באגים" },
+    { value: "Deployment", label: "פריסה" },
+    { value: "Sprint planning", label: "תכנון ספרינט" },
+    { value: "Technical documentation", label: "תיעוד טכני" },
+    { value: "On-call / incident response", label: "כוננות / תגובה לאירועים" },
+  ],
+  HR: [
+    { value: "Recruiting", label: "גיוס" },
+    { value: "Interviewing", label: "ראיונות" },
+    { value: "Onboarding new hires", label: "קליטת עובדים חדשים" },
+    { value: "Performance reviews", label: "שיחות משוב" },
+    { value: "Payroll", label: "שכר" },
+    { value: "Benefits administration", label: "ניהול הטבות" },
+  ],
+};
+
+const DEFAULT_SUGGESTIONS_EN: SuggestionPair[] = [
+  { value: "Planning meetings", label: "Planning meetings" },
+  { value: "Status updates", label: "Status updates" },
+  { value: "Reporting", label: "Reporting" },
+  { value: "Communication", label: "Communication" },
+  { value: "Documentation", label: "Documentation" },
 ];
 
-function getSuggestions(deptName: string): string[] {
-  const key = Object.keys(PROCESS_SUGGESTIONS).find(
+const DEFAULT_SUGGESTIONS_HE: SuggestionPair[] = [
+  { value: "Planning meetings", label: "פגישות תכנון" },
+  { value: "Status updates", label: "עדכוני סטטוס" },
+  { value: "Reporting", label: "דיווח" },
+  { value: "Communication", label: "תקשורת פנימית" },
+  { value: "Documentation", label: "תיעוד" },
+];
+
+function getSuggestions(deptName: string, lang: "he" | "en"): SuggestionPair[] {
+  const map = lang === "he" ? PROCESS_SUGGESTIONS_HE : PROCESS_SUGGESTIONS_EN;
+  const defaults = lang === "he" ? DEFAULT_SUGGESTIONS_HE : DEFAULT_SUGGESTIONS_EN;
+  const key = Object.keys(map).find(
     (k) => k.toLowerCase() === deptName.toLowerCase()
   );
-  return key ? PROCESS_SUGGESTIONS[key] : DEFAULT_SUGGESTIONS;
+  return key ? map[key] : defaults;
 }
 
 export function Step06_Processes({ onNext, onBack }: Props) {
   const { answers, updateAnswers } = useOnboardingStore();
   const [customInputs, setCustomInputs] = useState<Record<string, string>>({});
   const t = useT();
+  const { lang } = useLanguage();
 
   const processNames = answers.processes.map((p) => p.name + "|" + p.departmentName);
 
@@ -191,7 +270,7 @@ export function Step06_Processes({ onNext, onBack }: Props) {
           </p>
         ) : (
           answers.departments.map((dept) => {
-            const suggestions = getSuggestions(dept.name);
+            const suggestions = getSuggestions(dept.name, lang);
             const deptProcs = deptProcesses(dept.name);
 
             return (
@@ -210,12 +289,12 @@ export function Step06_Processes({ onNext, onBack }: Props) {
                 {/* Suggestion chips */}
                 <div className="flex flex-wrap gap-2">
                   {suggestions.map((suggestion) => {
-                    const added = isProcessAdded(suggestion, dept.name);
+                    const added = isProcessAdded(suggestion.value, dept.name);
                     return (
                       <button
-                        key={suggestion}
+                        key={suggestion.value}
                         type="button"
-                        onClick={() => toggleProcess(suggestion, dept.name)}
+                        onClick={() => toggleProcess(suggestion.value, dept.name)}
                         className={cn(
                           "px-3 py-1.5 rounded-full border text-xs transition-all",
                           added
@@ -224,7 +303,7 @@ export function Step06_Processes({ onNext, onBack }: Props) {
                         )}
                       >
                         {added ? "✓ " : "+ "}
-                        {suggestion}
+                        {suggestion.label}
                       </button>
                     );
                   })}

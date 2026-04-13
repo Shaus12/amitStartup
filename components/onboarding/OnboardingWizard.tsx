@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useOnboardingStore, TOTAL_STEPS } from "@/lib/hooks/useOnboardingStore";
 import { useT } from "@/lib/i18n";
 import { Step00_Welcome } from "@/components/onboarding/steps/Step00_Welcome";
@@ -20,6 +21,8 @@ import { Step14_PriorAI } from "@/components/onboarding/steps/Step14_PriorAI";
 import { Step15_Budget } from "@/components/onboarding/steps/Step15_Budget";
 import { Step16_Goals } from "@/components/onboarding/steps/Step16_Goals";
 import { Step17_Review } from "@/components/onboarding/steps/Step17_Review";
+import { Step18_Marketing } from "@/components/onboarding/steps/Step18_Marketing";
+import { Step19_Notifications } from "@/components/onboarding/steps/Step19_Notifications";
 
 type StepProps = { onNext: () => void; onBack: () => void };
 
@@ -29,9 +32,10 @@ const STEPS: React.ComponentType<StepProps>[] = [
   Step08_ManualWork, Step09_CustomerInteraction, Step10_Reporting,
   Step11_Communication, Step12_Bottlenecks, Step13_PainPoints,
   Step14_PriorAI, Step15_Budget, Step16_Goals, Step17_Review,
+  Step18_Marketing, Step19_Notifications,
 ] as React.ComponentType<StepProps>[];
 
-const GROUP_STEP_RANGES = [[0, 3], [4, 6], [7, 11], [12, 13], [14, 16], [17, 17]];
+const GROUP_STEP_RANGES = [[0, 3], [4, 6], [7, 11], [12, 13], [14, 16], [17, 19]];
 
 function getCurrentGroupIndex(step: number) {
   return GROUP_STEP_RANGES.findIndex(([s, e]) => step >= s && step <= e);
@@ -43,7 +47,7 @@ const PANEL_HEADING_INDICES = [
   [7, 11],  // "Where does time go?"
   [12, 13], // "Surface your friction."
   [14, 16], // "Define your AI goals."
-  [17, 17], // "Review everything."
+  [17, 19], // "Review everything."
 ];
 
 function getPanelHeadingIndex(step: number) {
@@ -54,6 +58,39 @@ export function OnboardingWizard() {
   const { currentStep, nextStep, prevStep } = useOnboardingStore();
   const t = useT();
   const progressPercent = Math.round((currentStep / (TOTAL_STEPS - 1)) * 100);
+
+  const [showSocialProof, setShowSocialProof] = useState(false);
+  const [socialProofDismissed, setSocialProofDismissed] = useState(false);
+  const [insightOverlay, setInsightOverlay] = useState<null | { emoji: string; title: string; body: string }>(null);
+
+  useEffect(() => {
+    if (currentStep >= 5 && currentStep <= 7 && !socialProofDismissed) {
+      const show = setTimeout(() => setShowSocialProof(true), 2000);
+      const hide = setTimeout(() => setShowSocialProof(false), 6000);
+      return () => { clearTimeout(show); clearTimeout(hide); };
+    }
+  }, [currentStep, socialProofDismissed]);
+
+  // Group transition insights
+  const GROUP_INSIGHTS: Record<number, { emoji: string; title: string; body: string }> = {
+    1: { emoji: "🗂️", title: "מצוין! יסודות העסק מוכנים", body: "כבר יש לנו תמונה ראשונית של הפעילות שלך. עכשיו נמפה את המבנה הארגוני — המחלקות, הצוותים והכלים שאתם עובדים איתם." },
+    2: { emoji: "⚙️", title: "המבנה ממופה!", body: "מעולה. עכשיו נצלול לעומק — נבדוק לאן הזמן הולך ואיפה יש עומסים שאפשר להפחית. זה המקום שבו רוב הכסף אבוד." },
+    3: { emoji: "🔍", title: "תפעול מוכן לניתוח", body: "הנתונים שנתת כבר מראים דפוסים מעניינים. עכשיו נזהה את נקודות החיכוך — איפה הצוות נתקע ואיפה הכאב הכי גדול." },
+    4: { emoji: "💡", title: "כמעט שם!", body: "אנחנו בשלב האחרון לפני הניתוח. נגדיר את יעדי ה-AI שלך כדי שההמלצות יהיו ממוקדות בדיוק בצרכים שלך." },
+    5: { emoji: "🚀", title: "הכל מוכן לניתוח!", body: "בדקי את הסיכום וכשתאשר — BizView ינתח את הנתונים ויחזיר לך מפת הזדמנויות AI מותאמת אישית לעסק שלך." },
+  };
+
+  const currentGroup = getCurrentGroupIndex(currentStep);
+  const isFirstStepOfGroup = GROUP_STEP_RANGES[currentGroup]?.[0] === currentStep;
+
+  useEffect(() => {
+    if (currentGroup > 0 && isFirstStepOfGroup && GROUP_INSIGHTS[currentGroup]) {
+      const timer = setTimeout(() => setInsightOverlay(GROUP_INSIGHTS[currentGroup]), 300);
+      return () => clearTimeout(timer);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentStep]);
+
   const StepComponent = STEPS[currentStep] ?? STEPS[0];
   const groupIndex = getCurrentGroupIndex(currentStep);
   const headingIndex = getPanelHeadingIndex(currentStep);
@@ -172,11 +209,23 @@ export function OnboardingWizard() {
 
       {/* ── Right form area ── */}
       <div className="flex-1 flex flex-col min-w-0">
-        <div className="h-[2px] shrink-0" style={{ backgroundColor: "#191b22" }}>
+        <div className="shrink-0 relative overflow-visible" style={{ backgroundColor: "#191b22", height: 6 }}>
           <div
             className="h-full transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
-            style={{ width: `${progressPercent}%`, background: "linear-gradient(90deg, #4d8eff, #adc6ff)" }}
+            style={{ width: `${progressPercent}%`, background: "linear-gradient(90deg, #22c55e, #86efac)" }}
           />
+          {progressPercent > 5 && (
+            <span
+              className="absolute top-1/2 -translate-y-1/2 text-[9px] font-bold tabular-nums leading-none"
+              style={{
+                left: `calc(${Math.min(progressPercent, 92)}% + 6px)`,
+                color: "#22c55e",
+                fontFamily: "var(--font-inter)",
+              }}
+            >
+              {progressPercent}%
+            </span>
+          )}
         </div>
 
         <div
@@ -208,6 +257,79 @@ export function OnboardingWizard() {
           </div>
         </div>
       </div>
+
+      {/* Group transition insight overlay */}
+      {insightOverlay && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center px-4"
+          style={{ backgroundColor: "rgba(17,19,25,0.85)", backdropFilter: "blur(8px)" }}
+        >
+          <div
+            className="w-full max-w-sm rounded-2xl p-8 text-center"
+            style={{
+              backgroundColor: "#1e1f26",
+              border: "1px solid #282a30",
+              boxShadow: "0 24px 80px rgba(0,0,0,0.5)",
+              animation: "bv-fade-up 0.4s cubic-bezier(0.16,1,0.3,1) both",
+            }}
+          >
+            <div className="text-4xl mb-4">{insightOverlay.emoji}</div>
+            <h3
+              className="text-lg font-bold mb-2"
+              style={{ fontFamily: "var(--font-manrope)", color: "#e2e2eb" }}
+            >
+              {insightOverlay.title}
+            </h3>
+            <p
+              className="text-sm leading-relaxed mb-6"
+              style={{ fontFamily: "var(--font-inter)", color: "#8c909f" }}
+            >
+              {insightOverlay.body}
+            </p>
+            <button
+              onClick={() => setInsightOverlay(null)}
+              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-150 active:scale-[0.98]"
+              style={{
+                fontFamily: "var(--font-inter)",
+                background: "linear-gradient(135deg, #22c55e, #86efac)",
+                color: "#052e16",
+              }}
+            >
+              המשך →
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Social proof toast */}
+      {showSocialProof && (
+        <div
+          className="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-4 py-3 rounded-xl shadow-xl"
+          style={{
+            backgroundColor: "#1e1f26",
+            border: "1px solid #282a30",
+            boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
+            animation: "bv-fade-up 0.4s cubic-bezier(0.16,1,0.3,1) both",
+            fontFamily: "var(--font-inter)",
+          }}
+        >
+          <div
+            className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-xs font-bold"
+            style={{ backgroundColor: "#4d8eff20", color: "#4d8eff" }}
+          >
+            מ
+          </div>
+          <div>
+            <p className="text-xs font-semibold" style={{ color: "#e2e2eb" }}>מוחמד מנצרת</p>
+            <p className="text-[10px]" style={{ color: "#8c909f" }}>מיפה זה עכשיו את 4 המחלקות שלו ✓</p>
+          </div>
+          <button
+            onClick={() => { setShowSocialProof(false); setSocialProofDismissed(true); }}
+            className="text-[10px] ml-2 leading-none"
+            style={{ color: "#424754" }}
+          >✕</button>
+        </div>
+      )}
     </div>
   );
 }

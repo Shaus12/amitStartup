@@ -9,8 +9,10 @@ import {
   useNodesState,
   useEdgesState,
   BackgroundVariant,
+  MarkerType,
   type NodeTypes,
   type Node,
+  type Edge,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 
@@ -27,9 +29,69 @@ interface BusinessMapProps {
   data: BusinessMapData;
 }
 
+// Canonical business flow priority (Marketing → Sales → Onboarding → Operations → Support)
+const FLOW_PRIORITY: string[][] = [
+  ["marketing", "שיווק", "advertis"],
+  ["sales", "מכירות", "selling"],
+  ["onboard", "קליטה", "implementation", "customer success"],
+  ["operations", "תפעול", "ops", "delivery", "fulfillment"],
+  ["customer support", "שירות", "support", "service", "helpdesk"],
+  ["finance", "כספ", "billing", "accounting"],
+  ["hr", "משאבי אנוש", "people", "talent"],
+  ["engineering", "פיתוח", "dev", "tech", "product"],
+];
+
+function deptPriority(name: string): number {
+  const n = name.toLowerCase();
+  return FLOW_PRIORITY.findIndex((keywords) => keywords.some((k) => n.includes(k)));
+}
+
+function buildEdges(depts: DepartmentWithProcesses[]): Edge[] {
+  // Sort departments by canonical business flow priority
+  const sorted = [...depts].sort((a, b) => {
+    const pa = deptPriority(a.name);
+    const pb = deptPriority(b.name);
+    if (pa === -1 && pb === -1) return 0;
+    if (pa === -1) return 1;
+    if (pb === -1) return -1;
+    return pa - pb;
+  });
+
+  const edges: Edge[] = [];
+  for (let i = 0; i < sorted.length - 1; i++) {
+    const src = sorted[i];
+    const tgt = sorted[i + 1];
+    // Only connect if both have known priorities (canonical flow)
+    if (deptPriority(src.name) !== -1 || deptPriority(tgt.name) !== -1) {
+      edges.push({
+        id: `e-${src.id}-${tgt.id}`,
+        source: src.id,
+        target: tgt.id,
+        type: "smoothstep",
+        animated: false,
+        style: {
+          stroke: "#4d8eff40",
+          strokeWidth: 2,
+          strokeDasharray: "6 3",
+        },
+        markerEnd: {
+          type: MarkerType.ArrowClosed,
+          color: "#4d8eff80",
+          width: 16,
+          height: 16,
+        },
+        label: undefined,
+      });
+    }
+  }
+  return edges;
+}
+
 export function BusinessMap({ data }: BusinessMapProps) {
   const [selectedDept, setSelectedDept] = useState<DepartmentWithProcesses | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
+
+  const initialEdges = useMemo(() => buildEdges(data.departments), [data.departments]);
 
   const initialNodes = useMemo<DepartmentNodeType[]>(() => {
     const allZero = data.departments.every(
@@ -62,14 +124,16 @@ export function BusinessMap({ data }: BusinessMapProps) {
     }));
 
     if (allZero) {
-      return applyDagreLayout(rawNodes, []) as DepartmentNodeType[];
+      return applyDagreLayout(rawNodes, initialEdges) as DepartmentNodeType[];
     }
 
     return rawNodes;
+  // initialEdges is stable — derived from same data
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data.departments]);
 
   const [nodes, , onNodesChange] = useNodesState<DepartmentNodeType>(initialNodes);
-  const [edges, , onEdgesChange] = useEdgesState([]);
+  const [edges, , onEdgesChange] = useEdgesState(initialEdges);
 
   const onNodeDragStop = useCallback(
     async (_event: React.MouseEvent, node: Node) => {
@@ -90,7 +154,7 @@ export function BusinessMap({ data }: BusinessMapProps) {
   );
 
   return (
-    <div className="w-full h-full" style={{ backgroundColor: "#111319" }}>
+    <div className="w-full h-full" style={{ backgroundColor: "#0d0f15" }}>
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -99,22 +163,27 @@ export function BusinessMap({ data }: BusinessMapProps) {
         onNodeDragStop={onNodeDragStop}
         nodeTypes={nodeTypes}
         fitView
-        fitViewOptions={{ padding: 0.2 }}
-        minZoom={0.3}
+        fitViewOptions={{ padding: 0.25 }}
+        minZoom={0.25}
         maxZoom={2}
-        style={{ backgroundColor: "#111319" }}
+        style={{ backgroundColor: "#0d0f15" }}
+        proOptions={{ hideAttribution: true }}
       >
         <Background
           variant={BackgroundVariant.Dots}
-          color="#282a30"
-          gap={20}
-          size={1}
+          color="#1e2030"
+          gap={24}
+          size={1.2}
         />
-        <Controls className="[&>button]:bg-[#1e1f26] [&>button]:border-[#282a30] [&>button]:text-[#8c909f] [&>button:hover]:bg-[#282a30]" />
+        <Controls
+          className="[&>button]:bg-[#1a1c24] [&>button]:border-[#282a30] [&>button]:text-[#8c909f] [&>button:hover]:bg-[#282a30] [&>button:hover]:text-[#e2e2eb]"
+          style={{ bottom: 16, left: 16 }}
+        />
         <MiniMap
-          className="!bg-[#191b22] !border-[#282a30]"
+          className="!bg-[#13151d] !border-[#282a30] !rounded-xl"
           nodeColor={(node) => (node.data as { color: string }).color ?? "#4d8eff"}
-          maskColor="rgba(17,19,25,0.75)"
+          maskColor="rgba(13,15,21,0.8)"
+          style={{ bottom: 16, right: 16 }}
         />
       </ReactFlow>
 

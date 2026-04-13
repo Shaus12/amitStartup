@@ -101,6 +101,15 @@ export interface OnboardingAnswers {
   // Step 16 - Goals
   goals: string[];
   topPriority90Days: string;
+
+  // Step 16b - Marketing & Leads
+  monthlyLeads: string;
+  leadSources: string[];
+  marketingBudget: string;
+  adPlatforms: string[];
+
+  // Step 16c - Notifications
+  notificationsEnabled: boolean;
 }
 
 export const EMPTY_ANSWERS: OnboardingAnswers = {
@@ -146,4 +155,9 @@ export const EMPTY_ANSWERS: OnboardingAnswers = {
   aiPrefBuiltVsCustom: "",
   goals: [],
   topPriority90Days: "",
+  monthlyLeads: "",
+  leadSources: [],
+  marketingBudget: "",
+  adPlatforms: [],
+  notificationsEnabled: false,
 };

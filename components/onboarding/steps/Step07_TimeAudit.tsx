@@ -4,7 +4,6 @@ import { useEffect } from "react";
 import { useOnboardingStore } from "@/lib/hooks/useOnboardingStore";
 import { StepCard } from "@/components/onboarding/StepCard";
 import { TimeAuditEntry } from "@/lib/types/onboarding";
-import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
 import { useT } from "@/lib/i18n";
 
@@ -141,17 +140,19 @@ export function Step07_TimeAudit({ onNext, onBack }: Props) {
                         {entry.hoursPerWeek}h
                       </span>
                     </div>
-                    <Slider
+                    <input
+                      type="range"
                       min={0}
                       max={40}
                       step={0.5}
                       value={entry.hoursPerWeek}
-                      onValueChange={(val) =>
+                      onChange={(e) =>
                         updateEntry(item.processName, item.departmentName, {
-                          hoursPerWeek: typeof val === "number" ? val : (val as number[])[0],
+                          hoursPerWeek: parseFloat(e.target.value),
                         })
                       }
-                      className="w-full"
+                      className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
+                      style={{ accentColor: "#4d8eff" }}
                     />
                     <div className="flex justify-between text-zinc-600 text-xs">
                       <span>0h</span>
