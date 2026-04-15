@@ -23,10 +23,15 @@ const EFFORT_STYLE: Record<string, { color: string; label: string }> = {
 };
 
 const IMPACT_COLOR: Record<string, string> = {
+  // New values from Claude
+  time:   "#4d8eff",
+  money:  "#34d399",
+  growth: "#fbbf24",
+  // Legacy values
   time_savings: "#4d8eff",
-  cost_savings: "#34d399",
-  revenue: "#fbbf24",
-  quality: "#a78bfa",
+  cost_savings:  "#34d399",
+  revenue:       "#fbbf24",
+  quality:       "#a78bfa",
 };
 
 export function OpportunityCard({ opportunity, onPin, onDismiss }: OpportunityCardProps) {

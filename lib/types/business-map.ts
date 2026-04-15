@@ -23,6 +23,9 @@ export interface DepartmentWithProcesses {
   positionY?: number | null;
   aiOpportunities: { id: string; title: string; impactType: string }[];
   painPoints: { id: string; description: string; severity: string }[];
+  healthScore?: number | null;
+  mainPain?: string | null;
+  firstAction?: string | null;
 }
 
 export interface BusinessMapData {

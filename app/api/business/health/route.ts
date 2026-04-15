@@ -15,84 +15,40 @@ export async function GET(req: NextRequest) {
   const owned = await verifyBusinessAccess(supabase, businessId, user);
   if (!owned) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
-  // Fetch business, departments, AI opportunities, and the onboarding snapshot
+  // ── 1. Fetch the pre-calculated health score ──
+  const { data: scoreRow } = await supabase
+    .from("business_health_scores")
+    .select("*")
+    .eq("business_id", businessId)
+    .order("calculated_at", { ascending: false })
+    .limit(1)
+    .single();
+
+  // ── 2. Fetch departments & opportunities to calculate per-department scores ──
   const [
-    { data: business },
     { data: departments },
     { data: opportunities },
-    { data: session },
+    { data: knowledgeRows },
   ] = await Promise.all([
-    supabase.from("businesses").select("*").eq("id", businessId).single(),
     supabase.from("departments").select("*").eq("business_id", businessId),
     supabase.from("ai_opportunities").select("*").eq("business_id", businessId),
-    supabase
-      .from("onboarding_sessions")
-      .select("answers")
-      .eq("business_id", businessId)
-      .limit(1)
-      .single(),
+    supabase.from("business_knowledge").select("*").eq("business_id", businessId).eq("category", "process"),
   ]);
 
-  if (!business) return NextResponse.json({ error: "Not found" }, { status: 404 });
-
-  // Pull detailed data from the JSONB onboarding snapshot
-  const answers = (session?.answers as any) ?? {};
-  const processes: any[] = answers.processes ?? [];
-  const painPoints: any[] = [
-    ...(answers.painPoint1 ? [{ description: answers.painPoint1, severity: "high" }] : []),
-    ...(answers.painPoint2 ? [{ description: answers.painPoint2, severity: "medium" }] : []),
-    ...(answers.painPoint3 ? [{ description: answers.painPoint3, severity: "medium" }] : []),
-    ...(answers.biggestHeadache ? [{ description: answers.biggestHeadache, severity: "high" }] : []),
-  ];
-  const bottlenecks: any[] = answers.bottlenecks ?? [];
   const depts = departments ?? [];
   const opps = opportunities ?? [];
+  const processes = knowledgeRows ?? [];
 
-  // ── Scoring (0–100) ───────────────────────────────────────────────
-  // 1. Manual workload (30pts)
-  const totalProcs = processes.length;
-  const manualProcs = processes.filter((p) => p.isManual).length;
-  const manualPct = totalProcs > 0 ? manualProcs / totalProcs : 0;
-  const manualScore = Math.round((1 - manualPct) * 30);
-
-  // 2. Pain point density (25pts)
-  const highPain = painPoints.filter((p) => p.severity === "high").length;
-  const medPain = painPoints.filter((p) => p.severity === "medium").length;
-  const painWeight = highPain * 2 + medPain * 1;
-  const maxPain = Math.max(depts.length * 3, 1);
-  const painScore = Math.round(Math.max(0, 1 - painWeight / maxPain) * 25);
-
-  // 3. Bottlenecks (15pts)
-  const bottleneckScore = Math.round(Math.max(0, 1 - bottlenecks.length / 6) * 15);
-
-  // 4. AI coverage (20pts)
-  const coveredOpps = opps.filter((o) => o.roadmap_status !== "backlog").length;
-  const aiCoverageScore = opps.length > 0 ? Math.round((coveredOpps / opps.length) * 20) : 10;
-
-  // 5. Business setup completeness (10pts)
-  const completenessFields = [
-    business.tagline,
-    business.industry,
-    business.tech_comfort,
-    business.ai_budget,
-    business.employee_range,
-  ];
-  const filled = completenessFields.filter(Boolean).length;
-  const completenessScore = Math.round((filled / completenessFields.length) * 10);
-
-  const totalScore = manualScore + painScore + bottleneckScore + aiCoverageScore + completenessScore;
-
-  // ── Per-department scores ─────────────────────────────────────────
   const deptScores = depts.map((dept) => {
-    const dProcs = processes.filter(
-      (p) => p.departmentName?.toLowerCase() === dept.name?.toLowerCase()
-    );
-    const dManual = dProcs.filter((p) => p.isManual).length;
+    const dProcs = processes.filter((p) => p.department_id === dept.id);
+    const dManual = dProcs.filter((p) => p.metadata?.isManual).length;
     const dOpps = opps.filter((o) => o.department_id === dept.id);
     const dManualPct = dProcs.length > 0 ? dManual / dProcs.length : 0;
+    
+    // Per-department score logic
     const s = Math.round(
       (1 - dManualPct) * 50 +
-        (dOpps.filter((o) => o.roadmap_status !== "backlog").length /
+        (dOpps.filter((o) => o.status !== "suggested").length /
           Math.max(dOpps.length, 1)) *
           50
     );
@@ -106,9 +62,19 @@ export async function GET(req: NextRequest) {
     };
   });
 
+  if (!scoreRow) {
+    // If no score exists yet (e.g. they haven't generated AI analysis), return a default
+    return NextResponse.json({
+      score: 50,
+      breakdown: {},
+      departments: deptScores,
+    });
+  }
+
   return NextResponse.json({
-    score: Math.min(100, totalScore),
-    breakdown: { manualScore, painScore, bottleneckScore, aiCoverageScore, completenessScore },
+    score: scoreRow.score,
+    breakdown: typeof scoreRow.breakdown === 'string' ? JSON.parse(scoreRow.breakdown) : scoreRow.breakdown,
+    daily_tip: scoreRow.daily_tip,
     departments: deptScores,
   });
 }

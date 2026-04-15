@@ -1,166 +1,101 @@
 import Anthropic from "@anthropic-ai/sdk";
-import { buildAnalysisPrompt } from "./prompts";
+import { buildAnalysisPrompt, buildChatPrompt } from "./prompts";
+
+// ── Output types ──────────────────────────────────────────────────────────────
 
 export interface OpportunityResult {
   title: string;
   description: string;
-  impactType: string;
-  estimatedHoursSaved: number | null;
-  estimatedCostSaved: number | null;
-  implementationEffort: string | null;
-  category: string | null;
-  departmentName: string | null;
-  agentName: string | null;
-  agentDescription: string | null;
-  agentTools: string | null;
-  setupComplexity: string | null;
+  impact_type: string;          // "time" | "money" | "growth"
+  estimated_hours_saved: number | null;
+  estimated_cost_saved: number | null;
+  priority: number;             // 1–5
+  department_name: string | null;
+}
+
+export interface DepartmentAnalysis {
+  department_name: string;
+  health_score: number;
+  main_pain: string;            // Hebrew
+  first_action: string;         // English
+  opportunities: OpportunityResult[];
 }
 
 export interface AnalysisResult {
+  overall_health_score: number;
+  daily_tip: string;            // Hebrew
+  biggest_pain: string;         // Hebrew
+  departments: DepartmentAnalysis[];
+  // Flattened for backward compat with existing route / UI
   opportunities: OpportunityResult[];
   summary: {
     topPriority: string;
     totalHoursSaved: number;
     totalMonthlySavings: number;
   };
+  healthScore: {
+    score: number;
+    breakdown: any;
+    dailyTip: string;
+  };
 }
 
+// ── Stub ──────────────────────────────────────────────────────────────────────
+
 const STUB_RESULT: AnalysisResult = {
-  opportunities: [
+  overall_health_score: 65,
+  daily_tip: "תחל בתיעוד כל התהליכים הידניים החוזרים שלך — זו נקודת ההתחלה לכל אוטומציה.",
+  biggest_pain: "עסק עם עומסי עבודה ידניים גבוהים שמקשים על צמיחה.",
+  departments: [
     {
-      title: "Automate customer inquiry responses",
-      description:
-        "Deploy an AI agent that handles first-line customer support, answering FAQs and routing complex issues to the right team member. Based on your 50+ weekly inquiries, this could eliminate 80% of manual responses.",
-      impactType: "time_savings",
-      estimatedHoursSaved: 12,
-      estimatedCostSaved: 1800,
-      implementationEffort: "low",
-      category: "ai_agent",
-      departmentName: "Customer Support",
-      agentName: "Support Triage Agent",
-      agentDescription:
-        "Monitors your email inbox and chat, reads incoming messages, searches your knowledge base for answers, responds automatically to common questions, and escalates complex issues with a full context summary to your team.",
-      agentTools: "Claude API, Intercom or Gmail API, Notion/Confluence",
-      setupComplexity: "some_setup",
-    },
-    {
-      title: "AI-powered lead follow-up sequences",
-      description:
-        "An agent that monitors your CRM, detects stale leads, and sends personalized follow-up emails at the right time. Eliminates the manual follow-up task your sales team does every week.",
-      impactType: "revenue",
-      estimatedHoursSaved: 8,
-      estimatedCostSaved: 3200,
-      implementationEffort: "medium",
-      category: "ai_agent",
-      departmentName: "Sales",
-      agentName: "Lead Nurture Agent",
-      agentDescription:
-        "Checks CRM daily for leads that haven't been contacted in 3+ days, generates personalized follow-up emails based on their profile and last interaction, sends them automatically, and logs all activity back in the CRM.",
-      agentTools: "Claude API, HubSpot/Pipedrive API, Zapier",
-      setupComplexity: "some_setup",
-    },
-    {
-      title: "Automated weekly reporting",
-      description:
-        "Replace manual report creation with an AI agent that pulls data from your tools, compiles it into a formatted report, and sends it to stakeholders every Monday morning.",
-      impactType: "time_savings",
-      estimatedHoursSaved: 6,
-      estimatedCostSaved: 900,
-      implementationEffort: "medium",
-      category: "ai_agent",
-      departmentName: "Operations",
-      agentName: "Weekly Report Agent",
-      agentDescription:
-        "Every Sunday night, pulls metrics from your analytics tools, financial dashboard, and project management system, compiles a structured executive summary with key highlights and flags, and sends it via email to your leadership team.",
-      agentTools: "Claude API, Google Analytics API, QuickBooks API, Gmail",
-      setupComplexity: "some_setup",
-    },
-    {
-      title: "Eliminate copy-paste between tools",
-      description:
-        "Your team regularly copies data between systems. An automation layer can sync this automatically, eliminating hours of manual data entry per week.",
-      impactType: "time_savings",
-      estimatedHoursSaved: 5,
-      estimatedCostSaved: 750,
-      implementationEffort: "low",
-      category: "automation",
-      departmentName: null,
-      agentName: null,
-      agentDescription: null,
-      agentTools: "Zapier or Make (formerly Integromat)",
-      setupComplexity: "plug_and_play",
-    },
-    {
-      title: "AI content creation for marketing",
-      description:
-        "Use AI to draft social media posts, blog articles, and email newsletters. Reduce content creation time by 70% while maintaining brand voice.",
-      impactType: "time_savings",
-      estimatedHoursSaved: 7,
-      estimatedCostSaved: 1400,
-      implementationEffort: "low",
-      category: "ai_tool",
-      departmentName: "Marketing",
-      agentName: null,
-      agentDescription: null,
-      agentTools: "Claude API or ChatGPT, Buffer/Hootsuite",
-      setupComplexity: "plug_and_play",
-    },
-    {
-      title: "Meeting summarizer and action item extractor",
-      description:
-        "Automatically transcribe and summarize all meetings, extracting action items and assigning them in your project management tool. No more post-meeting note-taking.",
-      impactType: "time_savings",
-      estimatedHoursSaved: 4,
-      estimatedCostSaved: 600,
-      implementationEffort: "low",
-      category: "ai_tool",
-      departmentName: null,
-      agentName: null,
-      agentDescription: null,
-      agentTools: "Otter.ai or Fireflies.ai, Notion/Asana integration",
-      setupComplexity: "plug_and_play",
-    },
-    {
-      title: "Invoice and payment tracking automation",
-      description:
-        "Automate invoice creation, sending, and payment reminders. Connect your finance tool to your CRM so invoices are created automatically when deals close.",
-      impactType: "cost_savings",
-      estimatedHoursSaved: 4,
-      estimatedCostSaved: 2400,
-      implementationEffort: "low",
-      category: "automation",
-      departmentName: "Finance",
-      agentName: null,
-      agentDescription: null,
-      agentTools: "QuickBooks/Xero + Zapier or Stripe",
-      setupComplexity: "plug_and_play",
-    },
-    {
-      title: "AI-assisted hiring and candidate screening",
-      description:
-        "Use AI to screen resumes, rank candidates, and draft personalized outreach emails. Reduce time-to-hire significantly.",
-      impactType: "time_savings",
-      estimatedHoursSaved: 5,
-      estimatedCostSaved: 2000,
-      implementationEffort: "medium",
-      category: "ai_tool",
-      departmentName: "HR",
-      agentName: null,
-      agentDescription: null,
-      agentTools: "Claude API, ATS integration (Lever/Greenhouse)",
-      setupComplexity: "some_setup",
+      department_name: "Customer Support",
+      health_score: 60,
+      main_pain: "מענה ידני לפניות לקוחות גוזל זמן רב.",
+      first_action: "Set up an AI-powered FAQ chatbot to handle the top 10 most common inquiries.",
+      opportunities: [
+        {
+          title: "AI Support Triage Agent",
+          description: "Deploy an AI agent that handles first-line customer support queries automatically.",
+          impact_type: "time",
+          estimated_hours_saved: 12,
+          estimated_cost_saved: 1800,
+          priority: 1,
+          department_name: "Customer Support",
+        },
+        {
+          title: "Automated Follow-up Emails",
+          description: "Send automated follow-up emails after ticket resolution to improve CSAT.",
+          impact_type: "growth",
+          estimated_hours_saved: 3,
+          estimated_cost_saved: 500,
+          priority: 3,
+          department_name: "Customer Support",
+        },
+      ],
     },
   ],
+  opportunities: [],  // populated below after declaration
   summary: {
-    topPriority:
-      "Deploy the Support Triage Agent first — it has the lowest setup effort and immediately frees up your team's time on the most repetitive task.",
-    totalHoursSaved: 51,
-    totalMonthlySavings: 13050,
+    topPriority: "Deploy Support Triage Agent",
+    totalHoursSaved: 15,
+    totalMonthlySavings: 2300,
+  },
+  healthScore: {
+    score: 65,
+    breakdown: {},
+    dailyTip: "תחל בתיעוד כל התהליכים הידניים החוזרים שלך.",
   },
 };
+// Populate flattened opportunities from departments
+STUB_RESULT.opportunities = STUB_RESULT.departments.flatMap((d) =>
+  d.opportunities.map((o) => ({ ...o, department_name: d.department_name }))
+);
+
+// ── Main analysis function ────────────────────────────────────────────────────
 
 export async function analyzeBusinessData(
-  businessContext: object
+  knowledgeRows: Array<{ category: string; content: string; metadata?: any }>,
+  departmentNames: string[] = []
 ): Promise<AnalysisResult> {
   const apiKey = process.env.ANTHROPIC_API_KEY;
 
@@ -170,12 +105,12 @@ export async function analyzeBusinessData(
   }
 
   const client = new Anthropic({ apiKey });
-  const prompt = buildAnalysisPrompt(businessContext);
+  const prompt = buildAnalysisPrompt(knowledgeRows, departmentNames);
 
   try {
     const message = await client.messages.create({
       model: "claude-sonnet-4-6",
-      max_tokens: 4096,
+      max_tokens: 6000,
       messages: [{ role: "user", content: prompt }],
     });
 
@@ -185,16 +120,100 @@ export async function analyzeBusinessData(
     }
 
     let text = textBlock.text.trim();
-    if (text.startsWith("```json")) {
-      text = text.replace(/^```json/, "").replace(/```$/, "").trim();
-    } else if (text.startsWith("```")) {
-      text = text.replace(/^```/, "").replace(/```$/, "").trim();
+    
+    // Log raw response for debugging
+    console.log("[Claude raw response excerpt]:", text.slice(0, 300));
+    
+    // Strip markdown code fences (handles ```json ... ``` or ``` ... ```)
+    if (text.startsWith("```")) {
+      text = text
+        .replace(/^```(?:json)?\s*/, "")
+        .replace(/\s*```\s*$/, "")
+        .trim();
     }
 
-    const parsed = JSON.parse(text) as AnalysisResult;
-    return parsed;
+    let parsed: {
+      overall_health_score: number;
+      daily_tip: string;
+      biggest_pain: string;
+      departments: DepartmentAnalysis[];
+    };
+    
+    try {
+      parsed = JSON.parse(text);
+    } catch (parseErr) {
+      console.error("[Claude JSON parse failed]. Raw text:", text.slice(0, 500));
+      throw new Error(`JSON parse failed: ${(parseErr as Error).message}`);
+    }
+
+    // Validate the expected structure
+    if (!parsed.departments || !Array.isArray(parsed.departments)) {
+      console.error("[Unexpected Claude structure]:", JSON.stringify(parsed).slice(0, 300));
+      throw new Error("Claude response missing 'departments' array");
+    }
+
+    console.log(`[Claude] Parsed ${parsed.departments.length} departments, opportunities:`,
+      parsed.departments.map(d => `${d.department_name}: ${d.opportunities?.length ?? 0}`).join(", ")
+    );
+
+
+    // Flatten departments → opportunities for backward compat
+    const allOpportunities: OpportunityResult[] = (parsed.departments ?? []).flatMap(
+      (d) => (d.opportunities ?? []).map((o) => ({ ...o, department_name: d.department_name }))
+    );
+
+    const totalHours = allOpportunities.reduce((s, o) => s + (o.estimated_hours_saved ?? 0), 0);
+    const totalSavings = allOpportunities.reduce((s, o) => s + (o.estimated_cost_saved ?? 0), 0);
+
+    return {
+      overall_health_score: parsed.overall_health_score,
+      daily_tip: parsed.daily_tip,
+      biggest_pain: parsed.biggest_pain,
+      departments: parsed.departments ?? [],
+      // Backward-compat fields
+      opportunities: allOpportunities,
+      summary: {
+        topPriority: allOpportunities[0]?.title ?? "",
+        totalHoursSaved: totalHours,
+        totalMonthlySavings: totalSavings,
+      },
+      healthScore: {
+        score: parsed.overall_health_score,
+        breakdown: {},
+        dailyTip: parsed.daily_tip,
+      },
+    };
   } catch (err: any) {
     console.error("Claude API error or JSON parsing failed:", err);
     throw new Error(`Claude analysis failed: ${err.message}`);
+  }
+}
+
+// ── Chat function ─────────────────────────────────────────────────────────────
+
+export async function callClaudeForChat(
+  knowledgeRows: Array<{ category: string; content: string }>,
+  conversationHistory: Array<{ role: string; content: string }>,
+  userMessage: string
+): Promise<string> {
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) return "AI is currently disabled. Please set the Anthropic API key.";
+
+  const client = new Anthropic({ apiKey });
+  const { systemPrompt, messages } = buildChatPrompt(knowledgeRows, conversationHistory, userMessage);
+
+  try {
+    const response = await client.messages.create({
+      model: "claude-sonnet-4-6",
+      max_tokens: 2048,
+      system: systemPrompt,
+      messages: messages as any,
+    });
+
+    const textBlock = response.content.find((b) => b.type === "text");
+    return textBlock?.type === "text" ? textBlock.text : "No response generated";
+  } catch (e: any) {
+    console.error("Claude chat error:", e);
+    return `Error: ${e.message}`;
   }
 }

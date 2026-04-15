@@ -12,13 +12,13 @@ interface OpportunitiesClientProps {
   businessName: string;
 }
 
-type FilterTab = "all" | "ai_agents" | "time_savings" | "cost_savings";
+type FilterTab = "all" | "time" | "money" | "growth";
 
 const FILTER_TABS: { value: FilterTab; label: string }[] = [
-  { value: "all", label: "All" },
-  { value: "ai_agents", label: "AI Agents" },
-  { value: "time_savings", label: "Time Savings" },
-  { value: "cost_savings", label: "Cost Savings" },
+  { value: "all", label: "הכל" },
+  { value: "time", label: "⏱ חסכון בזמן" },
+  { value: "money", label: "💰 חסכון בכסף" },
+  { value: "growth", label: "📈 צמיחה" },
 ];
 
 function SkeletonCard() {
@@ -129,10 +129,10 @@ export function OpportunitiesClient({ businessId, businessName }: OpportunitiesC
 
   const filteredOpportunities = useMemo(() => {
     switch (activeTab) {
-      case "ai_agents": return activeOpportunities.filter((o) => o.category === "ai_agent");
-      case "time_savings": return activeOpportunities.filter((o) => o.impactType === "time_savings");
-      case "cost_savings": return activeOpportunities.filter((o) => o.impactType === "cost_savings");
-      default: return activeOpportunities;
+      case "time":   return activeOpportunities.filter((o) => o.impactType === "time"   || o.impactType === "time_savings");
+      case "money":  return activeOpportunities.filter((o) => o.impactType === "money"  || o.impactType === "cost_savings");
+      case "growth": return activeOpportunities.filter((o) => o.impactType === "growth" || o.impactType === "revenue");
+      default:       return activeOpportunities;
     }
   }, [activeOpportunities, activeTab]);
 
@@ -195,11 +195,12 @@ export function OpportunitiesClient({ businessId, businessName }: OpportunitiesC
                 const isActive = activeTab === tab.value;
                 const count = tab.value === "all"
                   ? activeOpportunities.length
-                  : tab.value === "ai_agents"
-                  ? activeOpportunities.filter((o) => o.category === "ai_agent").length
-                  : tab.value === "time_savings"
-                  ? activeOpportunities.filter((o) => o.impactType === "time_savings").length
-                  : activeOpportunities.filter((o) => o.impactType === "cost_savings").length;
+                  : activeOpportunities.filter((o) =>
+                      o.impactType === tab.value ||
+                      (tab.value === "time"   && o.impactType === "time_savings") ||
+                      (tab.value === "money"  && o.impactType === "cost_savings") ||
+                      (tab.value === "growth" && o.impactType === "revenue")
+                    ).length;
                 return (
                   <button
                     key={tab.value}

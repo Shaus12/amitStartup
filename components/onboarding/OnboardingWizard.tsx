@@ -55,7 +55,7 @@ function getPanelHeadingIndex(step: number) {
 }
 
 export function OnboardingWizard() {
-  const { currentStep, nextStep, prevStep } = useOnboardingStore();
+  const { currentStep, nextStep, prevStep, reset } = useOnboardingStore();
   const t = useT();
   const progressPercent = Math.round((currentStep / (TOTAL_STEPS - 1)) * 100);
 
@@ -248,9 +248,45 @@ export function OnboardingWizard() {
             </div>
             <span className="text-xs font-semibold" style={{ color: "#c2c6d6", fontFamily: "var(--font-manrope)" }}>BizView</span>
           </div>
-          <span className="text-[11px] tabular-nums" style={{ color: "#424754" }}>
-            {currentStep + 1} / {TOTAL_STEPS}
-          </span>
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={() => { if (window.confirm("האם אתה בטוח שברצונך להתחיל מחדש? כל הנתונים שהזנת יימחקו.")) reset(); }}
+              className="text-[11px] font-medium transition-colors" 
+              style={{ color: "#424754", fontFamily: "var(--font-inter)" }}
+              onMouseEnter={e => e.currentTarget.style.color = "#f87171"}
+              onMouseLeave={e => e.currentTarget.style.color = "#424754"}
+            >
+              התחל מחדש
+            </button>
+            <span className="text-[11px] tabular-nums" style={{ color: "#424754" }}>
+              {currentStep + 1} / {TOTAL_STEPS}
+            </span>
+          </div>
+        </div>
+
+        <div className="absolute top-6 right-6 hidden md:block z-10">
+          <button 
+            onClick={() => { if (window.confirm("האם אתה בטוח שברצונך להתחיל מחדש? כל הנתונים שהזנת יימחקו.")) reset(); }}
+            className="text-xs font-semibold px-3 py-1.5 rounded border transition-all duration-150"
+            style={{ 
+              color: "#8c909f", 
+              borderColor: "#282a30",
+              backgroundColor: "transparent",
+              fontFamily: "var(--font-inter)"
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.color = "#f87171";
+              e.currentTarget.style.borderColor = "#f8717130";
+              e.currentTarget.style.backgroundColor = "#f8717108";
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.color = "#8c909f";
+              e.currentTarget.style.borderColor = "#282a30";
+              e.currentTarget.style.backgroundColor = "transparent";
+            }}
+          >
+            התחל מחדש
+          </button>
         </div>
 
         <div className="flex-1 flex items-center justify-center px-5 py-10 md:py-16 md:px-12 lg:px-20 overflow-hidden">

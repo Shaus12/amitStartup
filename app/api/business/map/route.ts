@@ -26,44 +26,71 @@ export async function GET(req: NextRequest) {
 
     if (bizError) throw bizError;
 
-    // Fetch departments with their AI opportunities
+    // Fetch departments with their AI opportunities (non-archived)
     const { data: departments, error: depError } = await supabase
       .from("departments")
-      .select("*, ai_opportunities(id, title, impact_type)")
+      .select("*, ai_opportunities(id, title, impact_type, status, archived)")
       .eq("business_id", businessId);
 
     if (depError) throw depError;
 
-    // Fetch processes from the onboarding session JSONB snapshot
-    const { data: session } = await supabase
-      .from("onboarding_sessions")
-      .select("answers")
-      .eq("business_id", businessId)
-      .limit(1)
-      .single();
+    // Fetch processes and insights from business_knowledge
+    const { data: knowledgeRows, error: knowledgeError } = await supabase
+      .from("business_knowledge")
+      .select("*")
+      .in("category", ["process", "insight", "pain_point", "main_pain", "first_action"]);
+      
+    if (knowledgeError) throw knowledgeError;
 
-    const answers = (session?.answers as any) ?? {};
-    const allProcesses: any[] = answers.processes ?? [];
+    const allProcesses = (knowledgeRows || []).filter(r => r.category === "process").map(r => ({
+      id: r.id,
+      department_id: r.department_id,
+      name: r.metadata?.originalName || r.content,
+      frequency: r.metadata?.frequency || null,
+      isManual: r.metadata?.isManual || false,
+    }));
+
+    // Fetch opportunities that already have tasks
+    const { data: existingTasks, error: tasksError } = await supabase
+      .from("tasks")
+      .select("opportunity_id")
+      .eq("business_id", businessId)
+      .not("opportunity_id", "is", null);
+
+    if (tasksError) throw tasksError;
+
+    const existingTaskOppIds = new Set(existingTasks?.map(t => t.opportunity_id) || []);
 
     // Normalize departments to camelCase for the UI components
     const normalizedDepts = (departments ?? []).map((dept) => {
-      // Filter processes that belong to this department from the JSONB snapshot
+      // Filter processes that belong to this department
       const deptProcesses = allProcesses
-        .filter((p) => p.departmentName?.toLowerCase() === dept.name?.toLowerCase())
+        .filter((p) => p.department_id === dept.id)
         .map((p) => ({
-          id: `${dept.id}-${p.name}`,
+          id: p.id,
           name: p.name,
-          frequency: p.frequency ?? null,
-          timeSpentHrsPerWeek: p.hoursPerWeek ?? null,
-          isManual: p.isManual ?? false,
+          frequency: p.frequency,
+          timeSpentHrsPerWeek: null,
+          isManual: p.isManual,
           isRepetitive: false,
         }));
+
+      const deptInsights = (knowledgeRows || []).filter(
+        (r) => r.department_id === dept.id && (r.category === "insight" || r.category === "pain_point")
+      );
+      const mainPainRow = (knowledgeRows || []).find((r) => r.department_id === dept.id && r.category === "main_pain")
+        || deptInsights.find((r) => r.content.startsWith("[main_pain]") || r.content.startsWith("Pain:") || r.category === "pain_point");
+      const firstActionRow = (knowledgeRows || []).find((r) => r.department_id === dept.id && r.category === "first_action")
+        || deptInsights.find((r) => r.content.startsWith("[first_action]") || r.content.startsWith("Action:"));
 
       return {
         id: dept.id,
         name: dept.name,
         color: dept.color,
         headcount: dept.headcount ?? null,
+        healthScore: dept.health_score ?? null,
+        mainPain: mainPainRow ? mainPainRow.content.replace(/^\[main_pain\]\s*/, "").replace(/^Pain:\s*/, "") : null,
+        firstAction: firstActionRow ? firstActionRow.content.replace(/^\[first_action\]\s*/, "").replace(/^Action:\s*/, "") : null,
         // camelCase aliases for React Flow / UI components
         positionX: dept.position_x ?? 0,
         positionY: dept.position_y ?? 0,
@@ -71,16 +98,21 @@ export async function GET(req: NextRequest) {
         sortOrder: 0,
         description: null,
         icon: null,
-        // Processes from JSONB snapshot
+        // Processes from knowledge table
         processes: deptProcesses,
-        // Pain points placeholder (not stored in DB separately)
         painPoints: [],
-        // AI opportunities — normalize to camelCase
-        aiOpportunities: (dept.ai_opportunities ?? []).map((o: any) => ({
-          id: o.id,
-          title: o.title,
-          impactType: o.impact_type,
-        })),
+        // AI opportunities — normalize to camelCase and filter non-archived
+        aiOpportunities: (dept.ai_opportunities ?? [])
+          .filter((o: any) => o.archived !== true)
+          .map((o: any) => ({
+            id: o.id,
+            title: o.title,
+            impactType: o.impact_type,
+            status: o.status,
+            estimatedHoursSaved: o.estimated_hours_saved,
+            estimatedCostSaved: o.estimated_cost_saved,
+            hasTask: existingTaskOppIds.has(o.id),
+          })),
       };
     });
 

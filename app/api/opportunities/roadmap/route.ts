@@ -12,7 +12,7 @@ export async function PATCH(req: NextRequest) {
 
   try {
     const { id, status } = await req.json();
-    if (!id || !["backlog", "in_progress", "done"].includes(status)) {
+    if (!id || !["suggested", "in_progress", "done"].includes(status)) {
       return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
     }
 
@@ -30,7 +30,7 @@ export async function PATCH(req: NextRequest) {
 
     const { data: updated, error } = await supabase
       .from("ai_opportunities")
-      .update({ roadmap_status: status })
+      .update({ status: status })
       .eq("id", id)
       .select()
       .single();
@@ -60,11 +60,18 @@ export async function GET(req: NextRequest) {
     .from("ai_opportunities")
     .select("*, department:departments(name, color)")
     .eq("business_id", businessId)
+    .neq("archived", true)
     .order("created_at", { ascending: false });
 
   if (error) {
     return NextResponse.json({ error: "Failed to fetch opportunities" }, { status: 500 });
   }
+  
+  // adding roadmapStatus for UI backwards compat
+  const mapped = (opportunities || []).map(o => ({
+    ...o,
+    roadmapStatus: o.status
+  }));
 
-  return NextResponse.json(opportunities || []);
+  return NextResponse.json(mapped);
 }

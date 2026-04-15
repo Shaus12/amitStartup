@@ -63,6 +63,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Failed to link business" }, { status: 500 });
     }
 
+    // Initialize user points (ignoring duplicates if they already exist)
+    const { error: pointsError } = await supabaseAdmin.from("user_points").upsert({
+      user_id: user.id,
+      business_id: businessId,
+      total_points: 0,
+      level: 1
+    }, { onConflict: 'user_id, business_id' });
+    
+    if (pointsError) console.error("Failed to init user points:", pointsError);
+
     return NextResponse.json({ success: true });
   } catch (err: any) {
     console.error("Claim business error:", err);

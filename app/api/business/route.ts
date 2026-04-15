@@ -25,8 +25,47 @@ export async function GET() {
     const { data: business, error } = await query.single();
 
     if (error) throw error;
+    
+    // Fetch additional data
+    const [
+      { data: healthScore },
+      { count: openTasksCount },
+      { data: userPoints }
+    ] = await Promise.all([
+      // Health Score
+      supabase
+        .from("business_health_scores")
+        .select("*")
+        .eq("business_id", business.id)
+        .order("calculated_at", { ascending: false })
+        .limit(1)
+        .single(),
+      
+      // Tasks count
+      supabase
+        .from("tasks")
+        .select("*", { count: "exact", head: true })
+        .eq("business_id", business.id)
+        .neq("status", "done"),
+        
+      // User Points (if user is linked)
+      business.user_id ? 
+        supabase
+          .from("user_points")
+          .select("total_points, level")
+          .eq("business_id", business.id)
+          .eq("user_id", business.user_id)
+          .single() 
+        : Promise.resolve({ data: { total_points: 0, level: 1 } })
+    ]);
 
-    return NextResponse.json(business);
+    return NextResponse.json({
+      ...business,
+      latest_health_score: healthScore?.score || null,
+      open_tasks_count: openTasksCount || 0,
+      total_points: userPoints?.total_points || 0,
+      level: userPoints?.level || 1,
+    });
   } catch (err: any) {
     console.error("Business route error:", err);
     return NextResponse.json({ error: "Failed to fetch" }, { status: 500 });

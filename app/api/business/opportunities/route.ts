@@ -21,6 +21,7 @@ export async function GET(req: NextRequest) {
       .from("ai_opportunities")
       .select("*, department:departments(name, color)")
       .eq("business_id", businessId)
+      .neq("archived", true)
       .order("estimated_hours_saved", { ascending: false });
 
     if (error) throw error;
@@ -29,18 +30,13 @@ export async function GET(req: NextRequest) {
       ...o,
       businessId: o.business_id,
       departmentId: o.department_id,
+      analysisId: o.analysis_id,
       impactType: o.impact_type,
       estimatedHoursSaved: o.estimated_hours_saved,
       estimatedCostSaved: o.estimated_cost_saved,
-      agentName: o.agent_name,
-      agentDescription: o.agent_description,
-      agentTools: o.agent_tools,
-      setupComplexity: o.setup_complexity,
-      implementationEffort: o.implementation_effort,
-      category: o.category || (o.agent_name ? "ai_agent" : "automation"),
-      dismissedAt: o.dismissed_at,
-      generatedAt: o.generated_at,
-      roadmapStatus: o.roadmap_status,
+      
+      // Alias to new 'status' column for backwards UI compatibility
+      roadmapStatus: o.status,
     }));
 
     return NextResponse.json(mapped);
@@ -57,12 +53,12 @@ export async function PATCH(req: NextRequest) {
   } = await authClient.auth.getUser();
 
   try {
-    const { id, roadmapStatus, pinned, dismissedAt } = await req.json();
+    const { id, roadmapStatus, status: newStatus } = await req.json();
+
+    const finalStatus = newStatus || roadmapStatus;
 
     const updates: any = {};
-    if (roadmapStatus !== undefined) updates.roadmap_status = roadmapStatus;
-    if (pinned !== undefined) updates.pinned = pinned;
-    if (dismissedAt !== undefined) updates.dismissed_at = dismissedAt;
+    if (finalStatus !== undefined) updates.status = finalStatus;
 
     // Fetch the opportunity to get its business_id for ownership check
     const { data: existing } = await supabase
