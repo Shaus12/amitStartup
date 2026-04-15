@@ -1,7 +1,25 @@
 "use client";
 
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, Shuffle } from "lucide-react";
 import { useT } from "@/lib/i18n";
+import { createContext, useContext } from "react";
+
+// Context so OnboardingWizard can inject onAutoFill without touching all 20 step files
+const AutoFillContext = createContext<(() => void) | null>(null);
+
+export function AutoFillProvider({
+  onAutoFill,
+  children,
+}: {
+  onAutoFill: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <AutoFillContext.Provider value={onAutoFill}>
+      {children}
+    </AutoFillContext.Provider>
+  );
+}
 
 interface StepCardProps {
   title: string;
@@ -9,6 +27,7 @@ interface StepCardProps {
   children: React.ReactNode;
   onNext: () => void;
   onBack: () => void;
+  onAutoFill?: () => void;
   nextLabel?: string;
   nextDisabled?: boolean;
   showBack?: boolean;
@@ -20,12 +39,15 @@ export function StepCard({
   children,
   onNext,
   onBack,
+  onAutoFill: onAutoFillProp,
   nextLabel,
   nextDisabled = false,
   showBack = true,
 }: StepCardProps) {
   const t = useT();
   const label = nextLabel ?? t.continue;
+  const contextFill = useContext(AutoFillContext);
+  const onAutoFill = onAutoFillProp ?? contextFill ?? undefined;
 
   return (
     <div className="w-full">
@@ -46,7 +68,32 @@ export function StepCard({
         )}
       </div>
 
-      <div className="mb-10">{children}</div>
+      <div className="mb-6">{children}</div>
+
+      {onAutoFill && (
+        <button
+          type="button"
+          onClick={onAutoFill}
+          className="w-full flex items-center justify-center gap-2 mb-4 py-2 rounded-lg text-xs font-medium transition-all duration-150"
+          style={{
+            backgroundColor: "rgba(77,142,255,0.06)",
+            border: "1px dashed rgba(77,142,255,0.25)",
+            color: "#4d8eff",
+            fontFamily: "var(--font-inter)",
+          }}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLElement).style.backgroundColor = "rgba(77,142,255,0.1)";
+            (e.currentTarget as HTMLElement).style.borderColor = "rgba(77,142,255,0.45)";
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLElement).style.backgroundColor = "rgba(77,142,255,0.06)";
+            (e.currentTarget as HTMLElement).style.borderColor = "rgba(77,142,255,0.25)";
+          }}
+        >
+          <Shuffle className="w-3 h-3" strokeWidth={2} />
+          מלא כרגע באופן אקראי ותשנה נתונים אחר כך
+        </button>
+      )}
 
       <div className="flex items-center justify-between pt-6" style={{ borderTop: "1px solid #282a30" }}>
         <div>

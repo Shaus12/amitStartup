@@ -23,6 +23,7 @@ import { Step16_Goals } from "@/components/onboarding/steps/Step16_Goals";
 import { Step17_Review } from "@/components/onboarding/steps/Step17_Review";
 import { Step18_Marketing } from "@/components/onboarding/steps/Step18_Marketing";
 import { Step19_Notifications } from "@/components/onboarding/steps/Step19_Notifications";
+import { AutoFillProvider } from "@/components/onboarding/StepCard";
 
 type StepProps = { onNext: () => void; onBack: () => void };
 
@@ -55,7 +56,7 @@ function getPanelHeadingIndex(step: number) {
 }
 
 export function OnboardingWizard() {
-  const { currentStep, nextStep, prevStep, reset } = useOnboardingStore();
+  const { currentStep, nextStep, prevStep, reset, fillRandom, setStep } = useOnboardingStore();
   const t = useT();
   const progressPercent = Math.round((currentStep / (TOTAL_STEPS - 1)) * 100);
 
@@ -297,10 +298,17 @@ export function OnboardingWizard() {
               animation: `${stepDirection === "forward" ? "bv-step-in" : "bv-step-in-back"} 0.3s cubic-bezier(0.16,1,0.3,1) both`,
             }}
           >
-            <StepComponent
-              onNext={() => { setStepDirection("forward"); setAnimKey((k) => k + 1); nextStep(); }}
-              onBack={() => { setStepDirection("back"); setAnimKey((k) => k + 1); prevStep(); }}
-            />
+            <AutoFillProvider onAutoFill={() => {
+              fillRandom();
+              setStepDirection("forward");
+              setAnimKey((k) => k + 1);
+              setStep(17);
+            }}>
+              <StepComponent
+                onNext={() => { setStepDirection("forward"); setAnimKey((k) => k + 1); nextStep(); }}
+                onBack={() => { setStepDirection("back"); setAnimKey((k) => k + 1); prevStep(); }}
+              />
+            </AutoFillProvider>
           </div>
         </div>
       </div>

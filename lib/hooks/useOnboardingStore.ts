@@ -2,7 +2,7 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { OnboardingAnswers, EMPTY_ANSWERS } from "@/lib/types/onboarding";
+import { OnboardingAnswers, EMPTY_ANSWERS, RANDOM_ANSWERS } from "@/lib/types/onboarding";
 
 export const TOTAL_STEPS = 20; // 0-19
 
@@ -16,6 +16,7 @@ interface OnboardingStore {
   updateAnswers: (partial: Partial<OnboardingAnswers>) => void;
   setBusinessId: (id: string) => void;
   reset: () => void;
+  fillRandom: () => void;
 }
 
 export const useOnboardingStore = create<OnboardingStore>()(
@@ -35,6 +36,8 @@ export const useOnboardingStore = create<OnboardingStore>()(
       setBusinessId: (id) => set({ businessId: id }),
       reset: () =>
         set({ currentStep: 0, answers: EMPTY_ANSWERS, businessId: null }),
+      fillRandom: () =>
+        set({ answers: RANDOM_ANSWERS }),
     }),
     {
       name: "onboarding-store",
