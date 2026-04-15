@@ -4,7 +4,7 @@ import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Sparkles } from "lucide-react";
 import { ImpactSummary } from "@/components/opportunities/ImpactSummary";
-import { OpportunityList } from "@/components/opportunities/OpportunityList";
+import { RobotGallery } from "@/components/opportunities/RobotGallery";
 import { AiOpportunityItem } from "@/lib/types/opportunities";
 
 interface OpportunitiesClientProps {
@@ -230,7 +230,7 @@ export function OpportunitiesClient({ businessId, businessName }: OpportunitiesC
               })}
             </div>
 
-            <OpportunityList
+            <RobotGallery
               opportunities={filteredOpportunities}
               onPin={handlePin}
               onDismiss={handleDismiss}

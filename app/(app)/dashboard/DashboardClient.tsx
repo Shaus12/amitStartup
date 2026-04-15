@@ -10,6 +10,7 @@ import { BusinessMap } from "@/components/business-map/BusinessMap";
 import { BusinessMapData } from "@/lib/types/business-map";
 import { HealthScore } from "@/components/dashboard/HealthScore";
 import { SaveMapModal } from "@/components/auth/SaveMapModal";
+import { FloatingAgent } from "@/components/dashboard/FloatingAgent";
 import { createClient } from "@/lib/supabase/client";
 
 interface DashboardClientProps {
@@ -129,15 +130,15 @@ export function DashboardClient({ businessId, businessName, showSaveModal = fals
                 style={{ color: "#424754" }}
               />
               <h1
-                className="text-sm font-semibold truncate"
-                style={{ fontFamily: "var(--font-manrope)", color: "#e2e2eb" }}
+                className="text-base font-bold truncate"
+                style={{ fontFamily: "var(--font-manrope)", color: "#e2e2eb", letterSpacing: "-0.01em" }}
               >
                 {businessName}
               </h1>
             </div>
             {!isLoading && data && (
               <div
-                className="hidden sm:flex items-center gap-3 text-[10px]"
+                className="hidden sm:flex items-center gap-3 text-xs"
                 style={{ color: "#424754", fontFamily: "var(--font-inter)" }}
               >
                 <span>
@@ -259,10 +260,10 @@ export function DashboardClient({ businessId, businessName, showSaveModal = fals
           className="px-6 py-2 flex items-start gap-2"
           style={{ backgroundColor: "#111319" }}
         >
-          <span className="text-[9px] font-bold uppercase tracking-widest shrink-0 mt-px" style={{ color: "#4d8eff", fontFamily: "var(--font-inter)" }}>
+          <span className="text-[10px] font-bold uppercase tracking-widest shrink-0 mt-px" style={{ color: "#4d8eff", fontFamily: "var(--font-inter)" }}>
             טיפ יומי
           </span>
-          <span className="text-[11px] leading-relaxed" style={{ color: "#8c909f", fontFamily: "var(--font-inter)" }}>
+          <span className="text-xs leading-relaxed" style={{ color: "#8c909f", fontFamily: "var(--font-inter)" }}>
             {todayTip}
           </span>
         </div>
@@ -305,6 +306,7 @@ export function DashboardClient({ businessId, businessName, showSaveModal = fals
 
         {data && !isLoading && !isError && <BusinessMap data={data} />}
         {showSaveModal && <SaveMapModal businessId={businessId} businessName={businessName} />}
+        <FloatingAgent businessId={businessId} />
 
         {!isLoading && !isError && data && data.departments.length === 0 && (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">

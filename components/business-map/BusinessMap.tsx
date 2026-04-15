@@ -46,28 +46,37 @@ function deptPriority(name: string): number {
   return FLOW_PRIORITY.findIndex((kws) => kws.some((k) => n.includes(k)));
 }
 
-function buildEdges(depts: DepartmentWithProcesses[]): Edge[] {
-  const sorted = [...depts].sort((a, b) => {
-    const pa = deptPriority(a.name), pb = deptPriority(b.name);
-    if (pa === -1 && pb === -1) return 0;
-    if (pa === -1) return 1;
-    if (pb === -1) return -1;
-    return pa - pb;
-  });
-  const edges: Edge[] = [];
-  for (let i = 0; i < sorted.length - 1; i++) {
-    const src = sorted[i], tgt = sorted[i + 1];
-    if (deptPriority(src.name) !== -1 || deptPriority(tgt.name) !== -1) {
-      edges.push({
-        id: `e-${src.id}-${tgt.id}`,
-        source: src.id, target: tgt.id,
-        type: "smoothstep", animated: false,
-        style: { stroke: "#4d8eff40", strokeWidth: 2, strokeDasharray: "6 3" },
-        markerEnd: { type: MarkerType.ArrowClosed, color: "#4d8eff80", width: 16, height: 16 },
-      });
+// Returns the hub department id (highest priority department)
+function findHubId(depts: DepartmentWithProcesses[]): string | null {
+  if (depts.length === 0) return null;
+  let best = depts[0];
+  let bestPri = deptPriority(best.name);
+  for (const d of depts) {
+    const p = deptPriority(d.name);
+    if (bestPri === -1 || (p !== -1 && p < bestPri)) {
+      best = d;
+      bestPri = p;
     }
   }
-  return edges;
+  return best.id;
+}
+
+// Hub-spoke: hub connects down to every other department (org-chart style)
+function buildEdges(depts: DepartmentWithProcesses[]): Edge[] {
+  if (depts.length <= 1) return [];
+  const hubId = findHubId(depts);
+  if (!hubId) return [];
+  return depts
+    .filter((d) => d.id !== hubId)
+    .map((d) => ({
+      id: `e-${hubId}-${d.id}`,
+      source: hubId,
+      target: d.id,
+      type: "smoothstep",
+      animated: false,
+      style: { stroke: "#4d8eff40", strokeWidth: 2, strokeDasharray: "6 3" },
+      markerEnd: { type: MarkerType.ArrowClosed, color: "#4d8eff80", width: 16, height: 16 },
+    }));
 }
 
 // Expanded node dimensions — must match ExpandedCard in DepartmentNode.tsx
@@ -91,6 +100,8 @@ function BusinessMapInner({ data }: BusinessMapProps) {
     return m;
   }, [data.departments]);
 
+  const hubId = useMemo(() => findHubId(data.departments), [data.departments]);
+
   const buildNodeData = useCallback(
     (dept: DepartmentWithProcesses, isExpanded: boolean) => ({
       label: dept.name,
@@ -101,6 +112,7 @@ function BusinessMapInner({ data }: BusinessMapProps) {
       mainPain: dept.mainPain,
       firstAction: dept.firstAction,
       healthScore: dept.healthScore ?? undefined,
+      isRoot: dept.id === hubId,
       processes: dept.processes.map((p) => ({
         id: p.id,
         name: p.name,
@@ -123,7 +135,7 @@ function BusinessMapInner({ data }: BusinessMapProps) {
       onClose: isExpanded ? () => handleCollapse() : undefined,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [businessId]
+    [businessId, hubId]
   );
 
   const initialNodes = useMemo<DepartmentNodeType[]>(() => {
@@ -135,7 +147,7 @@ function BusinessMapInner({ data }: BusinessMapProps) {
       data: buildNodeData(dept, false),
       zIndex: 0,
     }));
-    if (allZero) return applyDagreLayout(rawNodes, initialEdges) as DepartmentNodeType[];
+    if (allZero) return applyDagreLayout(rawNodes, initialEdges, hubId ?? undefined) as DepartmentNodeType[];
     return rawNodes;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data.departments]);

@@ -23,6 +23,7 @@ export interface DepartmentNodeData extends Record<string, unknown> {
   status: string;
   headcount: number | null;
   businessId?: string | null;
+  isRoot?: boolean;
   processes: {
     id: string;
     name: string;
@@ -124,43 +125,80 @@ function CompactCard({ data, score, healthStroke, healthGlow, emoji, processCoun
   processCount: number;
   manualCount: number;
 }) {
+  const isRoot = data.isRoot ?? false;
+  const cardWidth = isRoot ? 290 : 220;
+
   return (
     <div
       onClick={data.onSelect}
       className="cursor-pointer"
       style={{
-        width: 220,
-        minHeight: 180,
-        border: `1.5px solid ${healthStroke}40`,
-        borderRadius: 16,
+        width: cardWidth,
+        minHeight: isRoot ? 210 : 180,
+        border: isRoot
+          ? `2px solid ${healthStroke}70`
+          : `1.5px solid ${healthStroke}40`,
+        borderRadius: isRoot ? 20 : 16,
         overflow: "hidden",
-        background: "linear-gradient(160deg, #16182188 0%, #13151d 100%)",
-        boxShadow: `0 6px 30px rgba(0,0,0,0.55), 0 0 18px ${healthGlow}`,
+        background: isRoot
+          ? `linear-gradient(160deg, #1a1d2b 0%, #13151d 100%)`
+          : "linear-gradient(160deg, #16182188 0%, #13151d 100%)",
+        boxShadow: isRoot
+          ? `0 8px 40px rgba(0,0,0,0.65), 0 0 28px ${healthGlow}, 0 0 0 1px ${healthStroke}20`
+          : `0 6px 30px rgba(0,0,0,0.55), 0 0 18px ${healthGlow}`,
         transition: "border-color 0.2s, transform 0.2s, box-shadow 0.2s",
       }}
       onMouseEnter={(e) => {
         const el = e.currentTarget as HTMLDivElement;
-        el.style.borderColor = `${healthStroke}80`;
+        el.style.borderColor = `${healthStroke}${isRoot ? "aa" : "80"}`;
         el.style.transform = "translateY(-4px) scale(1.02)";
-        el.style.boxShadow = `0 16px 48px rgba(0,0,0,0.7), 0 0 28px ${healthGlow}`;
+        el.style.boxShadow = `0 16px 48px rgba(0,0,0,0.7), 0 0 ${isRoot ? "40" : "28"}px ${healthGlow}`;
       }}
       onMouseLeave={(e) => {
         const el = e.currentTarget as HTMLDivElement;
-        el.style.borderColor = `${healthStroke}40`;
+        el.style.borderColor = `${healthStroke}${isRoot ? "70" : "40"}`;
         el.style.transform = "translateY(0) scale(1)";
-        el.style.boxShadow = `0 6px 30px rgba(0,0,0,0.55), 0 0 18px ${healthGlow}`;
+        el.style.boxShadow = isRoot
+          ? `0 8px 40px rgba(0,0,0,0.65), 0 0 28px ${healthGlow}, 0 0 0 1px ${healthStroke}20`
+          : `0 6px 30px rgba(0,0,0,0.55), 0 0 18px ${healthGlow}`;
       }}
     >
       {/* Top glow bar */}
-      <div style={{ height: 3, background: `linear-gradient(90deg, transparent, ${healthStroke}, transparent)`, boxShadow: `0 0 10px ${healthStroke}80` }} />
+      <div style={{
+        height: isRoot ? 4 : 3,
+        background: `linear-gradient(90deg, transparent, ${healthStroke}, transparent)`,
+        boxShadow: `0 0 ${isRoot ? "14px" : "10px"} ${healthStroke}80`,
+      }} />
 
-      <div style={{ padding: "14px 16px 12px" }}>
+      {/* Root badge */}
+      {isRoot && (
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 4,
+          padding: "5px 12px",
+          backgroundColor: `${healthStroke}10`,
+          borderBottom: `1px solid ${healthStroke}20`,
+        }}>
+          <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.12em", color: healthStroke, fontFamily: "var(--font-inter)", textTransform: "uppercase" }}>
+            ★ מחלקה ראשית
+          </span>
+        </div>
+      )}
+
+      <div style={{ padding: isRoot ? "16px 18px 14px" : "14px 16px 12px" }}>
         {/* Header */}
         <div className="flex items-center justify-between gap-2 mb-3">
           <div className="flex items-center gap-2 min-w-0">
-            <span style={{ fontSize: 22, lineHeight: 1 }}>{emoji}</span>
+            <span style={{ fontSize: isRoot ? 28 : 22, lineHeight: 1 }}>{emoji}</span>
             <div className="min-w-0">
-              <h3 className="font-bold truncate" style={{ fontSize: 13, fontFamily: "var(--font-manrope)", color: "#e2e2eb" }}>
+              <h3 className="font-bold truncate" style={{
+                fontSize: isRoot ? 16 : 13,
+                fontFamily: "var(--font-manrope)",
+                color: "#e2e2eb",
+                letterSpacing: isRoot ? "-0.01em" : undefined,
+              }}>
                 {data.label}
               </h3>
               {data.headcount !== null && (
@@ -171,7 +209,7 @@ function CompactCard({ data, score, healthStroke, healthGlow, emoji, processCoun
               )}
             </div>
           </div>
-          <HealthRing score={score} size={54} sw={4} />
+          <HealthRing score={score} size={isRoot ? 62 : 54} sw={isRoot ? 5 : 4} />
         </div>
 
         <div style={{ height: 1, backgroundColor: "#1e2030", marginBottom: 10 }} />
@@ -181,7 +219,7 @@ function CompactCard({ data, score, healthStroke, healthGlow, emoji, processCoun
           <div className="flex items-center gap-1.5 flex-1 rounded-lg px-2.5 py-1.5" style={{ backgroundColor: "#1a1d27", border: "1px solid #282a30" }}>
             <GitBranch style={{ width: 10, height: 10, color: data.color || "#8c909f" }} strokeWidth={2} />
             <div>
-              <div style={{ fontSize: 13, fontWeight: 700, color: "#e2e2eb", lineHeight: 1, fontFamily: "var(--font-inter)" }}>{processCount}</div>
+              <div style={{ fontSize: isRoot ? 15 : 13, fontWeight: 700, color: "#e2e2eb", lineHeight: 1, fontFamily: "var(--font-inter)" }}>{processCount}</div>
               <div style={{ fontSize: 8, color: "#424754", fontFamily: "var(--font-inter)", marginTop: 1 }}>תהליכים</div>
             </div>
             {manualCount > 0 && (
@@ -194,11 +232,19 @@ function CompactCard({ data, score, healthStroke, healthGlow, emoji, processCoun
             style={{ backgroundColor: data.opportunityCount > 0 ? "#4d8eff10" : "#1a1d27", border: data.opportunityCount > 0 ? "1px solid #4d8eff30" : "1px solid #282a30" }}>
             <Zap style={{ width: 10, height: 10, color: data.opportunityCount > 0 ? "#4d8eff" : "#424754" }} strokeWidth={2} />
             <div>
-              <div style={{ fontSize: 13, fontWeight: 700, color: data.opportunityCount > 0 ? "#4d8eff" : "#424754", lineHeight: 1, fontFamily: "var(--font-inter)" }}>{data.opportunityCount}</div>
+              <div style={{ fontSize: isRoot ? 15 : 13, fontWeight: 700, color: data.opportunityCount > 0 ? "#4d8eff" : "#424754", lineHeight: 1, fontFamily: "var(--font-inter)" }}>{data.opportunityCount}</div>
               <div style={{ fontSize: 8, color: "#424754", fontFamily: "var(--font-inter)", marginTop: 1 }}>הזדמנויות</div>
             </div>
           </div>
         </div>
+
+        {/* Main pain preview for root */}
+        {isRoot && data.mainPain && (
+          <div style={{ marginTop: 10, backgroundColor: "rgba(248,113,113,0.05)", border: "1px solid rgba(248,113,113,0.12)", borderRadius: 8, padding: "6px 10px" }}>
+            <div style={{ fontSize: 9, fontWeight: 700, color: "#f87171", marginBottom: 2, fontFamily: "var(--font-inter)" }}>כאב עיקרי</div>
+            <div style={{ fontSize: 10, color: "#c2c6d6", lineHeight: 1.4, fontFamily: "var(--font-inter)" }}>{data.mainPain}</div>
+          </div>
+        )}
 
         <div className="mt-3 flex items-center justify-end">
           <span style={{ fontSize: 9, color: "#424754", fontFamily: "var(--font-inter)" }}>לחץ להגדלה →</span>
