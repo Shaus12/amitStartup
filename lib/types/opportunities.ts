@@ -4,7 +4,7 @@ export interface AiOpportunityItem {
   departmentId: string | null;
   title: string;
   description: string;
-  impactType: "time_savings" | "cost_savings" | "revenue" | "quality";
+  impactType: "time_savings" | "cost_savings" | "revenue" | "quality" | "time" | "money" | "growth";
   estimatedHoursSaved: number | null;
   estimatedCostSaved: number | null;
   implementationEffort: "low" | "medium" | "high" | null;

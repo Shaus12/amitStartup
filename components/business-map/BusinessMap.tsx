@@ -100,7 +100,7 @@ function BusinessMapInner({ data }: BusinessMapProps) {
       businessId,
       mainPain: dept.mainPain,
       firstAction: dept.firstAction,
-      healthScore: dept.healthScore,
+      healthScore: dept.healthScore ?? undefined,
       processes: dept.processes.map((p) => ({
         id: p.id,
         name: p.name,

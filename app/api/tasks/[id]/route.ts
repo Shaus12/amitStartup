@@ -3,9 +3,9 @@ import { supabaseAdmin as supabase } from "@/lib/supabase-admin";
 import { createClient } from "@/lib/supabase/server";
 import { verifyBusinessAccess } from "@/lib/supabase/verify-business-access";
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const taskId = params.id;
+    const { id: taskId } = await params;
     const body = await req.json();
     const { status, actualHoursSaved, actualMoneySaved } = body;
 
