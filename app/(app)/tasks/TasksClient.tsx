@@ -691,7 +691,7 @@ export function TasksClient({ businessId, initialXp, initialLevel }: TasksClient
         // Auto-scroll / highlight related tasks
         const oppId = prev.opportunity_id;
         if (oppId) {
-          const remainingTasks = ts.filter(t => t.opportunity_id === oppId && t.status !== "done" && t.id !== id);
+          const remainingTasks = tasks.filter(t => t.opportunity_id === oppId && t.status !== "done" && t.id !== id);
           if (remainingTasks.length > 0) {
             toast.custom((tId) => (
               <div 
