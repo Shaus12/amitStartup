@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Sparkles, MapPin, FileText } from "lucide-react";
+import { LayoutDashboard, CheckSquare, Sparkles, MapPin, FileText } from "lucide-react";
 import { useT } from "@/lib/i18n";
 
-const NAV_ICONS = [LayoutDashboard, Sparkles, MapPin, FileText];
+const NAV_ICONS = [LayoutDashboard, CheckSquare, Sparkles, MapPin, FileText];
 
 export function Sidebar() {
   const pathname = usePathname();

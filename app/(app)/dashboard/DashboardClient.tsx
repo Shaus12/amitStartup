@@ -10,7 +10,8 @@ import { BusinessMap } from "@/components/business-map/BusinessMap";
 import { BusinessMapData } from "@/lib/types/business-map";
 import { HealthScore } from "@/components/dashboard/HealthScore";
 import { SaveMapModal } from "@/components/auth/SaveMapModal";
-import { FloatingAgent } from "@/components/dashboard/FloatingAgent";
+import { KnowledgeRequestPopup } from "@/components/dashboard/KnowledgeRequestPopup";
+import { DashboardStats } from "@/components/dashboard/DashboardStats";
 import { createClient } from "@/lib/supabase/client";
 
 interface DashboardClientProps {
@@ -236,6 +237,8 @@ export function DashboardClient({ businessId, businessName, showSaveModal = fals
         )}
       </header>
 
+      <DashboardStats businessId={businessId} />
+
       {/* Daily tip + savings banner */}
       <div className="shrink-0" style={{ borderBottom: "1px solid #1e1f26" }}>
         {totalHrsSaved > 0 && (
@@ -306,7 +309,7 @@ export function DashboardClient({ businessId, businessName, showSaveModal = fals
 
         {data && !isLoading && !isError && <BusinessMap data={data} />}
         {showSaveModal && <SaveMapModal businessId={businessId} businessName={businessName} />}
-        <FloatingAgent businessId={businessId} />
+        <KnowledgeRequestPopup businessId={businessId} />
 
         {!isLoading && !isError && data && data.departments.length === 0 && (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">

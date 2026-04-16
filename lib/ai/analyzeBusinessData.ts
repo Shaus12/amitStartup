@@ -1,5 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
-import { buildAnalysisPrompt, buildChatPrompt } from "./prompts";
+import { buildAnalysisPrompt, buildChatPrompt, buildConstraintQuestionPrompt, buildProjectPlanPrompt } from "./prompts";
 
 // ── Output types ──────────────────────────────────────────────────────────────
 
@@ -215,5 +215,93 @@ export async function callClaudeForChat(
   } catch (e: any) {
     console.error("Claude chat error:", e);
     return `Error: ${e.message}`;
+  }
+}
+
+// ── Daily Tip function ────────────────────────────────────────────────────────
+
+export async function generateDailyTip(
+  knowledgeRows: Array<{ category: string; content: string }>
+): Promise<string> {
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) return "התמקד בתיעוד תהליכים ידניים כיום כדי לחסוך זמן מחר.";
+
+  const client = new Anthropic({ apiKey });
+  
+  const systemPrompt = `You are a highly analytical business AI assistant for a small business.
+Your goal is to generate a single, highly actionable daily tip in Hebrew (עברית) for the business owner.
+The tip MUST perfectly target their biggest current pain point based on their business profile.
+BAD: "שפר השיווק שלך" (Improve your marketing)
+GOOD: "היום: הקדש 20 דקות לכתיבת 3 תבניות תגובה לשאלות נפוצות של לקוחות — זה יחסוך לך שעה בשבוע"
+Return ONLY the Hebrew string. No quotes, no intro, no emojis.`;
+
+  const userPrompt = `Here is the business knowledge:\n${JSON.stringify(knowledgeRows)}\n\nPlease provide a highly specific, 1-sentence actionable daily tip in Hebrew addressing their biggest bottleneck or pain.`;
+
+  try {
+    const response = await client.messages.create({
+      model: "claude-3-5-sonnet-20241022",
+      max_tokens: 150,
+      system: systemPrompt,
+      messages: [{ role: "user", content: userPrompt }],
+    });
+
+    const textBlock = response.content.find((b) => b.type === "text");
+    return textBlock?.type === "text" ? textBlock.text.trim().replace(/^["']|["']$/g, '') : "בדוק את רשימת המשימות שלך וסגור משימות ישנות.";
+  } catch (e: any) {
+    console.error("Claude daily tip error:", e);
+    return "זכור שכל דקה שאתה חוסך שווה יותר עבור העסק שלך.";
+  }
+}
+
+// ── Project Planning functions ────────────────────────────────────────────────
+
+export async function generateConstraintQuestion(
+  knowledgeRows: Array<{ category: string; content: string }>,
+  goal: string,
+  timeline: string
+): Promise<string> {
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) return "האם יש מגבלות תקציב או משאבים שכדאי לקחת בחשבון?";
+
+  const client = new Anthropic({ apiKey });
+  const prompt = buildConstraintQuestionPrompt(knowledgeRows, goal, timeline);
+
+  try {
+    const response = await client.messages.create({
+      model: "claude-sonnet-4-6",
+      max_tokens: 150,
+      messages: [{ role: "user", content: prompt }],
+    });
+
+    const textBlock = response.content.find((b) => b.type === "text");
+    return textBlock?.type === "text" ? textBlock.text.trim() : "האם יש מגבלות מסוימות לצוות?";
+  } catch (e: any) {
+    console.error("Claude constraint question error:", e);
+    return "האם יש מגבלות מסוימות לצוות או לתקציב?";
+  }
+}
+
+export async function generateProjectPlan(
+  knowledgeRows: Array<{ category: string; content: string }>,
+  conversationHistory: Array<{ role: string; content: string }>
+): Promise<string> {
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) return "AI is disabled. Please configure your API key to generate a project.";
+
+  const client = new Anthropic({ apiKey });
+  const prompt = buildProjectPlanPrompt(knowledgeRows, conversationHistory);
+
+  try {
+    const response = await client.messages.create({
+      model: "claude-sonnet-4-6",
+      max_tokens: 2048,
+      messages: [{ role: "user", content: prompt }],
+    });
+
+    const textBlock = response.content.find((b) => b.type === "text");
+    return textBlock?.type === "text" ? textBlock.text : "No plan generated";
+  } catch (e: any) {
+    console.error("Claude project plan error:", e);
+    return `Error generating plan: ${e.message}`;
   }
 }

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useOnboardingStore, TOTAL_STEPS } from "@/lib/hooks/useOnboardingStore";
 import { useT } from "@/lib/i18n";
+import { useRouter } from "next/navigation";
 import { Step00_Welcome } from "@/components/onboarding/steps/Step00_Welcome";
 import { Step01_BusinessType } from "@/components/onboarding/steps/Step01_BusinessType";
 import { Step02_TeamSize } from "@/components/onboarding/steps/Step02_TeamSize";
@@ -58,6 +59,7 @@ function getPanelHeadingIndex(step: number) {
 export function OnboardingWizard() {
   const { currentStep, nextStep, prevStep, reset, fillRandom, setStep } = useOnboardingStore();
   const t = useT();
+  const router = useRouter();
   const progressPercent = Math.round((currentStep / (TOTAL_STEPS - 1)) * 100);
 
   const [showSocialProof, setShowSocialProof] = useState(false);
@@ -306,7 +308,15 @@ export function OnboardingWizard() {
             }}>
               <StepComponent
                 onNext={() => { setStepDirection("forward"); setAnimKey((k) => k + 1); nextStep(); }}
-                onBack={() => { setStepDirection("back"); setAnimKey((k) => k + 1); prevStep(); }}
+                onBack={() => { 
+                  if (currentStep === 0) {
+                    router.push("/");
+                  } else {
+                    setStepDirection("back"); 
+                    setAnimKey((k) => k + 1); 
+                    prevStep(); 
+                  }
+                }}
               />
             </AutoFillProvider>
           </div>

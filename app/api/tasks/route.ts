@@ -15,20 +15,47 @@ export async function GET(req: NextRequest) {
   const owned = await verifyBusinessAccess(supabase, businessId, user);
   if (!owned) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
-  const { data: tasks, error } = await supabase
+  const { data: rawTasks, error } = await supabase
     .from("tasks")
-    .select("*")
+    .select(`
+      *,
+      ai_opportunities (
+        departments (
+          name,
+          color
+        )
+      )
+    `)
     .eq("business_id", businessId)
     .order("created_at", { ascending: false });
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  
+  const tasks = rawTasks.map((t: any) => {
+    let deptName = t.department_name || null;
+    let deptColor = null;
+    
+    if (t.ai_opportunities?.departments) {
+      deptName = t.ai_opportunities.departments.name || deptName;
+      deptColor = t.ai_opportunities.departments.color || null;
+    }
+    
+    // Cleanup the nested join data to keep the response clean
+    delete t.ai_opportunities;
+    
+    return {
+      ...t,
+      department_name: deptName,
+      department_color: deptColor
+    };
+  });
 
   return NextResponse.json(tasks);
 }
 
 export async function POST(req: NextRequest) {
   try {
-    const { businessId, title, description, opportunityId, estimatedHours } = await req.json();
+    const { businessId, title, description, opportunityId, estimatedHours, parent_task_id, department_name } = await req.json();
     if (!businessId || !title) return NextResponse.json({ error: "Missing fields" }, { status: 400 });
 
     const authClient = await createClient();
@@ -48,6 +75,8 @@ export async function POST(req: NextRequest) {
         opportunity_id: opportunityId || null,
         estimated_hours: estimatedHours || null,
         status: "todo",
+        parent_task_id: parent_task_id || null,
+        department_name: department_name || null,
       })
       .select()
       .single();

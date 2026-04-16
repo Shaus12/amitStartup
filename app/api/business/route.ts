@@ -59,9 +59,42 @@ export async function GET() {
         : Promise.resolve({ data: { total_points: 0, level: 1 } })
     ]);
 
+    let finalHealthScore = healthScore;
+
+    // Daily tip refresh check
+    if (healthScore && healthScore.calculated_at) {
+      const today = new Date().toISOString().split("T")[0];
+      const calcDate = new Date(healthScore.calculated_at).toISOString().split("T")[0];
+      
+      if (calcDate < today) {
+        // Import must be dynamic or handled if we didn't add it to the top
+        const { generateDailyTip } = await import("@/lib/ai/analyzeBusinessData");
+        
+        // Fetch knowledge to generate tip
+        const { data: knowledgeRows } = await supabase
+          .from("business_knowledge")
+          .select("category, content")
+          .eq("business_id", business.id);
+
+        const newTip = await generateDailyTip(knowledgeRows || []);
+        
+        const { data: updatedHS } = await supabase
+          .from("business_health_scores")
+          .update({
+            daily_tip: newTip,
+            calculated_at: new Date().toISOString()
+          })
+          .eq("id", healthScore.id)
+          .select()
+          .single();
+          
+        if (updatedHS) finalHealthScore = updatedHS;
+      }
+    }
+
     return NextResponse.json({
       ...business,
-      latest_health_score: healthScore?.score || null,
+      latest_health_score: finalHealthScore?.score || null,
       open_tasks_count: openTasksCount || 0,
       total_points: userPoints?.total_points || 0,
       level: userPoints?.level || 1,

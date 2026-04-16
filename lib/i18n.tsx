@@ -386,6 +386,7 @@ const TRANSLATIONS = {
       intelligence: "מודיעין",
       nav: [
         { href: "/dashboard", label: "מפת עסק", description: "סקירה ויזואלית" },
+        { href: "/tasks", label: "משימות", description: "לוח משימות" },
         { href: "/opportunities", label: "הזדמנויות AI", description: "חיסכון וסוכנים" },
         { href: "/roadmap", label: "מפת דרכים", description: "תוכנית מימוש" },
         { href: "/report", label: "ייצוא דוח", description: "סיכום PDF" },
@@ -748,6 +749,7 @@ const TRANSLATIONS = {
       intelligence: "Intelligence",
       nav: [
         { href: "/dashboard", label: "Business Map", description: "Visual overview" },
+        { href: "/tasks", label: "Tasks", description: "Kanban board" },
         { href: "/opportunities", label: "AI Opportunities", description: "Savings & agents" },
         { href: "/roadmap", label: "Roadmap", description: "Implementation plan" },
         { href: "/report", label: "Export Report", description: "PDF summary" },

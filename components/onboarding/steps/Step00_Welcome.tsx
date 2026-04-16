@@ -21,7 +21,6 @@ export function Step00_Welcome({ onNext, onBack }: Props) {
       subtitle={t.step00.subtitle}
       onNext={onNext}
       onBack={onBack}
-      showBack={false}
       nextDisabled={!answers.businessName.trim()}
     >
       <div className="space-y-5">

@@ -56,7 +56,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         reference_id: taskId
       });
 
-      // Update user_points
+      // 2. Add points
       const { data: currentPoints } = await supabase
         .from("user_points")
         .select("total_points")
@@ -71,11 +71,40 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
           .eq("user_id", user.id)
           .eq("business_id", existing.business_id);
       }
-      
-      // Optionally check achievements here, but keeping it simple for now
     }
 
-    return NextResponse.json(updatedTask);
+    let newScore = null;
+    if (status === "done" && existing.status !== "done") {
+      // Recalculate business health score
+      let hoursSaved = existing.estimated_hours || 2; // Default if null
+      if (existing.opportunity_id) {
+        const { data: opp } = await supabase
+          .from("ai_opportunities")
+          .select("estimated_hours_saved")
+          .eq("id", existing.opportunity_id)
+          .single();
+        if (opp?.estimated_hours_saved) hoursSaved = opp.estimated_hours_saved;
+      }
+
+      const { data: currentScoreRow } = await supabase
+        .from("business_health_scores")
+        .select("*")
+        .eq("business_id", existing.business_id)
+        .order("calculated_at", { ascending: false })
+        .limit(1)
+        .single();
+        
+      if (currentScoreRow) {
+        const calcScore = Math.min(100, Math.round(currentScoreRow.score + (hoursSaved * 0.5)));
+        newScore = calcScore;
+        await supabase
+          .from("business_health_scores")
+          .update({ score: calcScore })
+          .eq("id", currentScoreRow.id);
+      }
+    }
+
+    return NextResponse.json({ ...updatedTask, new_health_score: newScore });
   } catch (err: any) {
     console.error("Task patch error:", err);
     return NextResponse.json({ error: err.message }, { status: 500 });

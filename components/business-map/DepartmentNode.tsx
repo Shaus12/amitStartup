@@ -2,9 +2,33 @@
 
 import { Handle, Position, type Node, type NodeProps } from "@xyflow/react";
 import { Users, Zap, GitBranch, X, CheckCircle2, AlertTriangle } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { toast } from "sonner";
+
+export function useCountUp(target: number, durationMs = 800) {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    if (target === 0) {
+      setCount(0);
+      return;
+    }
+    let startTime: number | null = null;
+    let animationFrame: number;
+    const step = (timestamp: number) => {
+      if (!startTime) startTime = timestamp;
+      const progress = Math.min((timestamp - startTime) / durationMs, 1);
+      const ease = 1 - Math.pow(1 - progress, 4);
+      setCount(target * ease);
+      if (progress < 1) animationFrame = requestAnimationFrame(step);
+    };
+    animationFrame = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(animationFrame);
+  }, [target, durationMs]);
+
+  return Math.round(count);
+}
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -38,6 +62,7 @@ export interface DepartmentNodeData extends Record<string, unknown> {
   mainPain?: string | null;
   firstAction?: string | null;
   isExpanded?: boolean;
+  index?: number;
   onSelect: () => void;
   onClose?: () => void;
 }
@@ -75,7 +100,7 @@ function deriveHealthScore(data: DepartmentNodeData): number {
 function healthColor(score: number) {
   if (score >= 70) return { stroke: "#34d399", glow: "rgba(52,211,153,0.3)", label: "בריא" };
   if (score >= 40) return { stroke: "#fbbf24", glow: "rgba(251,191,36,0.3)", label: "בסיכון" };
-  return { stroke: "#f87171", glow: "rgba(248,113,113,0.3)", label: "קריטי" };
+  return { stroke: "#f87171", glow: "rgba(248,113,113,0.3)", label: "זקוק לשיפור" };
 }
 
 function impactConfig(type: string) {
@@ -93,7 +118,11 @@ function impactConfig(type: string) {
 function HealthRing({ score, size = 54, sw = 4 }: { score: number; size?: number; sw?: number }) {
   const r = (size - sw * 2) / 2;
   const circ = 2 * Math.PI * r;
-  const offset = circ - (score / 100) * circ;
+  
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+  
+  const offset = mounted ? circ - (score / 100) * circ : circ;
   const { stroke, label } = healthColor(score);
   return (
     <div className="relative flex items-center justify-center shrink-0" style={{ width: size, height: size }}>
@@ -103,7 +132,7 @@ function HealthRing({ score, size = 54, sw = 4 }: { score: number; size?: number
           cx={size / 2} cy={size / 2} r={r} fill="none"
           stroke={stroke} strokeWidth={sw} strokeLinecap="round"
           strokeDasharray={circ} strokeDashoffset={offset}
-          style={{ transition: "stroke-dashoffset 0.6s ease", filter: `drop-shadow(0 0 4px ${stroke})` }}
+          style={{ transition: "stroke-dashoffset 1s cubic-bezier(0.16,1,0.3,1)", filter: `drop-shadow(0 0 4px ${stroke})` }}
         />
       </svg>
       <div className="absolute flex flex-col items-center leading-none">
@@ -127,17 +156,30 @@ function CompactCard({ data, score, healthStroke, healthGlow, emoji, processCoun
 }) {
   const isRoot = data.isRoot ?? false;
   const cardWidth = isRoot ? 290 : 220;
+  
+  const animIndex = data.index ?? 0;
+  const staggerDelay = Math.min(animIndex * 100, 1000);
+  
+  const animP = useCountUp(processCount);
+  const animO = useCountUp(data.opportunityCount);
+  
+  const isCritical = score < 40;
+  const isExcellent = score >= 70;
 
   return (
     <div
       onClick={data.onSelect}
-      className="cursor-pointer"
+      className={`cursor-pointer ${isCritical ? "critical-node" : ""} ${isExcellent ? "excellent-node" : ""}`}
       style={{
+        opacity: 0,
+        animation: `slide-up-fade 0.6s ease-out forwards`,
+        animationDelay: `${staggerDelay}ms`,
+        position: "relative",
         width: cardWidth,
         minHeight: isRoot ? 210 : 180,
         border: isRoot
           ? `2px solid ${healthStroke}70`
-          : `1.5px solid ${healthStroke}40`,
+          : `2px solid ${healthStroke}40`,
         borderRadius: isRoot ? 20 : 16,
         overflow: "hidden",
         background: isRoot
@@ -215,11 +257,11 @@ function CompactCard({ data, score, healthStroke, healthGlow, emoji, processCoun
         <div style={{ height: 1, backgroundColor: "#1e2030", marginBottom: 10 }} />
 
         {/* Stat badges */}
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5 flex-1 rounded-lg px-2.5 py-1.5" style={{ backgroundColor: "#1a1d27", border: "1px solid #282a30" }}>
+        <div className="flex items-center gap-2 relative z-10">
+          <div className="flex items-center gap-1.5 flex-1 rounded-lg px-2.5 py-1.5 backdrop-blur-md" style={{ backgroundColor: "#1a1d2790", border: "1px solid #282a30" }}>
             <GitBranch style={{ width: 10, height: 10, color: data.color || "#8c909f" }} strokeWidth={2} />
             <div>
-              <div style={{ fontSize: isRoot ? 15 : 13, fontWeight: 700, color: "#e2e2eb", lineHeight: 1, fontFamily: "var(--font-inter)" }}>{processCount}</div>
+              <div style={{ fontSize: isRoot ? 15 : 13, fontWeight: 700, color: "#e2e2eb", lineHeight: 1, fontFamily: "var(--font-inter)" }}>{animP}</div>
               <div style={{ fontSize: 8, color: "#424754", fontFamily: "var(--font-inter)", marginTop: 1 }}>תהליכים</div>
             </div>
             {manualCount > 0 && (
@@ -228,24 +270,17 @@ function CompactCard({ data, score, healthStroke, healthGlow, emoji, processCoun
               </span>
             )}
           </div>
-          <div className="flex items-center gap-1.5 flex-1 rounded-lg px-2.5 py-1.5"
-            style={{ backgroundColor: data.opportunityCount > 0 ? "#4d8eff10" : "#1a1d27", border: data.opportunityCount > 0 ? "1px solid #4d8eff30" : "1px solid #282a30" }}>
+          <div className="flex items-center gap-1.5 flex-1 rounded-lg px-2.5 py-1.5 backdrop-blur-md"
+            style={{ backgroundColor: data.opportunityCount > 0 ? "#4d8eff20" : "#1a1d2790", border: data.opportunityCount > 0 ? "1px solid #4d8eff40" : "1px solid #282a30" }}>
             <Zap style={{ width: 10, height: 10, color: data.opportunityCount > 0 ? "#4d8eff" : "#424754" }} strokeWidth={2} />
             <div>
-              <div style={{ fontSize: isRoot ? 15 : 13, fontWeight: 700, color: data.opportunityCount > 0 ? "#4d8eff" : "#424754", lineHeight: 1, fontFamily: "var(--font-inter)" }}>{data.opportunityCount}</div>
+              <div style={{ fontSize: isRoot ? 15 : 13, fontWeight: 700, color: data.opportunityCount > 0 ? "#4d8eff" : "#424754", lineHeight: 1, fontFamily: "var(--font-inter)" }}>{animO}</div>
               <div style={{ fontSize: 8, color: "#424754", fontFamily: "var(--font-inter)", marginTop: 1 }}>הזדמנויות</div>
             </div>
           </div>
         </div>
 
-        {/* Main pain preview for root */}
-        {isRoot && data.mainPain && (
-          <div style={{ marginTop: 10, backgroundColor: "rgba(248,113,113,0.05)", border: "1px solid rgba(248,113,113,0.12)", borderRadius: 8, padding: "6px 10px" }}>
-            <div style={{ fontSize: 9, fontWeight: 700, color: "#f87171", marginBottom: 2, fontFamily: "var(--font-inter)" }}>כאב עיקרי</div>
-            <div style={{ fontSize: 10, color: "#c2c6d6", lineHeight: 1.4, fontFamily: "var(--font-inter)" }}>{data.mainPain}</div>
-          </div>
-        )}
-
+        {/* Main pain preview for root removed per user request */}
         <div className="mt-3 flex items-center justify-end">
           <span style={{ fontSize: 9, color: "#424754", fontFamily: "var(--font-inter)" }}>לחץ להגדלה →</span>
         </div>
@@ -283,7 +318,7 @@ function ExpandedCard({ data, score, healthStroke, healthGlow, emoji, addedTasks
       const res = await fetch("/api/tasks", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ businessId: data.businessId, title: opp.title, opportunityId: opp.id }),
+        body: JSON.stringify({ businessId: data.businessId, title: opp.title, opportunityId: opp.id, department_name: data.label }),
       });
       if (!res.ok) throw new Error("failed");
       onTaskAdded(opp.id);
@@ -299,6 +334,8 @@ function ExpandedCard({ data, score, healthStroke, healthGlow, emoji, addedTasks
 
   return (
     <div
+      dir="rtl"
+      className="nowheel nodrag"
       style={{
         width: 400,
         border: `1.5px solid ${healthStroke}60`,
@@ -310,6 +347,7 @@ function ExpandedCard({ data, score, healthStroke, healthGlow, emoji, addedTasks
       }}
       // prevent drag from triggering inside expanded node
       onMouseDown={(e) => e.stopPropagation()}
+      onWheel={(e) => e.stopPropagation()}
     >
       {/* Top glow bar */}
       <div style={{ height: 4, background: `linear-gradient(90deg, transparent, ${healthStroke}, transparent)`, boxShadow: `0 0 14px ${healthStroke}` }} />
@@ -317,12 +355,12 @@ function ExpandedCard({ data, score, healthStroke, healthGlow, emoji, addedTasks
       {/* Header */}
       <div style={{ padding: "18px 20px 14px", borderBottom: "1px solid #1e2030" }}>
         <div className="flex items-start justify-between gap-4">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-1 min-w-0">
             <HealthRing score={score} size={80} sw={6} />
-            <div>
-              <div className="flex items-center gap-2">
-                <span style={{ fontSize: 24 }}>{emoji}</span>
-                <h2 style={{ fontSize: 19, fontWeight: 800, color: "#e2e2eb", fontFamily: "var(--font-manrope)", letterSpacing: "-0.02em" }}>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2 min-w-0">
+                <span className="shrink-0" style={{ fontSize: 24 }}>{emoji}</span>
+                <h2 className="truncate" style={{ fontSize: 19, fontWeight: 800, color: "#e2e2eb", fontFamily: "var(--font-manrope)", letterSpacing: "-0.02em" }}>
                   {data.label}
                 </h2>
               </div>
@@ -365,7 +403,11 @@ function ExpandedCard({ data, score, healthStroke, healthGlow, emoji, addedTasks
       </div>
 
       {/* Scrollable body */}
-      <div style={{ maxHeight: 460, overflowY: "auto", padding: "16px 20px" }}>
+      <div 
+        className="nowheel"
+        style={{ maxHeight: 460, overflowY: "auto", padding: "16px 20px" }}
+        onWheel={(e) => e.stopPropagation()}
+      >
 
         {/* Insights Callouts */}
         {(data.mainPain || data.firstAction) && (
@@ -541,6 +583,34 @@ export function DepartmentNode({ data }: NodeProps<DepartmentNodeType>) {
 
   return (
     <>
+      <style>{`
+        @keyframes slide-up-fade {
+          from { opacity: 0; transform: translateY(24px) scale(0.95); }
+          to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes pulse-critical {
+          0% { box-shadow: 0 0 10px rgba(248,113,113,0.1), 0 0 0 1px rgba(248,113,113,0.2); }
+          50% { box-shadow: 0 0 35px rgba(248,113,113,0.6), 0 0 0 2px rgba(248,113,113,0.7); }
+          100% { box-shadow: 0 0 10px rgba(248,113,113,0.1), 0 0 0 1px rgba(248,113,113,0.2); }
+        }
+        @keyframes shimmer-sweep {
+          0% { transform: skewX(-20deg) translateX(-150%); }
+          50% { transform: skewX(-20deg) translateX(150%); }
+          100% { transform: skewX(-20deg) translateX(150%); }
+        }
+        .critical-node {
+          animation: slide-up-fade 0.6s ease-out forwards, pulse-critical 3s ease-in-out infinite !important;
+        }
+        .excellent-node::after {
+          content: "";
+          position: absolute;
+          top: 0; left: -20%; right: -20%; bottom: 0;
+          background: linear-gradient(90deg, transparent, rgba(52,211,153, 0.15), transparent);
+          animation: shimmer-sweep 4s infinite linear;
+          pointer-events: none;
+          z-index: 1;
+        }
+      `}</style>
       <Handle type="target" position={Position.Left}   style={{ opacity: 0, width: 1, height: 1 }} />
       <Handle type="target" position={Position.Top}    style={{ opacity: 0, width: 1, height: 1 }} />
       <Handle type="source" position={Position.Right}  style={{ opacity: 0, width: 1, height: 1 }} />

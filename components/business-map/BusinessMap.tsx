@@ -19,11 +19,16 @@ import {
 import "@xyflow/react/dist/style.css";
 
 import { DepartmentNode, type DepartmentNodeType } from "./DepartmentNode";
+import { AnimatedParticleEdge } from "./AnimatedParticleEdge";
 import { BusinessMapData, DepartmentWithProcesses } from "@/lib/types/business-map";
 import { applyDagreLayout } from "@/lib/utils/mapLayout";
 
 const nodeTypes: NodeTypes = {
   department: DepartmentNode,
+};
+
+const edgeTypes = {
+  animatedParticleEdge: AnimatedParticleEdge,
 };
 
 interface BusinessMapProps {
@@ -66,16 +71,19 @@ function buildEdges(depts: DepartmentWithProcesses[]): Edge[] {
   if (depts.length <= 1) return [];
   const hubId = findHubId(depts);
   if (!hubId) return [];
+  
+  const hubDept = depts.find(d => d.id === hubId);
+  const healthScore = hubDept?.healthScore ?? 72;
+  const hubColor = healthScore >= 70 ? "#34d399" : healthScore >= 40 ? "#fbbf24" : "#f87171";
+  
   return depts
     .filter((d) => d.id !== hubId)
     .map((d) => ({
       id: `e-${hubId}-${d.id}`,
       source: hubId,
       target: d.id,
-      type: "smoothstep",
-      animated: false,
-      style: { stroke: "#4d8eff40", strokeWidth: 2, strokeDasharray: "6 3" },
-      markerEnd: { type: MarkerType.ArrowClosed, color: "#4d8eff80", width: 16, height: 16 },
+      type: "animatedParticleEdge",
+      data: { color: hubColor, duration: 2.5 + Math.random() * 1.5 },
     }));
 }
 
@@ -103,7 +111,7 @@ function BusinessMapInner({ data }: BusinessMapProps) {
   const hubId = useMemo(() => findHubId(data.departments), [data.departments]);
 
   const buildNodeData = useCallback(
-    (dept: DepartmentWithProcesses, isExpanded: boolean) => ({
+    (dept: DepartmentWithProcesses, isExpanded: boolean, index: number) => ({
       label: dept.name,
       color: dept.color,
       status: dept.status,
@@ -113,6 +121,7 @@ function BusinessMapInner({ data }: BusinessMapProps) {
       firstAction: dept.firstAction,
       healthScore: dept.healthScore ?? undefined,
       isRoot: dept.id === hubId,
+      index,
       processes: dept.processes.map((p) => ({
         id: p.id,
         name: p.name,
@@ -140,11 +149,11 @@ function BusinessMapInner({ data }: BusinessMapProps) {
 
   const initialNodes = useMemo<DepartmentNodeType[]>(() => {
     const allZero = data.departments.every((d) => d.positionX === 0 && d.positionY === 0);
-    const rawNodes: DepartmentNodeType[] = data.departments.map((dept) => ({
+    const rawNodes: DepartmentNodeType[] = data.departments.map((dept, idx) => ({
       id: dept.id,
       type: "department" as const,
       position: { x: dept.positionX ?? 0, y: dept.positionY ?? 0 },
-      data: buildNodeData(dept, false),
+      data: buildNodeData(dept, false, idx),
       zIndex: 0,
     }));
     if (allZero) return applyDagreLayout(rawNodes, initialEdges, hubId ?? undefined) as DepartmentNodeType[];
@@ -171,7 +180,7 @@ function BusinessMapInner({ data }: BusinessMapProps) {
           ...n,
           draggable: !isExpanded,
           zIndex: isExpanded ? 1000 : 0,
-          data: buildNodeData(deptData, isExpanded),
+          data: buildNodeData(deptData, isExpanded, n.data.index as number ?? 0),
         };
       })
     );
@@ -182,7 +191,7 @@ function BusinessMapInner({ data }: BusinessMapProps) {
       if (!node) return;
       const cx = node.position.x + EXPANDED_W / 2;
       const cy = node.position.y + EXPANDED_H / 2;
-      setCenter(cx, cy, { zoom: 1.2, duration: 650 });
+      setCenter(cx, cy, { zoom: 0.9, duration: 650 });
     }, 20);
   }
 
@@ -199,7 +208,7 @@ function BusinessMapInner({ data }: BusinessMapProps) {
           ...n,
           draggable: true,
           zIndex: 0,
-          data: buildNodeData(deptData, false),
+          data: buildNodeData(deptData, false, n.data.index as number ?? 0),
         };
       })
     );
@@ -259,6 +268,7 @@ function BusinessMapInner({ data }: BusinessMapProps) {
         onEdgesChange={onEdgesChange}
         onNodeDragStop={onNodeDragStop}
         nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
         fitView
         fitViewOptions={{ padding: 0.25 }}
         minZoom={0.15}
@@ -268,7 +278,13 @@ function BusinessMapInner({ data }: BusinessMapProps) {
         // Prevent clicking background from collapsing (only X / ESC should)
         onPaneClick={() => {}}
       >
-        <Background variant={BackgroundVariant.Dots} color="#1e2030" gap={24} size={1.2} />
+        <Background 
+          variant={BackgroundVariant.Dots} 
+          color="#ffffff" 
+          gap={28} 
+          size={1.5} 
+          style={{ opacity: 0.06 }}
+        />
         <Controls
           className="[&>button]:bg-[#1a1c24] [&>button]:border-[#282a30] [&>button]:text-[#8c909f] [&>button:hover]:bg-[#282a30] [&>button:hover]:text-[#e2e2eb]"
           style={{ bottom: 16, left: 16 }}
