@@ -84,12 +84,16 @@ export async function GET(req: NextRequest) {
       const firstActionRow = (knowledgeRows || []).find((r) => r.department_id === dept.id && r.category === "first_action")
         || deptInsights.find((r) => r.content.startsWith("[first_action]") || r.content.startsWith("Action:"));
 
+      const activeOpps = (dept.ai_opportunities ?? []).filter((o: any) => o.archived !== true);
+      const isLocked = deptProcesses.length === 0 && activeOpps.length === 0;
+
       return {
         id: dept.id,
         name: dept.name,
         color: dept.color,
         headcount: dept.headcount ?? null,
         healthScore: dept.health_score ?? null,
+        isLocked,
         mainPain: mainPainRow ? mainPainRow.content.replace(/^\[main_pain\]\s*/, "").replace(/^Pain:\s*/, "") : null,
         firstAction: firstActionRow ? firstActionRow.content.replace(/^\[first_action\]\s*/, "").replace(/^Action:\s*/, "") : null,
         // camelCase aliases for React Flow / UI components
@@ -103,9 +107,7 @@ export async function GET(req: NextRequest) {
         processes: deptProcesses,
         painPoints: [],
         // AI opportunities — normalize to camelCase and filter non-archived
-        aiOpportunities: (dept.ai_opportunities ?? [])
-          .filter((o: any) => o.archived !== true)
-          .map((o: any) => ({
+        aiOpportunities: activeOpps.map((o: any) => ({
             id: o.id,
             title: o.title,
             impactType: o.impact_type,

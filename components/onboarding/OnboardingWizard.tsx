@@ -17,7 +17,9 @@ import { Step12_Bottlenecks } from "@/components/onboarding/steps/Step12_Bottlen
 import { Step16_Goals } from "@/components/onboarding/steps/Step16_Goals";
 import { Step14_PriorAI } from "@/components/onboarding/steps/Step14_PriorAI";
 import { Step17_Review } from "@/components/onboarding/steps/Step17_Review";
+import { QuickReviewStep } from "@/components/onboarding/steps/QuickReviewStep";
 import { AutoFillProvider } from "@/components/onboarding/StepCard";
+import { Zap, CheckCircle2 } from "lucide-react";
 
 type StepProps = { onNext: () => void; onBack: () => void };
 
@@ -56,8 +58,154 @@ function getPanelHeadingIndex(step: number) {
   return PANEL_HEADING_INDICES.findIndex(([s, e]) => step >= s && step <= e);
 }
 
+// Quick mode: steps 0-4, then QuickReviewStep
+const QUICK_LAST_STEP = 4;
+
+function RegistrationModeSelector({ onSelect }: { onSelect: (mode: "quick" | "full") => void }) {
+  return (
+    <div className="min-h-[100dvh] flex items-center justify-center px-6" style={{ backgroundColor: "#111319" }}>
+      <div style={{ maxWidth: 480, width: "100%" }}>
+        {/* Logo */}
+        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 40, justifyContent: "center" }}>
+          <div
+            style={{
+              width: 36, height: 36, borderRadius: 10,
+              background: "linear-gradient(135deg, #4d8eff, #adc6ff)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}
+          >
+            <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
+              <rect x="2" y="2" width="5" height="5" rx="1" fill="white" fillOpacity="0.9" />
+              <rect x="9" y="2" width="5" height="5" rx="1" fill="white" fillOpacity="0.5" />
+              <rect x="2" y="9" width="5" height="5" rx="1" fill="white" fillOpacity="0.5" />
+              <rect x="9" y="9" width="5" height="5" rx="1" fill="white" fillOpacity="0.9" />
+            </svg>
+          </div>
+          <span style={{ fontSize: 18, fontWeight: 700, color: "#e2e2eb", fontFamily: "var(--font-manrope)" }}>BizMap</span>
+        </div>
+
+        <div style={{ textAlign: "center", marginBottom: 32 }}>
+          <h1 style={{ fontSize: 26, fontWeight: 800, color: "#e2e2eb", fontFamily: "var(--font-manrope)", letterSpacing: "-0.02em", marginBottom: 8 }}>
+            איך תרצה להתחיל?
+          </h1>
+          <p style={{ fontSize: 13, color: "#8c909f", fontFamily: "var(--font-inter)", lineHeight: 1.6 }}>
+            בחר את האופן שמתאים לך — אפשר להשלים את הפרטים בכל עת
+          </p>
+        </div>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          {/* Quick option */}
+          <button
+            onClick={() => onSelect("quick")}
+            style={{
+              width: "100%",
+              padding: "18px 20px",
+              borderRadius: 16,
+              border: "1.5px solid #282a30",
+              backgroundColor: "#191b22",
+              cursor: "pointer",
+              textAlign: "right",
+              direction: "rtl",
+              transition: "all 0.2s",
+            }}
+            onMouseEnter={e => {
+              (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(77,142,255,0.4)";
+              (e.currentTarget as HTMLButtonElement).style.backgroundColor = "rgba(77,142,255,0.04)";
+            }}
+            onMouseLeave={e => {
+              (e.currentTarget as HTMLButtonElement).style.borderColor = "#282a30";
+              (e.currentTarget as HTMLButtonElement).style.backgroundColor = "#191b22";
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <div style={{
+                width: 40, height: 40, borderRadius: 10, flexShrink: 0,
+                background: "linear-gradient(135deg, #4d8eff20, #4d8eff08)",
+                border: "1px solid rgba(77,142,255,0.2)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+              }}>
+                <Zap size={18} color="#4d8eff" />
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 15, fontWeight: 700, color: "#e2e2eb", fontFamily: "var(--font-manrope)", marginBottom: 3 }}>
+                  הרשמה זריזה
+                  <span style={{ fontSize: 11, fontWeight: 600, color: "#4d8eff", marginRight: 8, fontFamily: "var(--font-inter)" }}>
+                    ~2 דקות
+                  </span>
+                </div>
+                <div style={{ fontSize: 12, color: "#8c909f", fontFamily: "var(--font-inter)", lineHeight: 1.5 }}>
+                  שם העסק, גודל צוות, ומחלקות בלבד
+                </div>
+                <div style={{ fontSize: 11, color: "#424754", fontFamily: "var(--font-inter)", marginTop: 4 }}>
+                  תוכל להשלים כל מחלקה בנפרד ישירות מהמפה
+                </div>
+              </div>
+            </div>
+          </button>
+
+          {/* Full option */}
+          <button
+            onClick={() => onSelect("full")}
+            style={{
+              width: "100%",
+              padding: "18px 20px",
+              borderRadius: 16,
+              border: "1.5px solid rgba(52,211,153,0.3)",
+              background: "linear-gradient(135deg, rgba(52,211,153,0.06), rgba(52,211,153,0.02))",
+              cursor: "pointer",
+              textAlign: "right",
+              direction: "rtl",
+              position: "relative",
+              transition: "all 0.2s",
+            }}
+            onMouseEnter={e => {
+              (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(52,211,153,0.5)";
+            }}
+            onMouseLeave={e => {
+              (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(52,211,153,0.3)";
+            }}
+          >
+            <div style={{
+              position: "absolute", top: -10, left: 16,
+              backgroundColor: "#34d399", color: "#052e16",
+              fontSize: 10, fontWeight: 800, padding: "2px 10px",
+              borderRadius: 99, fontFamily: "var(--font-inter)",
+            }}>
+              מומלץ
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <div style={{
+                width: 40, height: 40, borderRadius: 10, flexShrink: 0,
+                background: "rgba(52,211,153,0.1)",
+                border: "1px solid rgba(52,211,153,0.2)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+              }}>
+                <CheckCircle2 size={18} color="#34d399" />
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 15, fontWeight: 700, color: "#e2e2eb", fontFamily: "var(--font-manrope)", marginBottom: 3 }}>
+                  הרשמה מלאה
+                  <span style={{ fontSize: 11, fontWeight: 600, color: "#34d399", marginRight: 8, fontFamily: "var(--font-inter)" }}>
+                    ~8 דקות
+                  </span>
+                </div>
+                <div style={{ fontSize: 12, color: "#8c909f", fontFamily: "var(--font-inter)", lineHeight: 1.5 }}>
+                  מיפוי מלא של תהליכים, כלים ואתגרים
+                </div>
+                <div style={{ fontSize: 11, color: "#34d399", fontFamily: "var(--font-inter)", marginTop: 4, opacity: 0.8 }}>
+                  הגדר פעם אחת וזהו — ניתוח AI מדויק מהרגע הראשון
+                </div>
+              </div>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function OnboardingWizard() {
-  const { currentStep, nextStep, prevStep, reset, fillRandom, setStep } = useOnboardingStore();
+  const { currentStep, nextStep, prevStep, reset, fillRandom, setStep, registrationMode, setRegistrationMode } = useOnboardingStore();
   const t = useT();
   const router = useRouter();
   const progressPercent = Math.round((currentStep / (TOTAL_STEPS - 1)) * 100);
@@ -95,6 +243,20 @@ export function OnboardingWizard() {
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentStep]);
+
+  // Show mode selector before any step
+  if (registrationMode === null) {
+    return (
+      <RegistrationModeSelector
+        onSelect={(mode) => {
+          setRegistrationMode(mode);
+        }}
+      />
+    );
+  }
+
+  const isQuickMode = registrationMode === "quick";
+  const isQuickReview = isQuickMode && currentStep > QUICK_LAST_STEP;
 
   const StepComponent = STEPS[currentStep] ?? STEPS[0];
   const groupIndex = getCurrentGroupIndex(currentStep);
@@ -249,52 +411,17 @@ export function OnboardingWizard() {
                 <rect x="9" y="9" width="5" height="5" rx="1" fill="white" fillOpacity="0.9" />
               </svg>
             </div>
-            <span className="text-xs font-semibold truncate" style={{ color: "#c2c6d6", fontFamily: "var(--font-manrope)" }}>BizView</span>
+            <span className="text-xs font-semibold truncate" style={{ color: "#c2c6d6", fontFamily: "var(--font-manrope)" }}>BizMap</span>
           </div>
-          <div className="flex items-center gap-3 shrink-0">
-            <button 
-              onClick={() => { if (window.confirm("האם אתה בטוח שברצונך להתחיל מחדש? כל הנתונים שהזנת יימחקו.")) reset(); }}
-              className="text-[11px] font-medium transition-colors whitespace-nowrap" 
-              style={{ color: "#424754", fontFamily: "var(--font-inter)" }}
-              onMouseEnter={e => e.currentTarget.style.color = "#f87171"}
-              onMouseLeave={e => e.currentTarget.style.color = "#424754"}
-            >
-              התחל מחדש
-            </button>
-            <span className="text-[11px] tabular-nums shrink-0" style={{ color: "#424754" }}>
-              {currentStep + 1} / {TOTAL_STEPS}
-            </span>
-          </div>
+          <span className="text-[11px] tabular-nums shrink-0" style={{ color: "#424754" }}>
+            {currentStep + 1} / {TOTAL_STEPS}
+          </span>
         </div>
 
         <div
           className="hidden md:flex shrink-0 justify-end items-center px-8 lg:px-12 pt-5 pb-2"
-          style={{ borderBottom: "1px solid #282a30" }}
-        >
-          <button 
-            type="button"
-            onClick={() => { if (window.confirm("האם אתה בטוח שברצונך להתחיל מחדש? כל הנתונים שהזנת יימחקו.")) reset(); }}
-            className="text-xs font-semibold px-3 py-1.5 rounded border transition-all duration-150"
-            style={{ 
-              color: "#8c909f", 
-              borderColor: "#282a30",
-              backgroundColor: "transparent",
-              fontFamily: "var(--font-inter)"
-            }}
-            onMouseEnter={e => {
-              e.currentTarget.style.color = "#f87171";
-              e.currentTarget.style.borderColor = "#f8717130";
-              e.currentTarget.style.backgroundColor = "#f8717108";
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.color = "#8c909f";
-              e.currentTarget.style.borderColor = "#282a30";
-              e.currentTarget.style.backgroundColor = "transparent";
-            }}
-          >
-            התחל מחדש
-          </button>
-        </div>
+          style={{ borderBottom: "1px solid #282a30", minHeight: 44 }}
+        />
 
         <div className="flex-1 flex items-center justify-center px-5 py-10 md:py-16 md:px-12 lg:px-20 overflow-hidden">
           <div
@@ -304,25 +431,44 @@ export function OnboardingWizard() {
               animation: `${stepDirection === "forward" ? "bv-step-in" : "bv-step-in-back"} 0.3s cubic-bezier(0.16,1,0.3,1) both`,
             }}
           >
-            <AutoFillProvider onAutoFill={() => {
-              fillRandom();
-              setStepDirection("forward");
-              setAnimKey((k) => k + 1);
-              setStep(11);
-            }}>
-              <StepComponent
-                onNext={() => { setStepDirection("forward"); setAnimKey((k) => k + 1); nextStep(); }}
-                onBack={() => { 
-                  if (currentStep === 0) {
-                    router.push("/");
-                  } else {
-                    setStepDirection("back"); 
-                    setAnimKey((k) => k + 1); 
-                    prevStep(); 
-                  }
+            {isQuickReview ? (
+              <QuickReviewStep
+                onBack={() => {
+                  setStepDirection("back");
+                  setAnimKey((k) => k + 1);
+                  prevStep();
                 }}
               />
-            </AutoFillProvider>
+            ) : (
+              <AutoFillProvider onAutoFill={() => {
+                fillRandom();
+                setStepDirection("forward");
+                setAnimKey((k) => k + 1);
+                setStep(11);
+              }}>
+                <StepComponent
+                  onNext={() => {
+                    setStepDirection("forward");
+                    setAnimKey((k) => k + 1);
+                    if (isQuickMode && currentStep === QUICK_LAST_STEP) {
+                      // Skip to quick review step (step 5 is past the quick threshold)
+                      nextStep();
+                    } else {
+                      nextStep();
+                    }
+                  }}
+                  onBack={() => {
+                    if (currentStep === 0) {
+                      router.push("/");
+                    } else {
+                      setStepDirection("back");
+                      setAnimKey((k) => k + 1);
+                      prevStep();
+                    }
+                  }}
+                />
+              </AutoFillProvider>
+            )}
           </div>
         </div>
       </div>

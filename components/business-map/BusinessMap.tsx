@@ -20,6 +20,7 @@ import "@xyflow/react/dist/style.css";
 
 import { DepartmentNode, type DepartmentNodeType } from "./DepartmentNode";
 import { AnimatedParticleEdge } from "./AnimatedParticleEdge";
+import { DepartmentOnboardingModal } from "./DepartmentOnboardingModal";
 import { BusinessMapData, DepartmentWithProcesses } from "@/lib/types/business-map";
 import { applyDagreLayout } from "@/lib/utils/mapLayout";
 
@@ -93,6 +94,7 @@ const EXPANDED_H = 560; // approx (header ~140 + body ~460cap)
 
 function BusinessMapInner({ data }: BusinessMapProps) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [unlockingDept, setUnlockingDept] = useState<{ id: string; name: string } | null>(null);
   const { setCenter, fitView, setNodes, getNode } = useReactFlow();
   // Store viewport before expand so we can restore it exactly
   const preExpandViewport = useRef<{ zoom: number } | null>(null);
@@ -121,6 +123,8 @@ function BusinessMapInner({ data }: BusinessMapProps) {
       firstAction: dept.firstAction,
       healthScore: dept.healthScore ?? undefined,
       isRoot: dept.id === hubId,
+      isLocked: dept.isLocked ?? false,
+      onUnlock: dept.isLocked ? () => setUnlockingDept({ id: dept.id, name: dept.name }) : undefined,
       index,
       processes: dept.processes.map((p) => ({
         id: p.id,
@@ -296,6 +300,21 @@ function BusinessMapInner({ data }: BusinessMapProps) {
           style={{ bottom: 16, right: 16 }}
         />
       </ReactFlow>
+
+      {/* Department onboarding modal for locked departments */}
+      {unlockingDept && (
+        <DepartmentOnboardingModal
+          departmentId={unlockingDept.id}
+          departmentName={unlockingDept.name}
+          businessId={businessId ?? ""}
+          onClose={() => setUnlockingDept(null)}
+          onComplete={() => {
+            setUnlockingDept(null);
+            // Reload the page to show updated map
+            window.location.reload();
+          }}
+        />
+      )}
     </div>
   );
 }

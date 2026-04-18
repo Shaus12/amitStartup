@@ -48,6 +48,8 @@ export interface DepartmentNodeData extends Record<string, unknown> {
   headcount: number | null;
   businessId?: string | null;
   isRoot?: boolean;
+  isLocked?: boolean;
+  onUnlock?: () => void;
   processes: {
     id: string;
     name: string;
@@ -155,20 +157,29 @@ function CompactCard({ data, score, healthStroke, healthGlow, emoji, processCoun
   manualCount: number;
 }) {
   const isRoot = data.isRoot ?? false;
+  const isLocked = data.isLocked ?? false;
   const cardWidth = isRoot ? 290 : 220;
-  
+
   const animIndex = data.index ?? 0;
   const staggerDelay = Math.min(animIndex * 100, 1000);
-  
+
   const animP = useCountUp(processCount);
   const animO = useCountUp(data.opportunityCount);
-  
+
   const isCritical = score < 40;
   const isExcellent = score >= 70;
 
+  function handleClick() {
+    if (isLocked) {
+      data.onUnlock?.();
+    } else {
+      data.onSelect();
+    }
+  }
+
   return (
     <div
-      onClick={data.onSelect}
+      onClick={handleClick}
       className={`cursor-pointer ${isCritical ? "critical-node" : ""} ${isExcellent ? "excellent-node" : ""}`}
       style={{
         opacity: 0,
@@ -213,7 +224,7 @@ function CompactCard({ data, score, healthStroke, healthGlow, emoji, processCoun
       }} />
 
       {/* Root badge */}
-      {isRoot && (
+      {isRoot && !isLocked && (
         <div style={{
           display: "flex",
           alignItems: "center",
@@ -226,6 +237,43 @@ function CompactCard({ data, score, healthStroke, healthGlow, emoji, processCoun
           <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.12em", color: healthStroke, fontFamily: "var(--font-inter)", textTransform: "uppercase" }}>
             ★ מחלקה ראשית
           </span>
+        </div>
+      )}
+
+      {/* Locked overlay */}
+      {isLocked && (
+        <div style={{
+          position: "absolute",
+          inset: 0,
+          borderRadius: "inherit",
+          background: "rgba(17,19,25,0.7)",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 8,
+          zIndex: 10,
+          backdropFilter: "blur(2px)",
+        }}>
+          <div style={{
+            width: 40, height: 40, borderRadius: 12,
+            background: "rgba(77,142,255,0.12)",
+            border: "1.5px solid rgba(77,142,255,0.3)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+          }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4d8eff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
+          </div>
+          <div style={{ textAlign: "center" }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: "#e2e2eb", fontFamily: "var(--font-inter)" }}>
+              {data.label}
+            </div>
+            <div style={{ fontSize: 10, color: "#4d8eff", fontFamily: "var(--font-inter)", marginTop: 3 }}>
+              לחץ להשלמת פרטים
+            </div>
+          </div>
         </div>
       )}
 

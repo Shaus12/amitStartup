@@ -26,6 +26,7 @@ export interface DepartmentWithProcesses {
   healthScore?: number | null;
   mainPain?: string | null;
   firstAction?: string | null;
+  isLocked?: boolean;
 }
 
 export interface BusinessMapData {

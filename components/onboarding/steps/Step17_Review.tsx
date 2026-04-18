@@ -38,15 +38,38 @@ function goalOptionList(t: ReturnType<typeof useT>) {
   return s.options ?? s.goals ?? [];
 }
 
+const STAGES = [
+  "שומר פרטי עסק...",
+  "ממפה מחלקות ותהליכים...",
+  "מנתח נתונים עם AI...",
+  "מחשב הזדמנויות חיסכון...",
+  "בונה מפת הזדמנויות...",
+  "מסיים ניתוח...",
+];
+
 export function Step17_Review({ onBack }: Props) {
   const router = useRouter();
   const { answers, setBusinessId } = useOnboardingStore();
   const [loading, setLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [stageIdx, setStageIdx] = useState(0);
   const t = useT();
   const goalOpts = goalOptionList(t);
 
   async function handleSubmit() {
     setLoading(true);
+    setProgress(0);
+    setStageIdx(0);
+
+    // Simulate fast progress to 80%
+    let current = 0;
+    const intervalId = setInterval(() => {
+      current = current + (80 - current) * 0.12;
+      if (current >= 79.5) { clearInterval(intervalId); current = 80; }
+      setProgress(Math.round(current));
+      setStageIdx((i) => Math.min(i + 1, STAGES.length - 2));
+    }, 180);
+
     try {
       const onboardingRes = await fetch("/api/onboarding", {
         method: "POST",
@@ -55,6 +78,7 @@ export function Step17_Review({ onBack }: Props) {
       });
 
       if (!onboardingRes.ok) {
+        clearInterval(intervalId);
         const err = await onboardingRes.json().catch(() => ({}));
         throw new Error(err.details || err.message || err.error || "Failed to save profile");
       }
@@ -62,8 +86,9 @@ export function Step17_Review({ onBack }: Props) {
       const { businessId } = await onboardingRes.json();
       setBusinessId(businessId);
       document.cookie = "onboarding_just_completed=1; path=/; max-age=3600";
+      setProgress(55);
+      setStageIdx(3);
 
-      // Analysis reads `business_knowledge` only — run before dashboard so the map has opportunities.
       const genRes = await fetch("/api/opportunities/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -77,10 +102,16 @@ export function Step17_Review({ onBack }: Props) {
         );
       }
 
+      clearInterval(intervalId);
+      setProgress(100);
+      setStageIdx(STAGES.length - 1);
+      await new Promise((r) => setTimeout(r, 600));
       router.push("/dashboard");
     } catch (err: any) {
+      clearInterval(intervalId);
       toast.error(err.message || "Error saving profile");
       setLoading(false);
+      setProgress(0);
     }
   }
 
@@ -174,14 +205,25 @@ export function Step17_Review({ onBack }: Props) {
           )}
         >
           {loading ? (
-            <>
-              <Loader2 className="h-5 w-5 animate-spin" />
-              {t.step17.generatingBtn}
-            </>
+            <div className="w-full flex flex-col items-center gap-3 py-1">
+              <div className="flex items-center gap-2 w-full justify-between">
+                <span className="text-sm font-semibold text-blue-200">{STAGES[stageIdx]}</span>
+                <span className="text-sm font-black tabular-nums text-blue-300">{progress}%</span>
+              </div>
+              <div className="w-full h-2 rounded-full bg-zinc-700/60 overflow-hidden">
+                <div
+                  className="h-full rounded-full transition-all duration-300 ease-out"
+                  style={{
+                    width: `${progress}%`,
+                    background: progress === 100
+                      ? "linear-gradient(90deg, #22c55e, #86efac)"
+                      : "linear-gradient(90deg, #3b82f6, #60a5fa)",
+                  }}
+                />
+              </div>
+            </div>
           ) : (
-            <>
-                {t.step17.generateBtn}
-            </>
+            <>{t.step17.generateBtn}</>
           )}
         </button>
       </div>

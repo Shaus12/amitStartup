@@ -15,11 +15,13 @@ interface OnboardingStore {
   currentStep: number;
   answers: OnboardingAnswers;
   businessId: string | null;
+  registrationMode: "quick" | "full" | null;
   setStep: (step: number) => void;
   nextStep: () => void;
   prevStep: () => void;
   updateAnswers: (partial: Partial<OnboardingAnswers>) => void;
   setBusinessId: (id: string) => void;
+  setRegistrationMode: (mode: "quick" | "full") => void;
   reset: () => void;
   fillRandom: () => void;
 }
@@ -30,6 +32,7 @@ export const useOnboardingStore = create<OnboardingStore>()(
       currentStep: 0,
       answers: EMPTY_ANSWERS,
       businessId: null,
+      registrationMode: null,
 
       setStep: (step) => set({ currentStep: step }),
       nextStep: () =>
@@ -41,8 +44,9 @@ export const useOnboardingStore = create<OnboardingStore>()(
       updateAnswers: (partial) =>
         set((s) => ({ answers: { ...s.answers, ...partial } })),
       setBusinessId: (id) => set({ businessId: id }),
+      setRegistrationMode: (mode) => set({ registrationMode: mode }),
       reset: () =>
-        set({ currentStep: 0, answers: EMPTY_ANSWERS, businessId: null }),
+        set({ currentStep: 0, answers: EMPTY_ANSWERS, businessId: null, registrationMode: null }),
       fillRandom: () =>
         set({ answers: RANDOM_ANSWERS }),
     }),
