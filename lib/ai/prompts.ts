@@ -26,6 +26,8 @@ ${deptList}
 BUSINESS KNOWLEDGE BASE:
 ${knowledgeSection || "(No onboarding data provided. Infer deeply based on industry, company size, and known patterns.)"}
 
+If the knowledge includes category **ONBOARDING_JSON**, it is the full structured export of every onboarding answer — treat it as authoritative alongside the other rows (when details conflict, prefer ONBOARDING_JSON).
+
 ───────────────────────────────────────────────────────────────────
 CORE ANALYSIS RULES:
 ───────────────────────────────────────────────────────────────────

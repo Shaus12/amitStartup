@@ -3,72 +3,39 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import { Loader2, CheckCircle2, ChevronLeft, Sparkles } from "lucide-react";
 import { useOnboardingStore } from "@/lib/hooks/useOnboardingStore";
 import { cn } from "@/lib/utils";
 import { useT } from "@/lib/i18n";
 
 interface Props {
-  onNext?: () => void;
   onBack: () => void;
 }
 
-function SummarySection({
-  title,
-  children,
-}: {
-  title: string;
-  children: React.ReactNode;
-}) {
+function SummaryCard({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-4">
-      <h3 className="text-xs font-semibold uppercase tracking-widest text-zinc-500 mb-3">
+    <div className="bg-zinc-900/40 border border-zinc-800/60 rounded-2xl p-4 space-y-3">
+      <h3 className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 border-b border-zinc-800/40 pb-2">
         {title}
       </h3>
-      <div className="space-y-1.5">{children}</div>
+      <div className="space-y-2">{children}</div>
     </div>
   );
 }
 
-function SummaryRow({
-  label,
-  value,
-}: {
-  label: string;
-  value: string | number | undefined | null;
-}) {
+function SummaryItem({ label, value }: { label: string; value: string | number | undefined | null }) {
   if (!value && value !== 0) return null;
   return (
-    <div className="flex items-start gap-2 text-sm">
-      <span className="text-zinc-500 shrink-0 min-w-[120px]">{label}</span>
-      <span className="text-zinc-200 flex-1">{value}</span>
+    <div className="flex justify-between items-center text-sm">
+      <span className="text-zinc-500 font-medium">{label}</span>
+      <span className="text-zinc-200 font-bold">{value}</span>
     </div>
   );
 }
 
-function SummaryList({
-  label,
-  items,
-}: {
-  label: string;
-  items: string[];
-}) {
-  if (!items || items.length === 0) return null;
-  return (
-    <div className="flex items-start gap-2 text-sm">
-      <span className="text-zinc-500 shrink-0 min-w-[120px]">{label}</span>
-      <div className="flex flex-wrap gap-1.5 flex-1">
-        {items.map((item) => (
-          <span
-            key={item}
-            className="px-2 py-0.5 rounded-md bg-zinc-800 border border-zinc-700 text-zinc-300 text-xs"
-          >
-            {item}
-          </span>
-        ))}
-      </div>
-    </div>
-  );
+function goalOptionList(t: ReturnType<typeof useT>) {
+  const s = t.step16 as { options?: { value: string; label: string }[]; goals?: { value: string; label: string }[] };
+  return s.options ?? s.goals ?? [];
 }
 
 export function Step17_Review({ onBack }: Props) {
@@ -76,11 +43,11 @@ export function Step17_Review({ onBack }: Props) {
   const { answers, setBusinessId } = useOnboardingStore();
   const [loading, setLoading] = useState(false);
   const t = useT();
+  const goalOpts = goalOptionList(t);
 
   async function handleSubmit() {
     setLoading(true);
     try {
-      // Step 1: POST onboarding answers
       const onboardingRes = await fetch("/api/onboarding", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -89,152 +56,132 @@ export function Step17_Review({ onBack }: Props) {
 
       if (!onboardingRes.ok) {
         const err = await onboardingRes.json().catch(() => ({}));
-        throw new Error(err.message ?? t.step17.errorFallback);
+        throw new Error(err.details || err.message || err.error || "Failed to save profile");
       }
 
       const { businessId } = await onboardingRes.json();
       setBusinessId(businessId);
-
-      // Signal to middleware that we're in the "just onboarded" state
-      // so /dashboard is accessible before the user creates an account
       document.cookie = "onboarding_just_completed=1; path=/; max-age=3600";
 
-      // Step 2: Trigger opportunity generation in the background (non-blocking).
-      // The dashboard will show opportunities once they're ready.
-      fetch("/api/opportunities/generate", {
+      // Analysis reads `business_knowledge` only — run before dashboard so the map has opportunities.
+      const genRes = await fetch("/api/opportunities/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ businessId }),
-      }).catch(() => {
-        // Silently ignore — user can regenerate from the dashboard
       });
+      if (!genRes.ok) {
+        const genBody = await genRes.json().catch(() => ({}));
+        console.error("Opportunity generation failed:", genBody);
+        toast.error(
+          genBody.details || genBody.error || "העסק נשמר, אך יצירת מפת ההזדמנויות נכשלה. נסה \"רענון ניתוח\" מהדשבורד."
+        );
+      }
 
-      // Step 3: Redirect immediately — don't wait for generation to finish
       router.push("/dashboard");
-    } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : t.step17.errorFallback;
-      toast.error(message);
+    } catch (err: any) {
+      toast.error(err.message || "Error saving profile");
       setLoading(false);
     }
   }
 
-  const departmentNames = answers.departments.map((d) => d.name);
-  const processCount = answers.processes.length;
-  const toolNames = answers.tools.map((t) => t.name);
-  const painPoints = [answers.painPoint1, answers.painPoint2, answers.painPoint3].filter(
-    Boolean
-  );
-
   return (
-    <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8 w-full max-w-2xl mx-auto">
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-zinc-100">
-          {t.step17.title}
+    <div className="w-full max-w-3xl mx-auto space-y-8 pb-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      {/* Hero Header */}
+      <div className="text-center space-y-3">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold mb-2">
+           <Sparkles className="w-3 h-3" />
+           {t.step17.title}
+        </div>
+        <h2 className="text-4xl font-black text-white tracking-tighter">
+          {t.step17.headline}
         </h2>
-        <p className="mt-2 text-zinc-400 text-sm leading-relaxed">
+        <p className="text-zinc-400 text-sm max-w-lg mx-auto leading-relaxed">
           {t.step17.subtitle}
         </p>
       </div>
 
-      <div className="space-y-3 mb-8">
-        {/* Business */}
-        <SummarySection title={t.step17.sections.business}>
-          <SummaryRow label={t.step17.labels.name} value={answers.businessName} />
-          <SummaryRow label={t.step17.labels.type} value={answers.businessType} />
-          <SummaryRow label={t.step17.labels.industry} value={answers.industry} />
-          <SummaryRow label={t.step17.labels.teamSize} value={answers.employeeRange} />
-          <SummaryRow label={t.step17.labels.revenue} value={answers.revenueRange} />
-        </SummarySection>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Business Details */}
+        <SummaryCard title={t.step17.sections.business}>
+          <SummaryItem label={t.step17.labels.name} value={answers.businessName} />
+          <SummaryItem label={t.step17.labels.type} value={answers.businessType} />
+          <SummaryItem label={t.step17.labels.teamSize} value={answers.employeeRange} />
+          <SummaryItem label={t.step17.labels.revenue} value={answers.revenueRange} />
+        </SummaryCard>
 
-        {/* Departments */}
-        {answers.departments.length > 0 && (
-          <SummarySection title={t.step17.sections.departments}>
-            {answers.departments.map((dept) => (
-              <div key={dept.name} className="flex items-center gap-2 text-sm">
-                <span className="text-zinc-200">{dept.name}</span>
-                {dept.headcount !== undefined && dept.headcount > 0 && (
-                  <span className="text-zinc-500 text-xs">
-                    — {dept.headcount} {dept.headcount === 1 ? t.step17.person : t.step17.people}
-                  </span>
-                )}
-              </div>
-            ))}
-          </SummarySection>
-        )}
+        {/* Structure & Metrics */}
+        <SummaryCard title={t.step17.sections.metrics}>
+          <SummaryItem
+            label={t.step17.metricLabels.closeRate}
+            value={answers.closeRate ? `${answers.closeRate}%` : undefined}
+          />
+          <SummaryItem
+            label={t.step17.metricLabels.avgDeal}
+            value={answers.avgDealSize ? `₪${answers.avgDealSize}` : undefined}
+          />
+          <SummaryItem
+            label={t.step17.metricLabels.timeComms}
+            value={answers.timeSpentComms ? `${answers.timeSpentComms}` : undefined}
+          />
+        </SummaryCard>
 
-        {/* Processes */}
-        {processCount > 0 && (
-          <SummarySection title={t.step17.sections.processes}>
-            <div className="text-sm text-zinc-200">
-              {t.step17.processCount(processCount, departmentNames.length)}
+        {/* Totals */}
+        <SummaryCard title={t.step17.sections.summary}>
+          <div className="flex items-center gap-3 p-3 rounded-xl bg-blue-500/5 border border-blue-500/10">
+            <CheckCircle2 className="w-5 h-5 text-blue-500" />
+            <div className="flex flex-col">
+              <span className="text-sm font-bold text-blue-100">
+                {t.step17.summaryCounts(answers.departments.length, answers.processes.length)}
+              </span>
             </div>
-          </SummarySection>
-        )}
-
-        {/* Tools */}
-        {toolNames.length > 0 && (
-          <SummarySection title={t.step17.sections.tools}>
-            <SummaryList label={t.step17.labels.currentStack} items={toolNames} />
-          </SummarySection>
-        )}
-
-        {/* Pain Points */}
-        {painPoints.length > 0 && (
-          <SummarySection title={t.step17.sections.painPoints}>
-            <div className="space-y-2">
-              {painPoints.map((point, i) => (
-                <p key={i} className="text-sm text-zinc-300 leading-relaxed">
-                  {point}
-                </p>
-              ))}
-            </div>
-          </SummarySection>
-        )}
+          </div>
+        </SummaryCard>
 
         {/* Goals */}
-        {answers.goals.length > 0 && (
-          <SummarySection title={t.step17.sections.goals}>
-            <SummaryList label={t.step17.labels.priorities} items={answers.goals} />
-            {answers.topPriority90Days && (
-              <div className="mt-2 text-sm text-zinc-300 leading-relaxed pt-2 border-t border-zinc-800">
-                <span className="text-zinc-500 text-xs block mb-1">{t.step17.labels.top90}</span>
-                {answers.topPriority90Days}
-              </div>
-            )}
-          </SummarySection>
-        )}
+        <SummaryCard title={t.step17.sections.goals}>
+          <div className="flex flex-wrap gap-2 pt-1">
+            {answers.goals.map((goal, i) => {
+                 const goalLabel = goalOpts.find((o) => o.value === goal)?.label || goal;
+                 return (
+                    <span key={i} className="px-3 py-1.5 rounded-lg bg-zinc-800/50 border border-zinc-800 text-[12px] font-medium text-zinc-300">
+                        {goalLabel}
+                    </span>
+                 );
+            })}
+          </div>
+        </SummaryCard>
       </div>
 
-      {/* Navigation */}
-      <div className="flex items-center justify-between gap-4">
+      {/* Action Buttons */}
+      <div className="flex flex-col sm:flex-row items-center gap-4 pt-4">
         <button
-          type="button"
           onClick={onBack}
           disabled={loading}
-          className="text-zinc-400 hover:text-zinc-100 text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex items-center gap-2 text-zinc-500 hover:text-zinc-200 text-sm font-bold transition-all disabled:opacity-50"
         >
+          <ChevronLeft className="w-4 h-4 rotate-180" />
           {t.step17.backBtn}
         </button>
 
         <button
-          type="button"
           onClick={handleSubmit}
           disabled={loading}
           className={cn(
-            "flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold transition-all",
+            "flex-1 w-full flex items-center justify-center gap-3 px-8 py-4 rounded-2xl text-lg font-black transition-all shadow-xl shadow-blue-500/10",
             loading
-              ? "bg-blue-600/60 text-blue-200 cursor-not-allowed"
-              : "bg-blue-600 hover:bg-blue-500 text-white"
+              ? "bg-zinc-800 text-zinc-500 cursor-not-allowed"
+              : "bg-blue-600 hover:bg-blue-500 text-white hover:scale-[1.02] active:scale-[0.98]"
           )}
         >
           {loading ? (
             <>
-              <Loader2 className="h-4 w-4 animate-spin" />
+              <Loader2 className="h-5 w-5 animate-spin" />
               {t.step17.generatingBtn}
             </>
           ) : (
-            t.step17.generateBtn
+            <>
+                {t.step17.generateBtn}
+            </>
           )}
         </button>
       </div>

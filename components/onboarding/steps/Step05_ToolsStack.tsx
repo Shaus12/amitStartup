@@ -2,91 +2,30 @@
 
 import { useOnboardingStore } from "@/lib/hooks/useOnboardingStore";
 import { StepCard } from "@/components/onboarding/StepCard";
-import { ToolInput } from "@/lib/types/onboarding";
 import { cn } from "@/lib/utils";
 import { useT } from "@/lib/i18n";
+import { OnboardingAnswers } from "@/lib/types/onboarding";
 
 interface Props {
   onNext: () => void;
   onBack: () => void;
 }
 
-const TOOL_CATEGORIES: { category: string; tools: string[] }[] = [
-  {
-    category: "CRM",
-    tools: [
-      "HubSpot",
-      "Salesforce",
-      "Pipedrive",
-      "Notion CRM",
-      "Airtable",
-      "Spreadsheet only",
-    ],
-  },
-  {
-    category: "Communication",
-    tools: ["Slack", "WhatsApp Business", "Microsoft Teams", "Email only"],
-  },
-  {
-    category: "Finance",
-    tools: ["QuickBooks", "Xero", "Excel/Sheets", "Manual invoicing"],
-  },
-  {
-    category: "Project Mgmt",
-    tools: ["Asana", "Monday.com", "Trello", "Jira", "ClickUp", "Nothing formal"],
-  },
-  {
-    category: "Analytics",
-    tools: [
-      "Google Analytics",
-      "Looker/Tableau",
-      "Manual reports",
-      "Nothing",
-    ],
-  },
-  {
-    category: "Support",
-    tools: ["Zendesk", "Intercom", "Email inbox", "Nothing"],
-  },
-];
-
 export function Step05_ToolsStack({ onNext, onBack }: Props) {
   const { answers, updateAnswers } = useOnboardingStore();
   const t = useT();
 
-  function isSelected(toolName: string) {
-    return answers.tools.some((t) => t.name === toolName);
-  }
+  const questions = [
+    { key: "leadsTracking" as keyof OnboardingAnswers, q: t.step05.questions.leads },
+    { key: "clientManagement" as keyof OnboardingAnswers, q: t.step05.questions.clients },
+    { key: "financeTracking" as keyof OnboardingAnswers, q: t.step05.questions.finance },
+    { key: "taskManagement" as keyof OnboardingAnswers, q: t.step05.questions.tasks },
+    { key: "dataTracking" as keyof OnboardingAnswers, q: t.step05.questions.data },
+  ];
 
-  function toggleTool(toolName: string, category: string) {
-    const exists = isSelected(toolName);
-    if (exists) {
-      updateAnswers({
-        tools: answers.tools.filter((t) => t.name !== toolName),
-      });
-    } else {
-      updateAnswers({
-        tools: [
-          ...answers.tools,
-          { name: toolName, category, isManualProcess: false },
-        ],
-      });
-    }
-  }
-
-  function toggleManual(toolName: string) {
-    updateAnswers({
-      tools: answers.tools.map((t) =>
-        t.name === toolName
-          ? { ...t, isManualProcess: !t.isManualProcess }
-          : t
-      ),
-    });
-  }
-
-  function getToolEntry(toolName: string): ToolInput | undefined {
-    return answers.tools.find((t) => t.name === toolName);
-  }
+  const stackComplete =
+    !!answers.softwareSpend &&
+    questions.every((item) => !!String(answers[item.key] ?? "").trim());
 
   return (
     <StepCard
@@ -94,47 +33,29 @@ export function Step05_ToolsStack({ onNext, onBack }: Props) {
       subtitle={t.step05.subtitle}
       onNext={onNext}
       onBack={onBack}
-      nextLabel="Continue"
+      nextDisabled={!stackComplete}
     >
-      <div className="space-y-6">
-        {TOOL_CATEGORIES.map(({ category, tools }) => (
-          <div key={category}>
-            <p className="text-zinc-400 text-xs font-semibold uppercase tracking-wider mb-2">
-              {category}
-            </p>
+      <div className="space-y-8">
+        {questions.map((item) => (
+          <div key={item.key} className="space-y-3">
+            <p className="text-zinc-300 text-sm font-semibold">{item.q.label}</p>
             <div className="flex flex-wrap gap-2">
-              {tools.map((tool) => {
-                const selected = isSelected(tool);
-                const entry = getToolEntry(tool);
+              {item.q.options.map((opt: string) => {
+                const selected = answers[item.key] === opt;
                 return (
-                  <div key={tool} className="flex flex-col gap-1">
-                    <button
-                      type="button"
-                      onClick={() => toggleTool(tool, category)}
-                      className={cn(
-                        "px-3 py-1.5 rounded-full border text-sm transition-all",
-                        selected
-                          ? "border-blue-500 bg-blue-600/20 text-blue-300"
-                          : "border-zinc-700 bg-zinc-800 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200"
-                      )}
-                    >
-                      {tool}
-                    </button>
-                    {selected && (
-                      <button
-                        type="button"
-                        onClick={() => toggleManual(tool)}
-                        className={cn(
-                          "px-2 py-0.5 rounded-full border text-xs transition-all self-start",
-                          entry?.isManualProcess
-                            ? "border-amber-500 bg-amber-600/20 text-amber-300"
-                            : "border-zinc-700 bg-zinc-800/50 text-zinc-500 hover:text-zinc-300"
-                        )}
-                      >
-                        {entry?.isManualProcess ? t.step05.manualConfirmed : t.step05.manualLabel}
-                      </button>
+                  <button
+                    key={opt}
+                    type="button"
+                    onClick={() => updateAnswers({ [item.key]: opt })}
+                    className={cn(
+                      "px-3 py-2 rounded-xl border text-[13px] font-medium transition-all whitespace-nowrap",
+                      selected
+                        ? "border-blue-500 bg-blue-600/10 text-blue-300"
+                        : "border-zinc-800 bg-zinc-900/40 text-zinc-500 hover:border-zinc-700 hover:text-zinc-300"
                     )}
-                  </div>
+                  >
+                    {opt}
+                  </button>
                 );
               })}
             </div>
@@ -142,27 +63,23 @@ export function Step05_ToolsStack({ onNext, onBack }: Props) {
         ))}
 
         {/* Software Spend */}
-        <div>
-          <p className="text-zinc-300 text-sm font-medium mb-3">
+        <div className="pt-6 border-t border-zinc-800/50">
+          <p className="text-zinc-100 text-[15px] font-bold mb-4">
             {t.step05.spendLabel}
           </p>
-          <div className="flex flex-wrap gap-2">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
             {t.step05.spendRanges.map((sr) => {
               const selected = answers.softwareSpend === sr.value;
               return (
                 <button
                   key={sr.value}
                   type="button"
-                  onClick={() =>
-                    updateAnswers({
-                      softwareSpend: selected ? "" : sr.value,
-                    })
-                  }
+                  onClick={() => updateAnswers({ softwareSpend: sr.value })}
                   className={cn(
-                    "px-4 py-2 rounded-xl border text-sm transition-all",
+                    "px-4 py-3 rounded-xl border text-sm font-semibold transition-all text-center",
                     selected
-                      ? "border-blue-500 bg-blue-600/10 text-blue-300"
-                      : "border-zinc-700 bg-zinc-800/50 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200"
+                      ? "border-blue-500 bg-blue-600/20 text-blue-300 shadow-[0_0_15px_rgba(77,142,255,0.15)]"
+                      : "border-zinc-800 bg-zinc-900/60 text-zinc-500 hover:border-zinc-700 hover:text-zinc-300"
                   )}
                 >
                   {sr.label}
@@ -171,15 +88,6 @@ export function Step05_ToolsStack({ onNext, onBack }: Props) {
             })}
           </div>
         </div>
-
-        {/* Selected tools summary */}
-        {answers.tools.length > 0 && (
-          <p className="text-zinc-500 text-xs">
-            {t.step05.toolsSelected(answers.tools.length)}
-            {answers.tools.filter((tool) => tool.isManualProcess).length > 0 &&
-              ` · ${t.step05.manualFlagged(answers.tools.filter((tool) => tool.isManualProcess).length)}`}
-          </p>
-        )}
       </div>
     </StepCard>
   );

@@ -3,26 +3,14 @@
 import { useOnboardingStore } from "@/lib/hooks/useOnboardingStore";
 import { StepCard } from "@/components/onboarding/StepCard";
 import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { useT } from "@/lib/i18n";
+import { Check } from "lucide-react";
 
 interface Props {
   onNext: () => void;
   onBack: () => void;
 }
-
-// English values used for storage/comparison with answers.bottlenecks
-const BOTTLENECK_VALUES = [
-  "Approval chains slow things down",
-  "Missing information to move forward",
-  "Manual handoffs between people",
-  "Constantly switching between tools",
-  "Unclear who owns what",
-  "Waiting on customer responses",
-  "Data scattered across systems",
-  "Repetitive admin tasks eat up time",
-];
 
 export function Step12_Bottlenecks({ onNext, onBack }: Props) {
   const { answers, updateAnswers } = useOnboardingStore();
@@ -37,82 +25,60 @@ export function Step12_Bottlenecks({ onNext, onBack }: Props) {
     }
   }
 
+  const isOtherSelected = answers.bottlenecks.includes("Other");
+
   return (
     <StepCard
       title={t.step12.title}
       subtitle={t.step12.subtitle}
       onNext={onNext}
       onBack={onBack}
+      nextDisabled={answers.bottlenecks.length === 0}
     >
-      <div className="space-y-7">
-        {/* Bottleneck Multi-select */}
-        <div className="space-y-2">
-          {BOTTLENECK_VALUES.map((val, i) => {
-            const selected = answers.bottlenecks.includes(val);
+      <div className="space-y-6">
+        <div className="grid grid-cols-1 gap-2">
+          {t.step12.options.map((opt: { value: string; label: string }) => {
+            const selected = answers.bottlenecks.includes(opt.value);
             return (
               <button
-                key={val}
+                key={opt.value}
                 type="button"
-                onClick={() => toggleBottleneck(val)}
+                onClick={() => toggleBottleneck(opt.value)}
                 className={cn(
-                  "w-full flex items-center gap-4 text-left px-4 py-3.5 rounded-xl border transition-all",
+                  "w-full flex items-center gap-3 px-4 py-3.5 rounded-xl border text-right transition-all group",
                   selected
-                    ? "border-blue-500 bg-blue-600/10 text-zinc-100"
-                    : "border-zinc-700 bg-zinc-800/50 text-zinc-300 hover:border-zinc-600 hover:text-zinc-100"
+                    ? "border-blue-500 bg-blue-500/10 text-blue-100 ring-1 ring-blue-500/30 shadow-[0_4px_20px_rgba(77,142,255,0.1)]"
+                    : "border-zinc-800 bg-zinc-900/40 text-zinc-500 hover:border-zinc-700 hover:text-zinc-300"
                 )}
               >
-                <span
+                <div
                   className={cn(
-                    "h-5 w-5 shrink-0 rounded border-2 flex items-center justify-center transition-all",
+                    "h-5 w-5 shrink-0 rounded flex items-center justify-center transition-all border",
                     selected
-                      ? "border-blue-500 bg-blue-600"
-                      : "border-zinc-600 bg-transparent"
+                      ? "border-blue-500 bg-blue-500 shadow-[0_0_8px_rgba(77,142,255,0.6)]"
+                      : "border-zinc-700 bg-zinc-800 group-hover:border-zinc-600"
                   )}
                 >
-                  {selected && (
-                    <svg
-                      className="h-3 w-3 text-white"
-                      viewBox="0 0 12 12"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <polyline points="2,6 5,9 10,3" />
-                    </svg>
-                  )}
+                  {selected && <Check className="h-3 w-3 text-zinc-900" strokeWidth={4} />}
+                </div>
+                <span className={cn("text-sm font-semibold", selected ? "text-blue-100" : "text-zinc-400")}>
+                    {opt.label}
                 </span>
-                <span className="text-sm">{t.step12.bottleneckLabels[i]}</span>
               </button>
             );
           })}
         </div>
 
-        {answers.bottlenecks.length > 0 && (
-          <p className="text-blue-400/80 text-xs">
-            {t.step12.selectedCount(answers.bottlenecks.length)}
-          </p>
+        {isOtherSelected && (
+          <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
+            <Textarea
+              value={answers.biggestHeadache}
+              onChange={(e) => updateAnswers({ biggestHeadache: e.target.value })}
+              placeholder={t.step12.otherPlaceholder}
+              className="bg-zinc-800/50 border-zinc-700 text-zinc-100 placeholder:text-zinc-500 focus:border-blue-500 focus:ring-blue-500/20 resize-none min-h-[100px]"
+            />
+          </div>
         )}
-
-        {/* Biggest Headache */}
-        <div className="space-y-1.5">
-          <Label
-            htmlFor="biggestHeadache"
-            className="text-zinc-300 text-sm font-medium"
-          >
-            {t.step12.headacheLabel}{" "}
-            <span className="text-zinc-500 font-normal">{t.optional}</span>
-          </Label>
-          <Textarea
-            id="biggestHeadache"
-            value={answers.biggestHeadache}
-            onChange={(e) => updateAnswers({ biggestHeadache: e.target.value })}
-            placeholder={t.step12.headachePlaceholder}
-            rows={4}
-            className="bg-zinc-800 border-zinc-700 text-zinc-100 placeholder:text-zinc-500 focus:border-blue-500 focus:ring-blue-500/20 resize-none"
-          />
-        </div>
       </div>
     </StepCard>
   );

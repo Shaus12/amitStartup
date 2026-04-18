@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 import { supabaseAdmin as supabase } from "@/lib/supabase-admin";
-import { OnboardingAnswers } from "@/lib/types/onboarding";
+import { OnboardingAnswers, ONBOARDING_COMPLETED_STEP_INDEX } from "@/lib/types/onboarding";
+import { buildOnboardingKnowledgeRows } from "@/lib/onboarding/knowledgeFromAnswers";
 
 export async function POST(req: NextRequest) {
   try {
@@ -14,11 +15,11 @@ export async function POST(req: NextRequest) {
         name: answers.businessName,
         owner_name: answers.ownerName,
         tagline: answers.tagline,
-        industry: answers.industry,
+        industry: answers.industry || null,
         employee_range: answers.employeeRange,
         revenue_range: answers.revenueRange,
         ai_budget: answers.aiBudget,
-        tech_comfort: answers.aiComfortLevel,
+        tech_comfort: answers.aiComfortLevel?.trim() || answers.priorAiUsage?.trim() || null,
         onboarding_completed: true,
       })
       .select()
@@ -61,137 +62,31 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // ── 3. Store full answers snapshot in onboarding_sessions ──────
-    const { error: sessionError } = await supabase
-      .from("onboarding_sessions")
-      .insert({
-        business_id: bizId,
-        current_step: 17,
-        completed: true,
-        answers: answers,
-      });
+    // ── 3. Full answers snapshot (used by department page, exports, etc.) ──
+    const { error: sessionError } = await supabase.from("onboarding_sessions").insert({
+      business_id: bizId,
+      current_step: ONBOARDING_COMPLETED_STEP_INDEX,
+      completed: true,
+      answers,
+    });
 
     if (sessionError) console.error("Failed to insert onboarding_session:", sessionError);
 
-    // ── 4. Create business_knowledge rows ─────
-    const knowledgeToInsert: any[] = [];
-
-    // Processes
-    if (answers.processes) {
-      for (const p of answers.processes) {
-        knowledgeToInsert.push({
-          business_id: bizId,
-          department_id: deptNameToId[p.departmentName] || null,
-          category: 'process',
-          content: `${p.name} (Frequency: ${p.frequency || 'N/A'}, Manual: ${p.isManual ? 'Yes' : 'No'})`,
-          source: 'onboarding',
-          metadata: { originalName: p.name, frequency: p.frequency, isManual: p.isManual }
-        });
-      }
-    }
-
-    // Tools
-    if (answers.tools) {
-      for (const t of answers.tools) {
-        knowledgeToInsert.push({
-          business_id: bizId,
-          department_id: null,
-          category: 'tool',
-          content: `${t.name} (Category: ${t.category}, Manual: ${t.isManualProcess ? 'Yes' : 'No'})`,
-          source: 'onboarding',
-          metadata: { name: t.name, category: t.category, isManualProcess: t.isManualProcess }
-        });
-      }
-    }
-
-    // Pain Points
-    const painPoints = [
-      answers.painPoint1,
-      answers.painPoint2,
-      answers.painPoint3,
-      answers.biggestHeadache,
-    ].filter(Boolean);
-    
-    for (const pp of painPoints) {
-      knowledgeToInsert.push({
-        business_id: bizId,
-        department_id: null,
-        category: 'pain_point',
-        content: String(pp),
-        source: 'onboarding'
-      });
-    }
-
-    if (answers.bottlenecks) {
-      for (const bn of answers.bottlenecks) {
-        knowledgeToInsert.push({
-          business_id: bizId,
-          department_id: null,
-          category: 'pain_point',
-          content: bn,
-          source: 'onboarding'
-        });
-      }
-    }
-
-    // Goals
-    const goals = [answers.topPriority90Days, ...(answers.goals || [])].filter(Boolean);
-    for (const g of goals) {
-      knowledgeToInsert.push({
-        business_id: bizId,
-        department_id: null,
-        category: 'goal',
-        content: String(g),
-        source: 'onboarding'
-      });
-    }
-
-    // Insights (General business info)
-    const insights = [
-      `Employee Range: ${answers.employeeRange}`,
-      `Revenue Range: ${answers.revenueRange}`,
-      `Industry: ${answers.industry}`,
-      `AI Comfort Level: ${answers.aiComfortLevel}`,
-      `Primary Contact: ${answers.primaryContact}`,
-      `Inquiry Volume: ${answers.inquiryVolume}`,
-      `Avg Response Time: ${answers.avgResponseTime}`
-    ].filter(i => !i.endsWith("undefined") && !i.endsWith(""));
-
-    for (const i of insights) {
-      knowledgeToInsert.push({
-        business_id: bizId,
-        department_id: null,
-        category: 'insight',
-        content: i,
-        source: 'onboarding'
-      });
-    }
-    
-    if (answers.manualTasks) {
-       for (const mt of answers.manualTasks) {
-          knowledgeToInsert.push({
-            business_id: bizId,
-            department_id: null,
-            category: 'insight',
-            content: `Manual Task: ${mt}`,
-            source: 'onboarding'
-          });
-       }
-    }
+    // ── 4. business_knowledge — consumed by /api/opportunities/generate & chat ──
+    const knowledgeToInsert = buildOnboardingKnowledgeRows(answers, bizId, deptNameToId);
 
     if (knowledgeToInsert.length > 0) {
-      const { error: knowledgeError } = await supabase
-        .from('business_knowledge')
-        .insert(knowledgeToInsert);
-      
+      const { error: knowledgeError } = await supabase.from("business_knowledge").insert(knowledgeToInsert);
+
       if (knowledgeError) console.error("Failed to insert business knowledge:", knowledgeError);
     }
 
     return NextResponse.json({ businessId: bizId });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("Onboarding error:", err);
+    const message = err instanceof Error ? err.message : String(err);
     return NextResponse.json(
-      { error: "Failed to save onboarding data", details: err?.message ?? String(err) },
+      { error: "Failed to save onboarding data", details: message, message },
       { status: 500 }
     );
   }

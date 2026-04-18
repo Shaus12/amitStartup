@@ -25,18 +25,23 @@ export interface ToolInput {
   monthlyCost?: number;
 }
 
+/** Total wizard screens (step indices 0 … ONBOARDING_TOTAL_STEPS - 1). */
+export const ONBOARDING_TOTAL_STEPS = 13;
+/** Stored in `onboarding_sessions.current_step` when flow is completed. */
+export const ONBOARDING_COMPLETED_STEP_INDEX = ONBOARDING_TOTAL_STEPS - 1;
+
 export interface OnboardingAnswers {
   // Step 0 - Welcome
   businessName: string;
   ownerName: string;
   tagline: string;
 
-  // Step 1 - Business Type
+  // Step 1 (wizard screen 2) — business model + team
   businessType: string;
   industry: string;
   targetCustomer: string;
 
-  // Step 2 - Team Size
+  // Team size & structure (same step)
   employeeRange: string;
   staffStructure: string;
   hasSeparateDepts: boolean;
@@ -49,9 +54,14 @@ export interface OnboardingAnswers {
   // Step 4 - Departments
   departments: DepartmentInput[];
 
-  // Step 5 - Tools
+  // Step 5 - Tools specific
   tools: ToolInput[];
   softwareSpend: string;
+  leadsTracking: string;
+  clientManagement: string;
+  financeTracking: string;
+  taskManagement: string;
+  dataTracking: string;
 
   // Step 6 - Processes (per dept)
   processes: ProcessInput[];
@@ -104,6 +114,9 @@ export interface OnboardingAnswers {
 
   // Step 16b - Marketing & Leads
   monthlyLeads: string;
+  closeRate: string;
+  avgDealSize: string;
+  timeSpentComms: string;
   leadSources: string[];
   marketingBudget: string;
   adPlatforms: string[];
@@ -116,7 +129,7 @@ export const RANDOM_ANSWERS: OnboardingAnswers = {
   businessName: "גלרייה פרימיום",
   ownerName: "עמית כהן",
   tagline: "חנות אונליין לבגדי יוקרה",
-  businessType: "E-Commerce / Retail",
+  businessType: "online_store",
   industry: "Fashion & Retail",
   targetCustomer: "B2C",
   employeeRange: "6-15",
@@ -138,6 +151,11 @@ export const RANDOM_ANSWERS: OnboardingAnswers = {
     { name: "Monday.com", category: "Project Management", isManualProcess: false, monthlyCost: 50 },
     { name: "Shopify", category: "E-Commerce", isManualProcess: false, monthlyCost: 80 },
   ],
+  leadsTracking: "CRM מסודר",
+  clientManagement: "וואטסאפ",
+  financeTracking: "אקסל-גוגל שיטס",
+  taskManagement: "Monday",
+  dataTracking: "דשבורד מותאם",
   softwareSpend: "500-2000",
   processes: [
     { name: "Lead generation", departmentName: "Sales", frequency: "Daily", isManual: true },
@@ -190,6 +208,9 @@ export const RANDOM_ANSWERS: OnboardingAnswers = {
   goals: ["Save time on repetitive tasks", "Improve customer response time", "Better reporting and analytics"],
   topPriority90Days: "Automate customer support and reduce response time by 80%",
   monthlyLeads: "50-100",
+  closeRate: "10–30%",
+  avgDealSize: "2,000–10,000",
+  timeSpentComms: "5–10 שעות",
   leadSources: ["Organic search", "Social media", "Referrals"],
   marketingBudget: "5000-15000",
   adPlatforms: ["Meta", "Google"],
@@ -211,6 +232,11 @@ export const EMPTY_ANSWERS: OnboardingAnswers = {
   growthTrajectory: "",
   departments: [],
   tools: [],
+  leadsTracking: "",
+  clientManagement: "",
+  financeTracking: "",
+  taskManagement: "",
+  dataTracking: "",
   softwareSpend: "",
   processes: [],
   timeAudit: [],
@@ -240,6 +266,9 @@ export const EMPTY_ANSWERS: OnboardingAnswers = {
   goals: [],
   topPriority90Days: "",
   monthlyLeads: "",
+  closeRate: "",
+  avgDealSize: "",
+  timeSpentComms: "",
   leadSources: [],
   marketingBudget: "",
   adPlatforms: [],

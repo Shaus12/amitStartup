@@ -5,51 +5,51 @@ import { useOnboardingStore, TOTAL_STEPS } from "@/lib/hooks/useOnboardingStore"
 import { useT } from "@/lib/i18n";
 import { useRouter } from "next/navigation";
 import { Step00_Welcome } from "@/components/onboarding/steps/Step00_Welcome";
-import { Step01_BusinessType } from "@/components/onboarding/steps/Step01_BusinessType";
 import { Step02_TeamSize } from "@/components/onboarding/steps/Step02_TeamSize";
 import { Step03_Revenue } from "@/components/onboarding/steps/Step03_Revenue";
+import { Trans_After3 } from "@/components/onboarding/steps/Trans_After3";
 import { Step04_Departments } from "@/components/onboarding/steps/Step04_Departments";
 import { Step05_ToolsStack } from "@/components/onboarding/steps/Step05_ToolsStack";
 import { Step06_Processes } from "@/components/onboarding/steps/Step06_Processes";
-import { Step07_TimeAudit } from "@/components/onboarding/steps/Step07_TimeAudit";
-import { Step08_ManualWork } from "@/components/onboarding/steps/Step08_ManualWork";
-import { Step09_CustomerInteraction } from "@/components/onboarding/steps/Step09_CustomerInteraction";
-import { Step10_Reporting } from "@/components/onboarding/steps/Step10_Reporting";
-import { Step11_Communication } from "@/components/onboarding/steps/Step11_Communication";
+import { Trans_After6 } from "@/components/onboarding/steps/Trans_After6";
+import { Step07_SalesMarketing } from "@/components/onboarding/steps/Step07_SalesMarketing";
 import { Step12_Bottlenecks } from "@/components/onboarding/steps/Step12_Bottlenecks";
-import { Step13_PainPoints } from "@/components/onboarding/steps/Step13_PainPoints";
-import { Step14_PriorAI } from "@/components/onboarding/steps/Step14_PriorAI";
-import { Step15_Budget } from "@/components/onboarding/steps/Step15_Budget";
 import { Step16_Goals } from "@/components/onboarding/steps/Step16_Goals";
+import { Step14_PriorAI } from "@/components/onboarding/steps/Step14_PriorAI";
 import { Step17_Review } from "@/components/onboarding/steps/Step17_Review";
-import { Step18_Marketing } from "@/components/onboarding/steps/Step18_Marketing";
-import { Step19_Notifications } from "@/components/onboarding/steps/Step19_Notifications";
 import { AutoFillProvider } from "@/components/onboarding/StepCard";
 
 type StepProps = { onNext: () => void; onBack: () => void };
 
 const STEPS: React.ComponentType<StepProps>[] = [
-  Step00_Welcome, Step01_BusinessType, Step02_TeamSize, Step03_Revenue,
-  Step04_Departments, Step05_ToolsStack, Step06_Processes, Step07_TimeAudit,
-  Step08_ManualWork, Step09_CustomerInteraction, Step10_Reporting,
-  Step11_Communication, Step12_Bottlenecks, Step13_PainPoints,
-  Step14_PriorAI, Step15_Budget, Step16_Goals, Step17_Review,
-  Step18_Marketing, Step19_Notifications,
+  Step00_Welcome, // 0
+  Step02_TeamSize, // 1
+  Step03_Revenue, // 2
+  Trans_After3, // 3
+  Step04_Departments, // 4
+  Step05_ToolsStack, // 5
+  Step06_Processes, // 6
+  Trans_After6, // 7
+  Step07_SalesMarketing, // 8
+  Step12_Bottlenecks, // 9
+  Step16_Goals, // 10
+  Step14_PriorAI, // 11
+  Step17_Review, // 12
 ] as React.ComponentType<StepProps>[];
 
-const GROUP_STEP_RANGES = [[0, 3], [4, 6], [7, 11], [12, 13], [14, 16], [17, 19]];
+const GROUP_STEP_RANGES = [[0, 2], [3, 6], [7, 8], [9, 9], [10, 11], [12, 12]];
 
 function getCurrentGroupIndex(step: number) {
   return GROUP_STEP_RANGES.findIndex(([s, e]) => step >= s && step <= e);
 }
 
 const PANEL_HEADING_INDICES = [
-  [0, 3],   // "Tell us about your business."
-  [4, 6],   // "Map out your teams."
-  [7, 11],  // "Where does time go?"
-  [12, 13], // "Surface your friction."
-  [14, 16], // "Define your AI goals."
-  [17, 19], // "Review everything."
+  [0, 2],   // "Tell us about your business."
+  [3, 6],   // "Map out your teams."
+  [7, 8],  // "Where does time go?"
+  [9, 9], // "Surface your friction."
+  [10, 11], // "Define your AI goals."
+  [12, 12], // "Review everything."
 ];
 
 function getPanelHeadingIndex(step: number) {
@@ -212,8 +212,8 @@ export function OnboardingWizard() {
         </div>
       </aside>
 
-      {/* ── Right form area ── */}
-      <div className="flex-1 flex flex-col min-w-0">
+      {/* ── Right form area (relative = reset button stays inside this column) ── */}
+      <div className="flex-1 flex flex-col min-w-0 relative">
         <div className="shrink-0 relative overflow-visible" style={{ backgroundColor: "#191b22", height: 6 }}>
           <div
             className="h-full transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
@@ -234,12 +234,12 @@ export function OnboardingWizard() {
         </div>
 
         <div
-          className="flex md:hidden items-center justify-between px-5 py-3 border-b"
+          className="flex md:hidden items-center justify-between gap-3 px-5 py-3 border-b min-w-0"
           style={{ borderColor: "#282a30" }}
         >
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0 min-w-0">
             <div
-              className="w-5 h-5 rounded flex items-center justify-center"
+              className="w-5 h-5 shrink-0 rounded flex items-center justify-center"
               style={{ background: "linear-gradient(135deg, #4d8eff, #adc6ff)" }}
             >
               <svg width="10" height="10" viewBox="0 0 16 16" fill="none">
@@ -249,26 +249,30 @@ export function OnboardingWizard() {
                 <rect x="9" y="9" width="5" height="5" rx="1" fill="white" fillOpacity="0.9" />
               </svg>
             </div>
-            <span className="text-xs font-semibold" style={{ color: "#c2c6d6", fontFamily: "var(--font-manrope)" }}>BizView</span>
+            <span className="text-xs font-semibold truncate" style={{ color: "#c2c6d6", fontFamily: "var(--font-manrope)" }}>BizView</span>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 shrink-0">
             <button 
               onClick={() => { if (window.confirm("האם אתה בטוח שברצונך להתחיל מחדש? כל הנתונים שהזנת יימחקו.")) reset(); }}
-              className="text-[11px] font-medium transition-colors" 
+              className="text-[11px] font-medium transition-colors whitespace-nowrap" 
               style={{ color: "#424754", fontFamily: "var(--font-inter)" }}
               onMouseEnter={e => e.currentTarget.style.color = "#f87171"}
               onMouseLeave={e => e.currentTarget.style.color = "#424754"}
             >
               התחל מחדש
             </button>
-            <span className="text-[11px] tabular-nums" style={{ color: "#424754" }}>
+            <span className="text-[11px] tabular-nums shrink-0" style={{ color: "#424754" }}>
               {currentStep + 1} / {TOTAL_STEPS}
             </span>
           </div>
         </div>
 
-        <div className="absolute top-6 right-6 hidden md:block z-10">
+        <div
+          className="hidden md:flex shrink-0 justify-end items-center px-8 lg:px-12 pt-5 pb-2"
+          style={{ borderBottom: "1px solid #282a30" }}
+        >
           <button 
+            type="button"
             onClick={() => { if (window.confirm("האם אתה בטוח שברצונך להתחיל מחדש? כל הנתונים שהזנת יימחקו.")) reset(); }}
             className="text-xs font-semibold px-3 py-1.5 rounded border transition-all duration-150"
             style={{ 
@@ -304,7 +308,7 @@ export function OnboardingWizard() {
               fillRandom();
               setStepDirection("forward");
               setAnimKey((k) => k + 1);
-              setStep(17);
+              setStep(11);
             }}>
               <StepComponent
                 onNext={() => { setStepDirection("forward"); setAnimKey((k) => k + 1); nextStep(); }}

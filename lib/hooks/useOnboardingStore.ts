@@ -2,9 +2,14 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { OnboardingAnswers, EMPTY_ANSWERS, RANDOM_ANSWERS } from "@/lib/types/onboarding";
+import {
+  OnboardingAnswers,
+  EMPTY_ANSWERS,
+  RANDOM_ANSWERS,
+  ONBOARDING_TOTAL_STEPS,
+} from "@/lib/types/onboarding";
 
-export const TOTAL_STEPS = 20; // 0-19
+export const TOTAL_STEPS = ONBOARDING_TOTAL_STEPS;
 
 interface OnboardingStore {
   currentStep: number;
@@ -28,7 +33,9 @@ export const useOnboardingStore = create<OnboardingStore>()(
 
       setStep: (step) => set({ currentStep: step }),
       nextStep: () =>
-        set((s) => ({ currentStep: Math.min(s.currentStep + 1, TOTAL_STEPS - 1) })),
+        set((s) => ({
+          currentStep: Math.min(s.currentStep + 1, ONBOARDING_TOTAL_STEPS - 1),
+        })),
       prevStep: () =>
         set((s) => ({ currentStep: Math.max(s.currentStep - 1, 0) })),
       updateAnswers: (partial) =>

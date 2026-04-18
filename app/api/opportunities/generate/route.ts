@@ -20,13 +20,21 @@ export async function POST(req: NextRequest) {
     const owned = await verifyBusinessAccess(supabase, businessId, user);
     if (!owned) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
-    // ── 1. Fetch departments + knowledge ──────────────────────────────────
+    // ── 1. Fetch departments + knowledge + latest onboarding snapshot ─────
     const [
       { data: knowledgeRows, error: knowledgeError },
       { data: departments },
+      { data: sessionRows },
     ] = await Promise.all([
       supabase.from("business_knowledge").select("*").eq("business_id", businessId),
       supabase.from("departments").select("*").eq("business_id", businessId),
+      supabase
+        .from("onboarding_sessions")
+        .select("answers")
+        .eq("business_id", businessId)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle(),
     ]);
 
     if (knowledgeError) throw knowledgeError;
@@ -41,11 +49,22 @@ export async function POST(req: NextRequest) {
     console.log("[generate] Knowledge rows:", knowledgeRows?.length ?? 0);
 
     // ── 2. Call Claude ─────────────────────────────────────────────────────
-    const safeKnowledgeRows = (knowledgeRows || []).map((r) => ({
-      category: r.category,
-      content: r.content,
-      metadata: r.metadata,
-    }));
+    const snapshotRows: { category: string; content: string; metadata?: unknown }[] = [];
+    if (sessionRows?.answers && typeof sessionRows.answers === "object") {
+      snapshotRows.push({
+        category: "onboarding_json",
+        content: JSON.stringify(sessionRows.answers),
+      });
+    }
+
+    const safeKnowledgeRows = [
+      ...snapshotRows,
+      ...(knowledgeRows || []).map((r) => ({
+        category: r.category,
+        content: r.content,
+        metadata: r.metadata,
+      })),
+    ];
 
     const result = await analyzeBusinessData(safeKnowledgeRows, departmentNames);
 

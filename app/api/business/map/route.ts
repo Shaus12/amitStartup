@@ -38,6 +38,7 @@ export async function GET(req: NextRequest) {
     const { data: knowledgeRows, error: knowledgeError } = await supabase
       .from("business_knowledge")
       .select("*")
+      .eq("business_id", businessId)
       .in("category", ["process", "insight", "pain_point", "main_pain", "first_action"]);
       
     if (knowledgeError) throw knowledgeError;

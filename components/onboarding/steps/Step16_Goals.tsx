@@ -2,26 +2,14 @@
 
 import { useOnboardingStore } from "@/lib/hooks/useOnboardingStore";
 import { StepCard } from "@/components/onboarding/StepCard";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import {
-  TrendingUp,
-  DollarSign,
-  Clock,
-  Star,
-  Users,
-  CheckCircle,
-  Globe,
-} from "lucide-react";
 import { useT } from "@/lib/i18n";
+import { Check, Target } from "lucide-react";
 
 interface Props {
   onNext: () => void;
   onBack: () => void;
 }
-
-const GOAL_ICONS = [TrendingUp, DollarSign, Clock, Star, Users, CheckCircle, Globe];
 
 export function Step16_Goals({ onNext, onBack }: Props) {
   const { answers, updateAnswers } = useOnboardingStore();
@@ -31,7 +19,7 @@ export function Step16_Goals({ onNext, onBack }: Props) {
     const isSelected = answers.goals.includes(value);
     if (isSelected) {
       updateAnswers({ goals: answers.goals.filter((g) => g !== value) });
-    } else {
+    } else if (answers.goals.length < 3) {
       updateAnswers({ goals: [...answers.goals, value] });
     }
   }
@@ -42,90 +30,59 @@ export function Step16_Goals({ onNext, onBack }: Props) {
       subtitle={t.step16.subtitle}
       onNext={onNext}
       onBack={onBack}
+      nextDisabled={answers.goals.length === 0}
     >
-      <div className="space-y-7">
-        {/* Goals multi-select */}
-        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-          {t.step16.goals.map(({ value, label, desc }, i) => {
-            const Icon = GOAL_ICONS[i];
-            const selected = answers.goals.includes(value);
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+           <p className="text-zinc-400 text-xs font-bold uppercase tracking-widest flex items-center gap-2">
+            <Target className="w-3 h-3" />
+            {t.step16.maxSelectLabel}
+          </p>
+          <span className="text-xs font-mono text-zinc-500">
+            {answers.goals.length}/3
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 gap-2">
+          {t.step16.options.map((opt: { value: string; label: string }) => {
+            const selected = answers.goals.includes(opt.value);
+            const disabled = !selected && answers.goals.length >= 3;
+            
             return (
               <button
-                key={value}
+                key={opt.value}
                 type="button"
-                onClick={() => toggleGoal(value)}
+                disabled={disabled}
+                onClick={() => toggleGoal(opt.value)}
                 className={cn(
-                  "flex items-start gap-3 p-4 rounded-xl border text-left transition-all",
+                  "w-full flex items-center gap-3 px-4 py-3.5 rounded-xl border text-right transition-all group relative overflow-hidden",
                   selected
-                    ? "border-blue-500 bg-blue-600/10"
-                    : "border-zinc-700 bg-zinc-800/50 hover:border-zinc-600"
+                    ? "border-blue-500 bg-blue-500/10 text-blue-100 ring-1 ring-blue-500/30 shadow-[0_4px_20px_rgba(77,142,255,0.1)]"
+                    : disabled
+                      ? "border-zinc-800/30 bg-zinc-900/10 text-zinc-600 cursor-not-allowed opacity-50"
+                      : "border-zinc-800 bg-zinc-900/40 text-zinc-500 hover:border-zinc-700 hover:text-zinc-300"
                 )}
               >
-                <Icon className={cn("w-4 h-4 mt-0.5 shrink-0", selected ? "text-blue-400" : "text-zinc-500")} strokeWidth={1.5} />
-                <div className="flex flex-col gap-0.5 min-w-0">
-                  <span
-                    className={cn(
-                      "text-sm font-semibold",
-                      selected ? "text-blue-300" : "text-zinc-200"
-                    )}
-                  >
-                    {label}
-                  </span>
-                  <span className="text-xs text-zinc-500 leading-snug">
-                    {desc}
-                  </span>
-                </div>
-                {/* Selection indicator */}
-                <span
+                <div
                   className={cn(
-                    "ml-auto shrink-0 h-5 w-5 rounded border-2 flex items-center justify-center transition-all",
+                    "h-5 w-5 shrink-0 rounded flex items-center justify-center transition-all border",
                     selected
-                      ? "border-blue-500 bg-blue-600"
-                      : "border-zinc-600 bg-transparent"
+                      ? "border-blue-500 bg-blue-500 shadow-[0_0_8px_rgba(77,142,255,0.6)]"
+                      : "border-zinc-700 bg-zinc-800 group-hover:border-zinc-600"
                   )}
                 >
-                  {selected && (
-                    <svg
-                      className="h-3 w-3 text-white"
-                      viewBox="0 0 12 12"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <polyline points="2,6 5,9 10,3" />
-                    </svg>
-                  )}
+                  {selected && <Check className="h-3 w-3 text-zinc-900" strokeWidth={4} />}
+                </div>
+                <span className={cn("text-sm font-semibold", selected ? "text-blue-100" : "text-zinc-400")}>
+                    {opt.label}
                 </span>
+                
+                {selected && (
+                    <div className="absolute top-0 right-0 h-full w-1 bg-blue-500" />
+                )}
               </button>
             );
           })}
-        </div>
-
-        {answers.goals.length > 0 && (
-          <p className="text-blue-400/80 text-xs">
-            {t.step16.selectedCount(answers.goals.length)}
-          </p>
-        )}
-
-        {/* Top Priority */}
-        <div className="space-y-1.5">
-          <Label
-            htmlFor="topPriority90Days"
-            className="text-zinc-300 text-sm font-medium"
-          >
-            {t.step16.priorityLabel}{" "}
-            <span className="text-zinc-500 font-normal">{t.optional}</span>
-          </Label>
-          <Textarea
-            id="topPriority90Days"
-            value={answers.topPriority90Days}
-            onChange={(e) => updateAnswers({ topPriority90Days: e.target.value })}
-            placeholder={t.step16.priorityPlaceholder}
-            rows={4}
-            className="bg-zinc-800 border-zinc-700 text-zinc-100 placeholder:text-zinc-500 focus:border-blue-500 focus:ring-blue-500/20 resize-none"
-          />
         </div>
       </div>
     </StepCard>

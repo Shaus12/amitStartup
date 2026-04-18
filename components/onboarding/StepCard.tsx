@@ -3,6 +3,7 @@
 import { ArrowLeft, ArrowRight, Shuffle } from "lucide-react";
 import { useT } from "@/lib/i18n";
 import { createContext, useContext } from "react";
+import { cn } from "@/lib/utils";
 
 // Context so OnboardingWizard can inject onAutoFill without touching all 20 step files
 const AutoFillContext = createContext<(() => void) | null>(null);
@@ -115,7 +116,11 @@ export function StepCard({
           type="button"
           onClick={onNext}
           disabled={nextDisabled}
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded text-sm font-semibold transition-all duration-150 active:scale-[0.98]"
+          className={cn(
+            "inline-flex items-center gap-2 px-8 py-4 rounded-xl text-lg font-bold transition-all duration-200 active:scale-[0.98]",
+            !nextDisabled && "hover:shadow-[0_8px_25px_rgba(77,142,255,0.35)] hover:-translate-y-0.5",
+            contextFill && "pulse-btn" // Apply pulse if it's the welcome page (detected by AutoFill presence or we can pass a prop)
+          )}
           style={{
             fontFamily: "var(--font-inter)",
             background: nextDisabled ? "#282a30" : "linear-gradient(135deg, #4d8eff, #adc6ff)",
@@ -125,7 +130,7 @@ export function StepCard({
           }}
         >
           {label}
-          {!nextDisabled && <ArrowRight className="w-3.5 h-3.5" strokeWidth={2} />}
+          {!nextDisabled && <ArrowRight className="w-4 h-4" strokeWidth={3} />}
         </button>
       </div>
     </div>
