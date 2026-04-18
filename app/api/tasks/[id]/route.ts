@@ -17,7 +17,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     // Fetch existing task to check ownership
     const { data: existing } = await supabase
       .from("tasks")
-      .select("id, business_id, status")
+      .select("id, business_id, status, opportunity_id, estimated_hours")
       .eq("id", taskId)
       .single();
 
