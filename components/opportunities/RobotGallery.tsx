@@ -128,9 +128,10 @@ interface RobotCardProps {
   onSelect: () => void;
   onPin: (id: string) => void;
   onDismiss: (id: string) => void;
+  businessId?: string;
 }
 
-function RobotCard({ opp, name, index, isSelected, onSelect, onPin, onDismiss }: RobotCardProps) {
+function RobotCard({ opp, name, index, isSelected, onSelect, onPin, onDismiss, businessId }: RobotCardProps) {
   const color = robotColor(opp.impactType);
   const savings = savingsLabel(opp);
   const isPinned = opp.pinned;
@@ -331,6 +332,50 @@ function RobotCard({ opp, name, index, isSelected, onSelect, onPin, onDismiss }:
             )}
           </div>
 
+          {/* Add as task */}
+          {businessId && (
+            <button
+              onClick={async (e) => {
+                e.stopPropagation();
+                try {
+                  await fetch("/api/tasks", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ businessId, title: opp.title, opportunityId: opp.id }),
+                  });
+                  // Show brief confirmation
+                  const btn = e.currentTarget;
+                  btn.textContent = "✓ נוספה!";
+                  btn.style.color = "#34d399";
+                  btn.style.borderColor = "rgba(52,211,153,0.3)";
+                  setTimeout(() => {
+                    btn.textContent = "+ הוסף כמשימה";
+                    btn.style.color = "#8c909f";
+                    btn.style.borderColor = "#282a30";
+                  }, 2000);
+                } catch {}
+              }}
+              style={{
+                width: "100%",
+                fontSize: 10,
+                fontWeight: 600,
+                padding: "5px 8px",
+                borderRadius: 8,
+                cursor: "pointer",
+                fontFamily: "var(--font-inter)",
+                backgroundColor: "#1e1f26",
+                border: "1px solid #282a30",
+                color: "#8c909f",
+                marginBottom: 6,
+                transition: "all 0.15s",
+              }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(77,142,255,0.3)"; e.currentTarget.style.color = "#4d8eff"; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = "#282a30"; e.currentTarget.style.color = "#8c909f"; }}
+            >
+              + הוסף כמשימה
+            </button>
+          )}
+
           <div style={{ display: "flex", gap: 6 }}>
             <button
               onClick={(e) => { e.stopPropagation(); onPin(opp.id); }}
@@ -381,9 +426,10 @@ interface RobotGalleryProps {
   opportunities: AiOpportunityItem[];
   onPin: (id: string) => void;
   onDismiss: (id: string) => void;
+  businessId?: string;
 }
 
-export function RobotGallery({ opportunities, onPin, onDismiss }: RobotGalleryProps) {
+export function RobotGallery({ opportunities, onPin, onDismiss, businessId }: RobotGalleryProps) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   if (opportunities.length === 0) {
@@ -502,6 +548,7 @@ export function RobotGallery({ opportunities, onPin, onDismiss }: RobotGalleryPr
               onSelect={() => setSelectedId(isSelected ? null : opp.id)}
               onPin={onPin}
               onDismiss={onDismiss}
+              businessId={businessId}
             />
           );
         })}

@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, CheckSquare, Sparkles, MapPin, FileText } from "lucide-react";
+import { LayoutDashboard, CheckSquare, GitBranch, Sparkles, MapPin, FileText } from "lucide-react";
 import { useT } from "@/lib/i18n";
 
-const NAV_ICONS = [LayoutDashboard, CheckSquare, Sparkles, MapPin, FileText];
+const NAV_ICONS = [LayoutDashboard, CheckSquare, GitBranch, Sparkles, MapPin, FileText];
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -33,7 +33,7 @@ export function Sidebar() {
           </div>
           <div>
             <p className="text-sm font-bold tracking-tight leading-none" style={{ fontFamily: "var(--font-manrope)", color: "#e2e2eb" }}>
-              BizView
+              BizMap
             </p>
             <p className="text-[10px] mt-0.5 leading-none" style={{ color: "#424754", fontFamily: "var(--font-inter)" }}>
               {t.sidebar.intelligence}
@@ -82,6 +82,38 @@ export function Sidebar() {
       </nav>
 
       <div className="flex-1" />
+
+      {/* Business Brain */}
+      <div className="px-3 pb-3">
+        <div
+          style={{
+            borderRadius: 12,
+            border: "1px dashed #282a30",
+            padding: "10px 12px",
+            cursor: "pointer",
+            transition: "all 0.15s",
+          }}
+          onMouseEnter={e => {
+            (e.currentTarget as HTMLElement).style.borderColor = "rgba(77,142,255,0.3)";
+            (e.currentTarget as HTMLElement).style.backgroundColor = "rgba(77,142,255,0.04)";
+          }}
+          onMouseLeave={e => {
+            (e.currentTarget as HTMLElement).style.borderColor = "#282a30";
+            (e.currentTarget as HTMLElement).style.backgroundColor = "transparent";
+          }}
+          onClick={() => window.location.href = "/brain"}
+        >
+          <div className="flex items-center gap-2 mb-1">
+            <span style={{ fontSize: 14 }}>🧠</span>
+            <span style={{ fontSize: 11, fontWeight: 700, color: "#8c909f", fontFamily: "var(--font-inter)" }}>
+              מוח העסק
+            </span>
+          </div>
+          <p style={{ fontSize: 10, color: "#33343b", fontFamily: "var(--font-inter)", lineHeight: 1.4 }}>
+            העלה מסמכים לשיפור הניתוח
+          </p>
+        </div>
+      </div>
 
       <div className="px-5 py-4" style={{ borderTop: "1px solid #282a30" }}>
         <p className="text-[10px]" style={{ color: "#33343b", fontFamily: "var(--font-inter)" }}>

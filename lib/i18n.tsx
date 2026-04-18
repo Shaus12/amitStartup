@@ -450,11 +450,12 @@ const TRANSLATIONS = {
       nav: [
         { href: "/dashboard", label: "מפת עסק", description: "סקירה ויזואלית" },
         { href: "/tasks", label: "משימות", description: "לוח משימות" },
+        { href: "/sops", label: "תהליכי עבודה", description: "SOPs ואוטומציה" },
         { href: "/opportunities", label: "הזדמנויות AI", description: "חיסכון וסוכנים" },
         { href: "/roadmap", label: "מפת דרכים", description: "תוכנית מימוש" },
         { href: "/report", label: "ייצוא דוח", description: "סיכום PDF" },
       ],
-      footer: "BizView Intelligence v1.0",
+      footer: "BizMap Intelligence v1.0",
     },
     login: {
       welcome: "ברוך שובך",
@@ -907,11 +908,12 @@ const TRANSLATIONS = {
       nav: [
         { href: "/dashboard", label: "Business Map", description: "Visual overview" },
         { href: "/tasks", label: "Tasks", description: "Kanban board" },
+        { href: "/sops", label: "Work Processes", description: "SOPs & automation" },
         { href: "/opportunities", label: "AI Opportunities", description: "Savings & agents" },
         { href: "/roadmap", label: "Roadmap", description: "Implementation plan" },
         { href: "/report", label: "Export Report", description: "PDF summary" },
       ],
-      footer: "BizView Intelligence v1.0",
+      footer: "BizMap Intelligence v1.0",
     },
     login: {
       welcome: "Welcome back",

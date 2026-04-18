@@ -234,6 +234,7 @@ export function OpportunitiesClient({ businessId, businessName }: OpportunitiesC
               opportunities={filteredOpportunities}
               onPin={handlePin}
               onDismiss={handleDismiss}
+              businessId={businessId}
             />
           </>
         )}

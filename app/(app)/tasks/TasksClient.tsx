@@ -17,6 +17,7 @@ import {
   Trophy,
   ArrowLeft,
   Clock,
+  Bot,
 } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -345,6 +346,42 @@ function TaskCard({
               ✓ הושלם
             </span>
           )}
+
+          {/* Open agent button */}
+          <button
+            onClick={() => {
+              const msg = `בוא נתחיל לעבוד על המשימה: "${task.title}"${task.department_name ? ` (מחלקת ${task.department_name})` : ""}${task.description ? `\n\n${task.description}` : ""}`;
+              window.dispatchEvent(new CustomEvent("bm-open-agent", { detail: { message: msg } }));
+            }}
+            title="פתח סוכן AI להתחלת המשימה"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 4,
+              fontSize: 10,
+              color: "#424754",
+              background: "transparent",
+              border: "1px solid #282a30",
+              cursor: "pointer",
+              padding: "4px 8px",
+              borderRadius: 6,
+              fontFamily: "var(--font-inter)",
+              transition: "all 0.12s",
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.borderColor = "rgba(77,142,255,0.35)";
+              e.currentTarget.style.color = "#4d8eff";
+              e.currentTarget.style.backgroundColor = "rgba(77,142,255,0.08)";
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.borderColor = "#282a30";
+              e.currentTarget.style.color = "#424754";
+              e.currentTarget.style.backgroundColor = "transparent";
+            }}
+          >
+            <Bot size={11} />
+            סוכן
+          </button>
 
           {/* Expand subtasks */}
           <button

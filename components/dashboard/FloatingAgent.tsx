@@ -35,6 +35,22 @@ export function FloatingAgent({ businessId }: { businessId: string }) {
     if (isOpen) setTimeout(() => inputRef.current?.focus(), 120);
   }, [isOpen]);
 
+  // Listen for external trigger (from tasks page "open agent" button)
+  useEffect(() => {
+    function handler(e: Event) {
+      const ce = e as CustomEvent<{ message: string }>;
+      setIsOpen(true);
+      if (ce.detail?.message) {
+        setTimeout(() => {
+          setInput(ce.detail.message);
+          inputRef.current?.focus();
+        }, 150);
+      }
+    }
+    window.addEventListener("bm-open-agent", handler);
+    return () => window.removeEventListener("bm-open-agent", handler);
+  }, []);
+
   async function send() {
     const text = input.trim();
     if (!text || isLoading) return;
