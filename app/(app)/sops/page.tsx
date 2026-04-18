@@ -5,7 +5,9 @@ import { SopsClient } from "./SopsClient";
 
 export default async function SopsPage() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
   const { data: business } = await supabaseAdmin
@@ -19,21 +21,43 @@ export default async function SopsPage() {
 
   if (!business) redirect("/onboarding");
 
-  // Fetch departments with processes
+  // Fetch departments
   const { data: departments } = await supabaseAdmin
     .from("departments")
-    .select(`
-      id, name, color, headcount,
-      processes (id, name, is_manual, frequency, time_spent_hrs_per_week)
-    `)
+    .select("id, name, color, headcount")
     .eq("business_id", business.id)
     .order("created_at", { ascending: true });
+
+  // Fetch processes from business_knowledge (same source the business map uses)
+  const { data: knowledgeRows } = await supabaseAdmin
+    .from("business_knowledge")
+    .select("id, department_id, content, metadata, category")
+    .eq("business_id", business.id)
+    .eq("category", "process");
+
+  // Attach processes to departments
+  const departmentsWithProcesses = (departments ?? []).map((dept) => {
+    const deptProcesses = (knowledgeRows ?? [])
+      .filter((r) => r.department_id === dept.id)
+      .map((r) => ({
+        id: r.id,
+        name: r.metadata?.originalName || r.content,
+        is_manual: r.metadata?.isManual ?? false,
+        frequency: r.metadata?.frequency ?? null,
+        time_spent_hrs_per_week: r.metadata?.hoursPerWeek ?? null,
+      }));
+
+    return {
+      ...dept,
+      processes: deptProcesses,
+    };
+  });
 
   return (
     <SopsClient
       businessId={business.id}
       businessName={business.name}
-      departments={departments ?? []}
+      departments={departmentsWithProcesses}
     />
   );
 }

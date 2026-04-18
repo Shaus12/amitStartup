@@ -85,7 +85,7 @@ export function FloatingAgent({ businessId }: { businessId: string }) {
         <div
           style={{
             position: "fixed",
-            right: 20,
+            left: 236,
             bottom: 88,
             zIndex: 9998,
             width: 340,
@@ -362,7 +362,7 @@ export function FloatingAgent({ businessId }: { businessId: string }) {
         title={isOpen ? "סגור" : "שוחח עם ARIA"}
         style={{
           position: "fixed",
-          right: 20,
+          left: 236,
           bottom: 20,
           zIndex: 9999,
           width: 56,
