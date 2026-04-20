@@ -20,17 +20,7 @@ export function Sidebar() {
       {/* Logo */}
       <div className="px-5 h-14 flex items-center" style={{ borderBottom: "1px solid #282a30" }}>
         <div className="flex items-center gap-2.5">
-          <div
-            className="w-7 h-7 rounded-md flex items-center justify-center"
-            style={{ background: "linear-gradient(135deg, #4d8eff, #adc6ff)" }}
-          >
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-              <rect x="2" y="2" width="5" height="5" rx="1" fill="white" fillOpacity="0.9" />
-              <rect x="9" y="2" width="5" height="5" rx="1" fill="white" fillOpacity="0.5" />
-              <rect x="2" y="9" width="5" height="5" rx="1" fill="white" fillOpacity="0.5" />
-              <rect x="9" y="9" width="5" height="5" rx="1" fill="white" fillOpacity="0.9" />
-            </svg>
-          </div>
+          <img src="/logo.png" alt="BizMap Logo" className="w-8 h-8 object-contain" />
           <div>
             <p className="text-sm font-bold tracking-tight leading-none" style={{ fontFamily: "var(--font-manrope)", color: "#e2e2eb" }}>
               BizMap

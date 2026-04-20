@@ -67,20 +67,7 @@ function RegistrationModeSelector({ onSelect }: { onSelect: (mode: "quick" | "fu
       <div style={{ maxWidth: 480, width: "100%" }}>
         {/* Logo */}
         <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 40, justifyContent: "center" }}>
-          <div
-            style={{
-              width: 36, height: 36, borderRadius: 10,
-              background: "linear-gradient(135deg, #4d8eff, #adc6ff)",
-              display: "flex", alignItems: "center", justifyContent: "center",
-            }}
-          >
-            <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
-              <rect x="2" y="2" width="5" height="5" rx="1" fill="white" fillOpacity="0.9" />
-              <rect x="9" y="2" width="5" height="5" rx="1" fill="white" fillOpacity="0.5" />
-              <rect x="2" y="9" width="5" height="5" rx="1" fill="white" fillOpacity="0.5" />
-              <rect x="9" y="9" width="5" height="5" rx="1" fill="white" fillOpacity="0.9" />
-            </svg>
-          </div>
+          <img src="/logo.png" alt="BizMap Logo" style={{ width: 40, height: 40, objectFit: "contain" }} />
           <span style={{ fontSize: 18, fontWeight: 700, color: "#e2e2eb", fontFamily: "var(--font-manrope)" }}>BizMap</span>
         </div>
 
@@ -230,7 +217,7 @@ export function OnboardingWizard() {
     2: { emoji: "⚙️", title: "המבנה ממופה!", body: "מעולה. עכשיו נצלול לעומק — נבדוק לאן הזמן הולך ואיפה יש עומסים שאפשר להפחית. זה המקום שבו רוב הכסף אבוד." },
     3: { emoji: "🔍", title: "תפעול מוכן לניתוח", body: "הנתונים שנתת כבר מראים דפוסים מעניינים. עכשיו נזהה את נקודות החיכוך — איפה הצוות נתקע ואיפה הכאב הכי גדול." },
     4: { emoji: "💡", title: "כמעט שם!", body: "אנחנו בשלב האחרון לפני הניתוח. נגדיר את יעדי ה-AI שלך כדי שההמלצות יהיו ממוקדות בדיוק בצרכים שלך." },
-    5: { emoji: "🚀", title: "הכל מוכן לניתוח!", body: "בדקי את הסיכום וכשתאשר — BizView ינתח את הנתונים ויחזיר לך מפת הזדמנויות AI מותאמת אישית לעסק שלך." },
+    5: { emoji: "🚀", title: "הכל מוכן לניתוח!", body: "בדקי את הסיכום וכשתאשר — BizMap ינתח את הנתונים ויחזיר לך מפת הזדמנויות AI מותאמת אישית לעסק שלך." },
   };
 
   const currentGroup = getCurrentGroupIndex(currentStep);
@@ -283,22 +270,12 @@ export function OnboardingWizard() {
 
         <div className="relative">
           <div className="flex items-center gap-3 mb-14">
-            <div
-              className="w-8 h-8 rounded-md flex items-center justify-center"
-              style={{ background: "linear-gradient(135deg, #4d8eff, #adc6ff)" }}
-            >
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <rect x="2" y="2" width="5" height="5" rx="1" fill="white" fillOpacity="0.9" />
-                <rect x="9" y="2" width="5" height="5" rx="1" fill="white" fillOpacity="0.5" />
-                <rect x="2" y="9" width="5" height="5" rx="1" fill="white" fillOpacity="0.5" />
-                <rect x="9" y="9" width="5" height="5" rx="1" fill="white" fillOpacity="0.9" />
-              </svg>
-            </div>
+            <img src="/logo.png" alt="BizMap Logo" className="w-8 h-8 object-contain" />
             <span
               className="text-sm font-semibold tracking-tight"
               style={{ fontFamily: "var(--font-manrope)", color: "#e2e2eb" }}
             >
-              BizView
+              BizMap
             </span>
           </div>
 
@@ -400,17 +377,7 @@ export function OnboardingWizard() {
           style={{ borderColor: "#282a30" }}
         >
           <div className="flex items-center gap-2 shrink-0 min-w-0">
-            <div
-              className="w-5 h-5 shrink-0 rounded flex items-center justify-center"
-              style={{ background: "linear-gradient(135deg, #4d8eff, #adc6ff)" }}
-            >
-              <svg width="10" height="10" viewBox="0 0 16 16" fill="none">
-                <rect x="2" y="2" width="5" height="5" rx="1" fill="white" fillOpacity="0.9" />
-                <rect x="9" y="2" width="5" height="5" rx="1" fill="white" fillOpacity="0.5" />
-                <rect x="2" y="9" width="5" height="5" rx="1" fill="white" fillOpacity="0.5" />
-                <rect x="9" y="9" width="5" height="5" rx="1" fill="white" fillOpacity="0.9" />
-              </svg>
-            </div>
+            <img src="/logo.png" alt="BizMap Logo" className="w-5 h-5 shrink-0 object-contain" />
             <span className="text-xs font-semibold truncate" style={{ color: "#c2c6d6", fontFamily: "var(--font-manrope)" }}>BizMap</span>
           </div>
           <span className="text-[11px] tabular-nums shrink-0" style={{ color: "#424754" }}>

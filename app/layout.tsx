@@ -18,7 +18,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "BizView — Your Business From Above",
+  title: "BizMap — Your Business From Above",
   description: "Understand every process in your business and find where AI can save you time and money.",
 };
 

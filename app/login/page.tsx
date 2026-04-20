@@ -51,14 +51,9 @@ export default function LoginPage() {
 
       <div className="relative w-full max-w-sm mx-4">
         <div className="flex items-center justify-center gap-2 mb-8">
-          <div
-            className="w-8 h-8 rounded-lg flex items-center justify-center"
-            style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)", boxShadow: "0 0 20px rgba(99,102,241,0.4)" }}
-          >
-            <Network className="w-4 h-4 text-white" strokeWidth={1.5} />
-          </div>
+          <img src="/logo.png" alt="BizMap Logo" className="w-10 h-10 object-contain" />
           <span className="text-base font-semibold" style={{ color: "#e2e2eb", fontFamily: "var(--font-manrope)" }}>
-            BizView
+            BizMap
           </span>
         </div>
 

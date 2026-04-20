@@ -90,7 +90,7 @@ const CONTENT = {
       badge: "מרבית בעלי עסקים מבזבזים 20+ שעות בשבוע בלי לדעת על מה",
       h1: "פתחת עסק כדי להיות חופשי.",
       h2: "אז למה אתה טובע בוואטסאפ, אקסל ושריפות?",
-      sub: "BizView ממפה את כל הפעילות שלך תוך 15 דקות ומראה לך בדיוק אילו סוכני AI יחזירו לך את הזמן — ואת הכסף. ללא יועצים. ללא ניחושים.",
+      sub: "BizMap ממפה את כל הפעילות שלך תוך 15 דקות ומראה לך בדיוק אילו סוכני AI יחזירו לך את הזמן — ואת הכסף. ללא יועצים. ללא ניחושים.",
       cta1: "הראה לי לאן הזמן שלי הולך",
       cta2: "ראה דוגמה אמיתית",
       proof: ["15 דקות בלבד", "חוסך ~23 שעות/שבוע", "ללא כרטיס אשראי"],
@@ -110,7 +110,7 @@ const CONTENT = {
       sub: "מיפינו את כל העסק שלך. בחינם.",
       items: [
         { label: "יועץ עסקי", cost: "₪3,000–8,000/חודש", note: "לפגישות שבועיות ודוח", bad: true },
-        { label: "BizView", cost: "חינם", note: "מפה מלאה + תוכנית AI + המלצות ספציפיות", bad: false },
+        { label: "BizMap", cost: "חינם", note: "מפה מלאה + תוכנית AI + המלצות ספציפיות", bad: false },
       ],
     },
     insight: {
@@ -176,7 +176,7 @@ const CONTENT = {
     footer: {
       tag: "מרחב ה-AI שמבין את כל הפעילות העסקית שלך.",
       status: "כל המערכות פועלות",
-      copy: "© 2026 BizView. נבנה עם Claude AI. הנתונים שלך לא עוזבים את המחשב שלך.",
+      copy: "© 2026 BizMap. נבנה עם Claude AI. הנתונים שלך לא עוזבים את המחשב שלך.",
       cols: [
         { h: "מוצר",   links: ["מפת עסקים", "הזדמנויות AI", "ביקורת תהליכים", "ניתוח זמן"] },
         { h: "חברה",   links: ["אודות", "בלוג", "קריירה", "עיתונות"] },
@@ -190,7 +190,7 @@ const CONTENT = {
     dir: "ltr" as const,
     nav: {
       features: "Features", howItWorks: "How it works",
-      pricing: "Pricing", signIn: "Sign in", cta: "Get BizView free",
+      pricing: "Pricing", signIn: "Sign in", cta: "Get BizMap free",
     },
     /* CRO-optimised copy:
        ✓ Outcome-focused headlines with specific numbers
@@ -202,7 +202,7 @@ const CONTENT = {
       badge: "Join 500+ businesses already saving 23h/week",
       h1: "You started a business to be free.",
       h2: "So why are you drowning in WhatsApp, spreadsheets, and fires?",
-      sub: "BizView maps your entire operation in 15 minutes and shows you exactly which AI agents will recover your time — and your money. No consultants. No guesswork.",
+      sub: "BizMap maps your entire operation in 15 minutes and shows you exactly which AI agents will recover your time — and your money. No consultants. No guesswork.",
       cta1: "Show me where my time is going",
       cta2: "Watch a 2-min demo",
       proof: ["Takes just 15 minutes", "Saves ~23 hours/week on average", "No credit card required"],
@@ -222,7 +222,7 @@ const CONTENT = {
       sub: "We mapped your entire business. Free.",
       items: [
         { label: "Business consultant", cost: "$800–3,000/mo", note: "For weekly meetings and a report", bad: true },
-        { label: "BizView", cost: "Free", note: "Full map + AI plan + specific recommendations", bad: false },
+        { label: "BizMap", cost: "Free", note: "Full map + AI plan + specific recommendations", bad: false },
       ],
     },
     insight: {
@@ -288,7 +288,7 @@ const CONTENT = {
     footer: {
       tag: "The AI workspace that understands your entire business operation.",
       status: "All systems operational",
-      copy: "© 2026 BizView. Built with Claude AI. Local-first — your data never leaves your machine.",
+      copy: "© 2026 BizMap. Built with Claude AI. Local-first — your data never leaves your machine.",
       cols: [
         { h: "Product",   links: ["Business Map", "AI Opportunities", "Process Audit", "Time Analysis"] },
         { h: "Company",   links: ["About", "Blog", "Careers", "Press"] },
@@ -325,12 +325,7 @@ function useReveal() {
 /* ─── Shared logo mark ──────────────────────────────────────────────── */
 function BizLogo({ size = 14 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-      <rect x="2" y="2" width="5" height="5" rx="1" fill="white" fillOpacity="0.9" />
-      <rect x="9" y="2" width="5" height="5" rx="1" fill="white" fillOpacity="0.45" />
-      <rect x="2" y="9" width="5" height="5" rx="1" fill="white" fillOpacity="0.45" />
-      <rect x="9" y="9" width="5" height="5" rx="1" fill="white" fillOpacity="0.9" />
-    </svg>
+    <img src="/logo.png" alt="BizMap" style={{ width: size * 1.5, height: size * 1.5, objectFit: "contain" }} />
   );
 }
 
@@ -350,13 +345,8 @@ function Nav() {
       <div className="max-w-[1400px] mx-auto px-6 md:px-10 h-14 flex items-center justify-between gap-8">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5 shrink-0">
-          <div
-            className="w-7 h-7 rounded-md flex items-center justify-center"
-            style={{ background: `linear-gradient(135deg, ${C.blue}, ${C.glow})` }}
-          >
-            <BizLogo size={13} />
-          </div>
-          <span className="text-sm font-bold" style={{ ...MF, color: C.text }}>BizView</span>
+          <img src="/logo.png" alt="BizMap Logo" className="w-8 h-8 object-contain" />
+          <span className="text-sm font-bold" style={{ ...MF, color: C.text }}>BizMap</span>
         </Link>
 
         {/* Nav links */}
@@ -599,10 +589,8 @@ function HeroBrowserMockup() {
         {/* Sidebar */}
         <div className="w-40 shrink-0 flex flex-col py-3 px-2" style={{ backgroundColor: C.s1, borderRight: `1px solid ${C.s3}` }}>
           <div className="flex items-center gap-2 px-2 mb-5">
-            <div className="w-5 h-5 rounded flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${C.blue}, ${C.glow})` }}>
-              <BizLogo size={9} />
-            </div>
-            <span className="text-[11px] font-bold" style={{ ...MF, color: C.text }}>BizView</span>
+            <img src="/logo.png" alt="BizMap Logo" className="w-5 h-5 object-contain" />
+            <span className="text-[11px] font-bold" style={{ ...MF, color: C.text }}>BizMap</span>
           </div>
           <div className="text-[8px] font-bold tracking-widest uppercase px-2 mb-2" style={{ ...IF, color: C.s4 }}>Workspace</div>
           {[{ label: "Business Map", active: true }, { label: "AI Opportunities", active: false }].map(({ label, active }) => (
@@ -1214,7 +1202,7 @@ function Footer() {
                 style={{ background: `linear-gradient(135deg, ${C.blue}, ${C.glow})` }}>
                 <BizLogo size={13} />
               </div>
-              <span className="text-sm font-bold" style={{ ...MF, color: C.text }}>BizView</span>
+              <span className="text-sm font-bold" style={{ ...MF, color: C.text }}>BizMap</span>
             </div>
             <p className="text-xs leading-relaxed" style={{ ...IF, color: C.muted, maxWidth: "26ch" }}>{f.tag}</p>
             <div className="flex items-center gap-2 mt-5">
