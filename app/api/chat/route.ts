@@ -36,7 +36,7 @@ function parseProjectFromMarkdown(markdown: string) {
 
 export async function POST(req: NextRequest) {
   try {
-    const { businessId, message } = await req.json();
+    const { businessId, message, session_id } = await req.json();
     if (!businessId || !message) {
       return NextResponse.json({ error: "Missing fields" }, { status: 400 });
     }
@@ -49,9 +49,46 @@ export async function POST(req: NextRequest) {
     const owned = await verifyBusinessAccess(supabase, businessId, user);
     if (!owned) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
+    let sessionId = session_id as string | undefined;
+    let sessionRow: { id: string; title: string | null; created_at: string; updated_at: string } | null = null;
+
+    if (!sessionId) {
+      const { data: createdSession, error: createSessionError } = await supabase
+        .from("chat_sessions")
+        .insert({
+          business_id: businessId,
+          title: null,
+        })
+        .select("id, title, created_at, updated_at")
+        .single();
+
+      if (createSessionError || !createdSession) {
+        return NextResponse.json(
+          { error: createSessionError?.message || "Failed to create chat session" },
+          { status: 500 }
+        );
+      }
+
+      sessionId = createdSession.id;
+      sessionRow = createdSession;
+    } else {
+      const { data: existingSession, error: sessionError } = await supabase
+        .from("chat_sessions")
+        .select("id, title, created_at, updated_at")
+        .eq("id", sessionId)
+        .eq("business_id", businessId)
+        .single();
+
+      if (sessionError || !existingSession) {
+        return NextResponse.json({ error: "Session not found" }, { status: 404 });
+      }
+      sessionRow = existingSession;
+    }
+
     // 1. Save user message
     await supabase.from("conversation_messages").insert({
       business_id: businessId,
+      session_id: sessionId,
       role: "user",
       content: message
     });
@@ -66,9 +103,9 @@ export async function POST(req: NextRequest) {
     const { data: messages } = await supabase
       .from("conversation_messages")
       .select("role, content")
-      .eq("business_id", businessId)
+      .eq("session_id", sessionId)
       .order("created_at", { ascending: false })
-      .limit(10);
+      .limit(30);
       
     const history = (messages || []).reverse();
 
@@ -173,15 +210,26 @@ export async function POST(req: NextRequest) {
       .from("conversation_messages")
       .insert({
         business_id: businessId,
+        session_id: sessionId,
         role: "assistant",
         content: claudeResponse
       })
       .select()
       .single();
+
+    await supabase
+      .from("chat_sessions")
+      .update({ updated_at: new Date().toISOString() })
+      .eq("id", sessionId);
       
     if (error) console.error("Could not save assistant message:", error);
 
-    return NextResponse.json({ response: claudeResponse, message: savedMsg });
+    return NextResponse.json({
+      response: claudeResponse,
+      message: savedMsg,
+      session_id: sessionId,
+      session: sessionRow,
+    });
   } catch (err: any) {
     console.error("Chat error:", err);
     return NextResponse.json({ error: err.message }, { status: 500 });
