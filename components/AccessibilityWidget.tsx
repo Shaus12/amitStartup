@@ -34,9 +34,9 @@ export function AccessibilityWidget() {
           }
         });
 
-        // Layout properties to reposition the accessibility icon to the left side
-        document.body.style.setProperty('--_access-icon-left', '20px');
-        document.body.style.setProperty('--_access-icon-right', 'unset');
+        // Layout properties to reposition the accessibility icon to the right side
+        document.body.style.setProperty('--_access-icon-left', 'unset');
+        document.body.style.setProperty('--_access-icon-right', '20px');
         document.body.style.setProperty('--_access-icon-bottom', '80px');
 
         // Force z-index high enough so it sits above chat window but below modals

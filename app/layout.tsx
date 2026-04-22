@@ -24,6 +24,7 @@ export const metadata: Metadata = {
 
 import Script from "next/script";
 import { AccessibilityWidget } from "@/components/AccessibilityWidget";
+import { CookieBanner } from "@/components/CookieBanner";
 
 export default function RootLayout({
   children,
@@ -43,6 +44,7 @@ export default function RootLayout({
         </LanguageProvider>
         <Toaster theme="dark" position="bottom-right" />
         <AccessibilityWidget />
+        <CookieBanner />
       </body>
     </html>
   );
