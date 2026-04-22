@@ -12,13 +12,6 @@ export function AccessibilityWidget() {
       
       try {
         new Accessibility({
-          icon: {
-            position: {
-              bottom: { size: 20, units: 'px' },
-              left: { size: 20, units: 'px' },
-              type: 'fixed'
-            }
-          },
           labels: {
             resetTitle: 'איפוס תפריט',
             closeTitle: 'סגירה',
@@ -33,9 +26,18 @@ export function AccessibilityWidget() {
             bigCursor: 'סמן גדול',
             readingGuide: 'סרגל קריאה',
             textToSpeech: 'טקסט לדיבור',
-            speechToText: 'דיבור לטקסט'
+            speechToText: 'דיבור לטקסט',
+            disableAnimations: 'ביטול אנימציות',
+            increaseLineHeight: 'הגדל מרווח שורות',
+            decreaseLineHeight: 'הקטן מרווח שורות',
+            hotkeyPrefix: 'מקש קיצור:'
           }
         });
+
+        // Layout properties to reposition the accessibility icon to the left side
+        document.body.style.setProperty('--_access-icon-left', '20px');
+        document.body.style.setProperty('--_access-icon-right', 'unset');
+        document.body.style.setProperty('--_access-icon-bottom', '80px');
 
         // Force z-index high enough so it sits above chat window but below modals
         setTimeout(() => {
