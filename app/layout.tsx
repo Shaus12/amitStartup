@@ -22,6 +22,8 @@ export const metadata: Metadata = {
   description: "Understand every process in your business and find where AI can save you time and money.",
 };
 
+import Script from "next/script";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -39,6 +41,39 @@ export default function RootLayout({
           </QueryProvider>
         </LanguageProvider>
         <Toaster theme="dark" position="bottom-right" />
+        <Script
+          src="https://cdn.jsdelivr.net/npm/accessibility/dist/accessibility.min.js"
+          strategy="lazyOnload"
+        />
+        <Script id="acc-init" strategy="lazyOnload">
+          {`
+            function initAcc() {
+              if (typeof window !== "undefined" && typeof Accessibility === "function") {
+                new Accessibility({
+                  labels: {
+                    resetTitle: 'איפוס',
+                    closeTitle: 'סגירה',
+                    menuTitle: 'נגישות',
+                    increaseText: 'הגדל טקסט',
+                    decreaseText: 'הקטן טקסט',
+                    increaseTextSpacing: 'הגדל מרווח טקסט',
+                    decreaseTextSpacing: 'הקטן מרווח טקסט',
+                    invertColors: 'צבעים הפוכים',
+                    grayHues: 'גווני אפור',
+                    underlineLinks: 'קו תחתון קישורים',
+                    bigCursor: 'סמן גדול',
+                    readingGuide: 'קורא מסך',
+                    textToSpeech: 'טקסט לדיבור',
+                    speechToText: 'דיבור לטקסט'
+                  }
+                });
+              } else {
+                setTimeout(initAcc, 500);
+              }
+            }
+            initAcc();
+          `}
+        </Script>
       </body>
     </html>
   );
