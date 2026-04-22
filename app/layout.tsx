@@ -23,6 +23,7 @@ export const metadata: Metadata = {
 };
 
 import Script from "next/script";
+import { AccessibilityWidget } from "@/components/AccessibilityWidget";
 
 export default function RootLayout({
   children,
@@ -41,39 +42,7 @@ export default function RootLayout({
           </QueryProvider>
         </LanguageProvider>
         <Toaster theme="dark" position="bottom-right" />
-        <Script
-          src="https://cdn.jsdelivr.net/npm/accessibility/dist/accessibility.min.js"
-          strategy="lazyOnload"
-        />
-        <Script id="acc-init" strategy="lazyOnload">
-          {`
-            function initAcc() {
-              if (typeof window !== "undefined" && typeof Accessibility === "function") {
-                new Accessibility({
-                  labels: {
-                    resetTitle: 'איפוס',
-                    closeTitle: 'סגירה',
-                    menuTitle: 'נגישות',
-                    increaseText: 'הגדל טקסט',
-                    decreaseText: 'הקטן טקסט',
-                    increaseTextSpacing: 'הגדל מרווח טקסט',
-                    decreaseTextSpacing: 'הקטן מרווח טקסט',
-                    invertColors: 'צבעים הפוכים',
-                    grayHues: 'גווני אפור',
-                    underlineLinks: 'קו תחתון קישורים',
-                    bigCursor: 'סמן גדול',
-                    readingGuide: 'קורא מסך',
-                    textToSpeech: 'טקסט לדיבור',
-                    speechToText: 'דיבור לטקסט'
-                  }
-                });
-              } else {
-                setTimeout(initAcc, 500);
-              }
-            }
-            initAcc();
-          `}
-        </Script>
+        <AccessibilityWidget />
       </body>
     </html>
   );
