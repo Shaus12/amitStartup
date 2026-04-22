@@ -18,17 +18,28 @@ export async function GET(req: NextRequest) {
     const owned = await verifyBusinessAccess(supabase, businessId, user);
     if (!owned || !user) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
-    // 1. Record User Session
-    // Format YYYY-MM-DD in local time
-    const today = new Date().toISOString().split('T')[0];
-    
-    const { error: sessionError } = await supabase.from("user_sessions").upsert({
-      user_id: user.id,
-      business_id: businessId,
-      session_date: today
-    }, { onConflict: 'user_id, business_id, session_date' });
-    
-    if (sessionError) console.error("Session recording error", sessionError);
+    // 1. Record user session (one row per user + business + calendar day)
+    // Avoid upsert ... onConflict: DB may not have a matching UNIQUE for those columns (42P10).
+    const today = new Date().toISOString().split("T")[0];
+
+    const { data: existingSession } = await supabase
+      .from("user_sessions")
+      .select("id")
+      .eq("user_id", user.id)
+      .eq("business_id", businessId)
+      .eq("session_date", today)
+      .maybeSingle();
+
+    if (!existingSession) {
+      const { error: sessionError } = await supabase.from("user_sessions").insert({
+        user_id: user.id,
+        business_id: businessId,
+        session_date: today,
+      });
+      if (sessionError && sessionError.code !== "23505") {
+        console.error("Session recording error", sessionError);
+      }
+    }
 
     // 2. Fetch all session dates to calculate streak
     const { data: sessions } = await supabase

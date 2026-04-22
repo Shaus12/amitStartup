@@ -41,15 +41,19 @@ export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const isDashboard = pathname.startsWith("/dashboard");
   const isLogin = pathname === "/login";
+  const isLoadingAnalysis = pathname === "/loading";
 
-  // Allow dashboard access WITHOUT a session only if they just completed
-  // onboarding (cookie present) — the "Save your map" modal handles sign-up
-  const justOnboarded = request.cookies.has("onboarding_just_completed");
-
-  // ── Protect /dashboard ────────────────────────────────────────────
-  if (isDashboard && !user && !justOnboarded) {
+  // ── Protect /dashboard — must be signed in ────────────────────────
+  if (isDashboard && !user) {
     const url = request.nextUrl.clone();
-    url.pathname = "/login";
+    url.pathname = "/onboarding";
+    return NextResponse.redirect(url);
+  }
+
+  // ── Protect /loading (post-onboarding analysis) ─────────────────
+  if (isLoadingAnalysis && !user) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/onboarding";
     return NextResponse.redirect(url);
   }
 
@@ -64,6 +68,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // Run on /dashboard and all sub-paths, and on /login
-  matcher: ["/dashboard/:path*", "/login"],
+  matcher: ["/dashboard/:path*", "/login", "/loading"],
 };

@@ -58,7 +58,7 @@ export async function GET(req: NextRequest) {
         try {
           const client = new Anthropic({ apiKey });
           const response = await client.messages.create({
-            model: "claude-3-5-sonnet-20241022",
+            model: "claude-sonnet-4-6",
             max_tokens: 120,
             system: `You are a business analyst AI. Analyze the business knowledge provided and identify the single most important piece of MISSING information that would help you give better advice to this business owner.
 Return ONLY a concise question in Hebrew (עברית) — maximum 15 words. No extra text, no quotes, no explanation.`,

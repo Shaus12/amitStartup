@@ -1,79 +1,24 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import { Loader2, ChevronLeft, Zap } from "lucide-react";
+import { ChevronLeft, Zap } from "lucide-react";
 import { useOnboardingStore } from "@/lib/hooks/useOnboardingStore";
+import { OnboardingGateModal } from "@/components/onboarding/OnboardingGateModal";
 
 interface Props {
   onBack: () => void;
 }
 
-const STAGES = [
-  "שומר פרטי עסק...",
-  "יוצר מחלקות...",
-  "בונה מפה ראשונית...",
-  "הכנה לתצוגה...",
-];
-
 export function QuickReviewStep({ onBack }: Props) {
-  const router = useRouter();
-  const { answers, setBusinessId } = useOnboardingStore();
-  const [loading, setLoading] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [stageIdx, setStageIdx] = useState(0);
+  const { answers } = useOnboardingStore();
+  const [gateOpen, setGateOpen] = useState(false);
 
-  async function handleSubmit() {
-    setLoading(true);
-    setProgress(0);
-    setStageIdx(0);
-
-    let current = 0;
-    const intervalId = setInterval(() => {
-      current = current + (80 - current) * 0.14;
-      if (current >= 79.5) { clearInterval(intervalId); current = 80; }
-      setProgress(Math.round(current));
-      setStageIdx((i) => Math.min(i + 1, STAGES.length - 2));
-    }, 200);
-
-    try {
-      const onboardingRes = await fetch("/api/onboarding", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...answers, quickMode: true }),
-      });
-
-      if (!onboardingRes.ok) {
-        clearInterval(intervalId);
-        const err = await onboardingRes.json().catch(() => ({}));
-        throw new Error(err.details || err.message || err.error || "Failed to save profile");
-      }
-
-      const { businessId } = await onboardingRes.json();
-      setBusinessId(businessId);
-      document.cookie = "onboarding_just_completed=1; path=/; max-age=3600";
-      setProgress(80);
-      setStageIdx(3);
-
-      clearInterval(intervalId);
-      setProgress(100);
-      await new Promise((r) => setTimeout(r, 500));
-      router.push("/dashboard");
-    } catch (err: any) {
-      clearInterval(intervalId);
-      toast.error(err.message || "שגיאה בשמירת הפרטים");
-      setLoading(false);
-      setProgress(0);
-    }
-  }
+  const onboardingPayload = { ...answers, quickMode: true } as unknown as Record<string, unknown>;
 
   return (
-    <div
-      className="w-full max-w-md mx-auto"
-      style={{ fontFamily: "var(--font-inter)" }}
-    >
-      {/* Header */}
+    <div className="w-full max-w-md mx-auto" style={{ fontFamily: "var(--font-inter)" }}>
+      <OnboardingGateModal open={gateOpen} onClose={() => setGateOpen(false)} onboardingPayload={onboardingPayload} />
+
       <div style={{ textAlign: "center", marginBottom: 32 }}>
         <div style={{ fontSize: 48, marginBottom: 12 }}>⚡</div>
         <h2
@@ -95,7 +40,6 @@ export function QuickReviewStep({ onBack }: Props) {
         </p>
       </div>
 
-      {/* Departments preview */}
       <div style={{ display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "center", marginBottom: 28 }}>
         {answers.departments.map((dept) => (
           <div
@@ -136,21 +80,20 @@ export function QuickReviewStep({ onBack }: Props) {
         💡 מחלקות עם 🔒 עדיין לא הושלמו — לחץ עליהן במפה להוספת פרטים ולפתיחת ניתוח AI מלא
       </div>
 
-      {/* Actions */}
       <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
         <button
-          onClick={handleSubmit}
-          disabled={loading}
+          type="button"
+          onClick={() => setGateOpen(true)}
           style={{
             width: "100%",
-            padding: loading ? "16px 24px" : "14px 24px",
+            padding: "14px 24px",
             borderRadius: 14,
             border: "none",
-            background: loading ? "#1e1f26" : "linear-gradient(135deg, #4d8eff, #adc6ff)",
-            color: loading ? "#8c909f" : "#001a42",
+            background: "linear-gradient(135deg, #4d8eff, #adc6ff)",
+            color: "#001a42",
             fontSize: 15,
             fontWeight: 800,
-            cursor: loading ? "not-allowed" : "pointer",
+            cursor: "pointer",
             fontFamily: "var(--font-manrope)",
             transition: "all 0.2s",
             display: "flex",
@@ -159,41 +102,19 @@ export function QuickReviewStep({ onBack }: Props) {
             gap: 8,
           }}
         >
-          {loading ? (
-            <>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
-                <span style={{ fontSize: 13, color: "#c2c6d6" }}>{STAGES[stageIdx]}</span>
-                <span style={{ fontSize: 14, fontWeight: 800, color: "#4d8eff" }}>{progress}%</span>
-              </div>
-              <div style={{ width: "100%", height: 6, backgroundColor: "#282a30", borderRadius: 99, overflow: "hidden" }}>
-                <div
-                  style={{
-                    height: "100%",
-                    borderRadius: 99,
-                    width: `${progress}%`,
-                    background: progress === 100
-                      ? "linear-gradient(90deg, #22c55e, #86efac)"
-                      : "linear-gradient(90deg, #4d8eff, #adc6ff)",
-                    transition: "width 0.3s ease-out",
-                  }}
-                />
-              </div>
-            </>
-          ) : (
-            <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <Zap size={18} />
-              צור את מפת העסק
-            </span>
-          )}
+          <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <Zap size={18} />
+            צור את מפת העסק
+          </span>
         </button>
 
         <button
+          type="button"
           onClick={onBack}
-          disabled={loading}
           style={{
             background: "none",
             border: "none",
-            cursor: loading ? "not-allowed" : "pointer",
+            cursor: "pointer",
             color: "#424754",
             fontSize: 13,
             fontWeight: 600,

@@ -21,12 +21,29 @@ import "@xyflow/react/dist/style.css";
 import { DepartmentNode, type DepartmentNodeType } from "./DepartmentNode";
 import { AnimatedParticleEdge } from "./AnimatedParticleEdge";
 import { DepartmentOnboardingModal } from "./DepartmentOnboardingModal";
+import {
+  SUMMARY_CARD_NODE_ID,
+  SummaryCard,
+  type SummaryCardNodeType,
+} from "./SummaryCard";
+import type { AnalysisSummarySnapshot } from "@/lib/types/business-map";
 import { BusinessMapData, DepartmentWithProcesses } from "@/lib/types/business-map";
-import { applyDagreLayout } from "@/lib/utils/mapLayout";
+import {
+  applyDagreLayout,
+  NODE_WIDTH,
+  NODE_HEIGHT,
+  ROOT_WIDTH,
+  ROOT_HEIGHT,
+} from "@/lib/utils/mapLayout";
 
 const nodeTypes: NodeTypes = {
-  department: DepartmentNode,
+  departmentNode: DepartmentNode,
+  summaryCard: SummaryCard,
 };
+
+type BusinessMapRFNode = DepartmentNodeType | SummaryCardNodeType;
+
+const SUMMARY_LAYOUT_GAP = 200;
 
 const edgeTypes = {
   animatedParticleEdge: AnimatedParticleEdge,
@@ -34,6 +51,46 @@ const edgeTypes = {
 
 interface BusinessMapProps {
   data: BusinessMapData;
+  onOpenAnalysisReveal?: () => void;
+}
+
+function computeSummaryPosition(
+  deptNodes: Array<{ id: string; position: { x: number; y: number }; type?: string | null }>,
+  hubId: string | null
+): { x: number; y: number } {
+  const SUMMARY_W = 480;
+  let minX = Infinity;
+  let maxX = -Infinity;
+  let maxBottom = 0;
+
+  for (const n of deptNodes) {
+    if (n.type !== "departmentNode") continue;
+    const isRoot = Boolean(hubId && n.id === hubId);
+    const w = isRoot ? ROOT_WIDTH : NODE_WIDTH;
+    const h = isRoot ? ROOT_HEIGHT : NODE_HEIGHT;
+    minX = Math.min(minX, n.position.x);
+    maxX = Math.max(maxX, n.position.x + w);
+    maxBottom = Math.max(maxBottom, n.position.y + h);
+  }
+
+  if (!Number.isFinite(minX)) return { x: 60, y: 320 };
+  return { x: (minX + maxX) / 2 - SUMMARY_W / 2, y: maxBottom + SUMMARY_LAYOUT_GAP };
+}
+
+function buildSummaryCardNode(
+  position: { x: number; y: number },
+  summary: AnalysisSummarySnapshot,
+  onOpenReveal: () => void
+): SummaryCardNodeType {
+  return {
+    id: SUMMARY_CARD_NODE_ID,
+    type: "summaryCard",
+    position,
+    draggable: false,
+    selectable: true,
+    data: { summary, onOpenReveal },
+    zIndex: 0,
+  };
 }
 
 const FLOW_PRIORITY: string[][] = [
@@ -92,14 +149,21 @@ function buildEdges(depts: DepartmentWithProcesses[]): Edge[] {
 const EXPANDED_W = 400;
 const EXPANDED_H = 560; // approx (header ~140 + body ~460cap)
 
-function BusinessMapInner({ data }: BusinessMapProps) {
+function BusinessMapInner({ data, onOpenAnalysisReveal }: BusinessMapProps) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [unlockingDept, setUnlockingDept] = useState<{ id: string; name: string } | null>(null);
-  const { setCenter, fitView, setNodes, getNode } = useReactFlow();
+  const { setCenter, fitView, getNode } = useReactFlow();
   // Store viewport before expand so we can restore it exactly
   const preExpandViewport = useRef<{ zoom: number } | null>(null);
 
   const businessId = data.business?.id ?? null;
+  const analysisSummary = data.analysisSummary;
+
+  const revealRef = useRef(onOpenAnalysisReveal);
+  revealRef.current = onOpenAnalysisReveal;
+  const fireAnalysisReveal = useCallback(() => {
+    revealRef.current?.();
+  }, []);
 
   const initialEdges = useMemo(() => buildEdges(data.departments), [data.departments]);
 
@@ -151,22 +215,45 @@ function BusinessMapInner({ data }: BusinessMapProps) {
     [businessId, hubId]
   );
 
-  const initialNodes = useMemo<DepartmentNodeType[]>(() => {
+  const initialNodes = useMemo<BusinessMapRFNode[]>(() => {
+    if (data.departments.length === 0) return [];
+
     const allZero = data.departments.every((d) => d.positionX === 0 && d.positionY === 0);
     const rawNodes: DepartmentNodeType[] = data.departments.map((dept, idx) => ({
       id: dept.id,
-      type: "department" as const,
+      type: "departmentNode" as const,
       position: { x: dept.positionX ?? 0, y: dept.positionY ?? 0 },
       data: buildNodeData(dept, false, idx),
       zIndex: 0,
     }));
-    if (allZero) return applyDagreLayout(rawNodes, initialEdges, hubId ?? undefined) as DepartmentNodeType[];
-    return rawNodes;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data.departments]);
 
-  const [nodes, , onNodesChange] = useNodesState<DepartmentNodeType>(initialNodes);
-  const [edges, , onEdgesChange] = useEdgesState(initialEdges);
+    const positioned = (
+      allZero
+        ? (applyDagreLayout(rawNodes, initialEdges, hubId ?? undefined) as DepartmentNodeType[])
+        : rawNodes
+    ) as DepartmentNodeType[];
+
+    const pos = computeSummaryPosition(positioned, hubId);
+    return [...positioned, buildSummaryCardNode(pos, analysisSummary, fireAnalysisReveal)];
+  }, [
+    data.departments,
+    analysisSummary,
+    initialEdges,
+    hubId,
+    buildNodeData,
+    fireAnalysisReveal,
+  ]);
+
+  const [nodes, setNodes, onNodesChange] = useNodesState<BusinessMapRFNode>(initialNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+
+  useEffect(() => {
+    setNodes(initialNodes);
+  }, [initialNodes, setNodes]);
+
+  useEffect(() => {
+    setEdges(initialEdges);
+  }, [initialEdges, setEdges]);
 
   // ── Expand: zoom in cinematically, mark node as expanded ──────────────────
   function handleExpand(deptId: string) {
@@ -178,6 +265,7 @@ function BusinessMapInner({ data }: BusinessMapProps) {
     // Update all nodes: expand the clicked one, collapse others, raise z-index
     setNodes((nds) =>
       nds.map((n) => {
+        if (n.type === "summaryCard") return n;
         const isExpanded = n.id === deptId;
         const deptData = deptMap.get(n.id)!;
         return {
@@ -206,6 +294,7 @@ function BusinessMapInner({ data }: BusinessMapProps) {
     // Restore all nodes to compact, draggable
     setNodes((nds) =>
       nds.map((n) => {
+        if (n.type === "summaryCard") return n;
         const deptData = deptMap.get(n.id);
         if (!deptData) return n;
         return {
@@ -236,6 +325,7 @@ function BusinessMapInner({ data }: BusinessMapProps) {
   // ── Drag to save position (only when not expanded) ────────────────────────
   const onNodeDragStop = useCallback(async (_event: React.MouseEvent, node: Node) => {
     if (expandedId) return; // no dragging expanded node
+    if (node.id === SUMMARY_CARD_NODE_ID) return;
     try {
       await fetch(`/api/departments/${node.id}`, {
         method: "PATCH",
@@ -295,7 +385,10 @@ function BusinessMapInner({ data }: BusinessMapProps) {
         />
         <MiniMap
           className="!bg-[#13151d] !border-[#282a30] !rounded-xl"
-          nodeColor={(node) => (node.data as { color: string }).color ?? "#4d8eff"}
+          nodeColor={(node) => {
+            if (node.type === "summaryCard") return "#4d8eff";
+            return (node.data as { color?: string }).color ?? "#4d8eff";
+          }}
           maskColor="rgba(13,15,21,0.8)"
           style={{ bottom: 16, right: 16 }}
         />
@@ -319,10 +412,10 @@ function BusinessMapInner({ data }: BusinessMapProps) {
   );
 }
 
-export function BusinessMap({ data }: BusinessMapProps) {
+export function BusinessMap({ data, onOpenAnalysisReveal }: BusinessMapProps) {
   return (
     <ReactFlowProvider>
-      <BusinessMapInner data={data} />
+      <BusinessMapInner data={data} onOpenAnalysisReveal={onOpenAnalysisReveal} />
     </ReactFlowProvider>
   );
 }

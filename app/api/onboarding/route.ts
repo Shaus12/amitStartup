@@ -1,14 +1,38 @@
 import { NextRequest, NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 import { supabaseAdmin as supabase } from "@/lib/supabase-admin";
+import { createClient } from "@/lib/supabase/server";
 import { OnboardingAnswers, ONBOARDING_COMPLETED_STEP_INDEX } from "@/lib/types/onboarding";
 import { buildOnboardingKnowledgeRows } from "@/lib/onboarding/knowledgeFromAnswers";
 
 export async function POST(req: NextRequest) {
   try {
+    const authClient = await createClient();
+    const {
+      data: { user },
+      error: authError,
+    } = await authClient.auth.getUser();
+
+    if (authError || !user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const answers: OnboardingAnswers = await req.json();
 
-    // ── 1. Create business ─────
+    // ── 0. Ensure public.users row exists (FK: businesses.user_id → users.id) ──
+    const { error: userRowError } = await supabase.from("users").upsert({
+      id: user.id,
+      email: user.email ?? "",
+    });
+    if (userRowError) {
+      console.error("Failed to upsert users row:", userRowError);
+      return NextResponse.json(
+        { error: "Failed to sync user profile", details: userRowError.message },
+        { status: 500 }
+      );
+    }
+
+    // ── 1. Create business (always tied to authenticated user) ─────
     const { data: business, error: bizError } = await supabase
       .from("businesses")
       .insert({
@@ -21,6 +45,7 @@ export async function POST(req: NextRequest) {
         ai_budget: answers.aiBudget,
         tech_comfort: answers.aiComfortLevel?.trim() || answers.priorAiUsage?.trim() || null,
         onboarding_completed: true,
+        user_id: user.id,
       })
       .select()
       .single();
@@ -31,6 +56,17 @@ export async function POST(req: NextRequest) {
     }
 
     const bizId = business.id;
+
+    const { error: pointsError } = await supabase.from("user_points").upsert(
+      {
+        user_id: user.id,
+        business_id: bizId,
+        total_points: 0,
+        level: 1,
+      },
+      { onConflict: "user_id, business_id" }
+    );
+    if (pointsError) console.error("Failed to init user_points:", pointsError);
 
     // ── 2. Create departments ─────
     const DEPT_COLORS = [

@@ -1,10 +1,10 @@
 import dagre from "dagre";
 import { Node, Edge } from "@xyflow/react";
 
-const NODE_WIDTH = 220;
-const NODE_HEIGHT = 190;
-const ROOT_WIDTH = 300;
-const ROOT_HEIGHT = 210;
+export const NODE_WIDTH = 220;
+export const NODE_HEIGHT = 190;
+export const ROOT_WIDTH = 300;
+export const ROOT_HEIGHT = 210;
 
 export function applyDagreLayout(
   nodes: Node[],

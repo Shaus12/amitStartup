@@ -69,7 +69,7 @@ export interface DepartmentNodeData extends Record<string, unknown> {
   onClose?: () => void;
 }
 
-export type DepartmentNodeType = Node<DepartmentNodeData, "department">;
+export type DepartmentNodeType = Node<DepartmentNodeData, "departmentNode">;
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 

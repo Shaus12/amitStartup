@@ -62,6 +62,69 @@ export async function GET(req: NextRequest) {
 
     const existingTaskOppIds = new Set(existingTasks?.map(t => t.opportunity_id) || []);
 
+    function pickImpactfulQuote(rows: { content: string; category: string }[] | null): string | null {
+      if (!rows?.length) return null;
+      const scored = rows.map((r) => ({
+        content: r.content,
+        score: (r.category === "pain_point" ? 2000 : 0) + (typeof r.content === "string" ? r.content.length : 0),
+      }));
+      scored.sort((a, b) => b.score - a.score);
+      return scored[0]?.content ?? null;
+    }
+
+    function toHealthOutOf10(raw: number | null | undefined): number | null {
+      if (raw == null || Number.isNaN(Number(raw))) return null;
+      const n = Number(raw);
+      if (n <= 10) return Math.min(10, Math.max(0, n));
+      return Math.min(10, Math.max(0, Math.round((n / 10) * 10) / 10));
+    }
+
+    // ── Business-wide analysis summary (reveal modal + summary card) ───────
+    const [
+      { data: allOppsRows },
+      { data: latestHealth },
+      { data: quoteCandidates },
+    ] = await Promise.all([
+      supabase
+        .from("ai_opportunities")
+        .select("estimated_hours_saved, estimated_cost_saved, archived")
+        .eq("business_id", businessId),
+      supabase
+        .from("business_health_scores")
+        .select("score")
+        .eq("business_id", businessId)
+        .order("calculated_at", { ascending: false })
+        .limit(1)
+        .maybeSingle(),
+      supabase
+        .from("business_knowledge")
+        .select("content, category")
+        .eq("business_id", businessId)
+        .in("category", ["pain_point", "goal"])
+        .order("created_at", { ascending: false })
+        .limit(40),
+    ]);
+
+    const activeOppsAll = (allOppsRows ?? []).filter((o: any) => o.archived !== true);
+    const hoursSavedPerMonth = activeOppsAll.reduce(
+      (s: number, o: any) => s + (Number(o.estimated_hours_saved) || 0),
+      0
+    );
+    const moneyPerMonthSum = activeOppsAll.reduce(
+      (s: number, o: any) => s + (Number(o.estimated_cost_saved) || 0),
+      0
+    );
+    const rawHealth = latestHealth?.score != null ? Number(latestHealth.score) : null;
+    const analysisSummary = {
+      hoursSavedPerMonth: hoursSavedPerMonth,
+      moneySavedPerYear: moneyPerMonthSum * 12,
+      opportunityCount: activeOppsAll.length,
+      healthScore: rawHealth,
+      healthScoreOutOf10: toHealthOutOf10(rawHealth),
+      departmentCount: (departments ?? []).length,
+      questionnaireQuote: pickImpactfulQuote(quoteCandidates as { content: string; category: string }[] | null),
+    };
+
     // Normalize departments to camelCase for the UI components
     const normalizedDepts = (departments ?? []).map((dept) => {
       // Filter processes that belong to this department
@@ -119,7 +182,7 @@ export async function GET(req: NextRequest) {
       };
     });
 
-    return NextResponse.json({ business, departments: normalizedDepts });
+    return NextResponse.json({ business, departments: normalizedDepts, analysisSummary });
   } catch (err: any) {
     console.error("Map route error:", err);
     return NextResponse.json({ error: "Failed to fetch" }, { status: 500 });

@@ -29,6 +29,19 @@ export interface DepartmentWithProcesses {
   isLocked?: boolean;
 }
 
+/** Aggregated AI analysis figures for reveal modal + map summary node */
+export interface AnalysisSummarySnapshot {
+  hoursSavedPerMonth: number;
+  moneySavedPerYear: number;
+  opportunityCount: number;
+  /** Raw score from DB (often 0–100) */
+  healthScore: number | null;
+  /** Normalized 0–10 for benchmark UI */
+  healthScoreOutOf10: number | null;
+  departmentCount: number;
+  questionnaireQuote: string | null;
+}
+
 export interface BusinessMapData {
   business: {
     id: string;
@@ -36,4 +49,6 @@ export interface BusinessMapData {
     industry: string | null;
   };
   departments: DepartmentWithProcesses[];
+  /** Present when map loads; used for first-visit reveal + summary card */
+  analysisSummary: AnalysisSummarySnapshot;
 }

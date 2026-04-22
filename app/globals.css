@@ -391,3 +391,64 @@
   from { opacity: 0; transform: translateY(16px) scale(0.97); }
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
+
+/* ── Full-screen analysis loading (LoadingAnalysis) ───────────────── */
+@keyframes la-blob {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(6%, -8%) scale(1.06); }
+  66% { transform: translate(-5%, 5%) scale(0.94); }
+}
+@keyframes la-spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes la-shimmer {
+  0% { transform: translateX(-130%) skewX(-10deg); opacity: 0; }
+  15% { opacity: 0.85; }
+  100% { transform: translateX(230%) skewX(-10deg); opacity: 0; }
+}
+@keyframes la-ring-expand {
+  0% { transform: scale(0.55); opacity: 0.65; }
+  100% { transform: scale(1.45); opacity: 0; }
+}
+@keyframes la-stage-in {
+  from { opacity: 0; transform: translateY(10px); filter: blur(4px); }
+  to { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+@keyframes la-glow-pulse {
+  0%, 100% { opacity: 0.35; filter: blur(24px); }
+  50% { opacity: 0.7; filter: blur(28px); }
+}
+.la-loading-blob-a { animation: la-blob 20s ease-in-out infinite; }
+.la-loading-blob-b { animation: la-blob 26s ease-in-out infinite reverse; }
+.la-loading-spin { animation: la-spin-slow 28s linear infinite; }
+.la-loading-shimmer { animation: la-shimmer 2.4s ease-in-out infinite; }
+.la-loading-ring { animation: la-ring-expand 2.6s cubic-bezier(0.22, 1, 0.36, 1) infinite; }
+.la-loading-ring-d1 { animation: la-ring-expand 2.6s cubic-bezier(0.22, 1, 0.36, 1) infinite 0.65s; }
+.la-loading-ring-d2 { animation: la-ring-expand 2.6s cubic-bezier(0.22, 1, 0.36, 1) infinite 1.3s; }
+.la-loading-stage { animation: la-stage-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.la-loading-core-glow { animation: la-glow-pulse 3s ease-in-out infinite; }
+
+/* Analysis reveal modal — cinematic entrance */
+@keyframes reveal-overlay-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes reveal-card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(22px) scale(0.97);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+.reveal-modal-overlay-anim {
+  animation: reveal-overlay-fade 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.reveal-modal-card-anim {
+  animation: reveal-card-enter 0.65s cubic-bezier(0.22, 1, 0.36, 1) 0.06s both;
+}

@@ -3,21 +3,20 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { RotateCcw, Network, FileText, LogOut } from "lucide-react";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { BusinessMap } from "@/components/business-map/BusinessMap";
 import { BusinessMapData } from "@/lib/types/business-map";
 import { HealthScore } from "@/components/dashboard/HealthScore";
-import { SaveMapModal } from "@/components/auth/SaveMapModal";
 import { KnowledgeRequestPopup } from "@/components/dashboard/KnowledgeRequestPopup";
 import { DashboardStats } from "@/components/dashboard/DashboardStats";
 import { createClient } from "@/lib/supabase/client";
+import { AnalysisRevealModal, revealStorageKey } from "@/components/dashboard/AnalysisRevealModal";
 
 interface DashboardClientProps {
   businessId: string;
   businessName: string;
-  showSaveModal?: boolean;
 }
 
 function SkeletonNode() {
@@ -50,10 +49,13 @@ const DAILY_TIPS = [
   "מה לוקח לך הכי הרבה זמן ביום? זה המקום הראשון להתחיל",
 ];
 
-export function DashboardClient({ businessId, businessName, showSaveModal = false }: DashboardClientProps) {
+export function DashboardClient({ businessId, businessName }: DashboardClientProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const fromAnalysis = searchParams.get("fromAnalysis") === "1";
   const queryClient = useQueryClient();
   const [isRegenerating, setIsRegenerating] = useState(false);
+  const [revealOpen, setRevealOpen] = useState(false);
 
   const todayTip = DAILY_TIPS[Math.floor(Date.now() / 86400000) % DAILY_TIPS.length];
 
@@ -86,6 +88,24 @@ export function DashboardClient({ businessId, businessName, showSaveModal = fals
       return res.json();
     },
   });
+
+  useEffect(() => {
+    if (!data) return;
+    if (!fromAnalysis) return;
+
+    let shown = false;
+    try {
+      shown = localStorage.getItem(revealStorageKey(businessId)) === "1";
+    } catch {
+      /* ignore */
+    }
+    if (!shown) setRevealOpen(true);
+    router.replace("/dashboard", { scroll: false });
+  }, [data, fromAnalysis, businessId, router]);
+
+  const openAnalysisReveal = useCallback(() => {
+    setRevealOpen(true);
+  }, []);
 
   async function handleRegenerateAnalysis() {
     setIsRegenerating(true);
@@ -307,9 +327,19 @@ export function DashboardClient({ businessId, businessName, showSaveModal = fals
           </div>
         )}
 
-        {data && !isLoading && !isError && <BusinessMap data={data} />}
-        {showSaveModal && <SaveMapModal businessId={businessId} businessName={businessName} />}
+        {data && !isLoading && !isError && (
+          <BusinessMap data={data} onOpenAnalysisReveal={openAnalysisReveal} />
+        )}
         <KnowledgeRequestPopup businessId={businessId} />
+
+        {data && (
+          <AnalysisRevealModal
+            open={revealOpen}
+            onDismiss={() => setRevealOpen(false)}
+            businessId={businessId}
+            summary={data.analysisSummary ?? null}
+          />
+        )}
 
         {!isLoading && !isError && data && data.departments.length === 0 && (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
