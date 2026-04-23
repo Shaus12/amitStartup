@@ -1189,7 +1189,7 @@ function FinalCTA() {
 
 /* ─── Footer ─────────────────────────────────────────────────────────── */
 function Footer() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const f = t.footer;
   return (
     <footer style={{ backgroundColor: C.s1, borderTop: `1px solid ${C.s3}` }}>
@@ -1205,6 +1205,14 @@ function Footer() {
               <span className="text-sm font-bold" style={{ ...MF, color: C.text }}>BizMap</span>
             </div>
             <p className="text-xs leading-relaxed" style={{ ...IF, color: C.muted, maxWidth: "26ch" }}>{f.tag}</p>
+            <div className="mt-3">
+              <span className="text-[10px] font-bold tracking-widest uppercase mb-1 block" style={{ ...IF, color: C.outline }}>
+                {lang === "he" ? "צור קשר" : "Contact Us"}
+              </span>
+              <a href="mailto:support@bizmapai.com" className="text-xs font-semibold hover:underline" style={{ ...IF, color: C.blue }}>
+                support@bizmapai.com
+              </a>
+            </div>
             <div className="flex items-center gap-2 mt-5">
               <div className="w-1.5 h-1.5 rounded-full"
                 style={{ backgroundColor: C.green, animation: "bv-pulse-dot 2s ease-in-out infinite" }} />
