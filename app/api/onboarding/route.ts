@@ -26,10 +26,24 @@ export async function POST(req: NextRequest) {
     });
     if (userRowError) {
       console.error("Failed to upsert users row:", userRowError);
-      return NextResponse.json(
-        { error: "Failed to sync user profile", details: userRowError.message },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    }
+
+    // Idempotency guard: if onboarding already created a business for this user, reuse it.
+    const { data: existingBusiness, error: existingBusinessError } = await supabase
+      .from("businesses")
+      .select("id")
+      .eq("user_id", user.id)
+      .eq("onboarding_completed", true)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (existingBusinessError) {
+      console.error("Failed to check existing business:", existingBusinessError);
+      return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    }
+    if (existingBusiness?.id) {
+      return NextResponse.json({ businessId: existingBusiness.id });
     }
 
     // ── 1. Create business (always tied to authenticated user) ─────
@@ -120,10 +134,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ businessId: bizId });
   } catch (err: unknown) {
     console.error("Onboarding error:", err);
-    const message = err instanceof Error ? err.message : String(err);
-    return NextResponse.json(
-      { error: "Failed to save onboarding data", details: message, message },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

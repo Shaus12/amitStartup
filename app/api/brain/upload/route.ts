@@ -1,6 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { createClient } from "@/lib/supabase/server";
+import path from "node:path";
+
+const MAX_FILE_BYTES = 20 * 1024 * 1024;
+const ALLOWED_FILE_TYPES = new Set([
+  "application/pdf",
+  "text/plain",
+  "text/markdown",
+  "text/csv",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+]);
 
 export async function POST(req: NextRequest) {
   const authClient = await createClient();
@@ -17,6 +28,12 @@ export async function POST(req: NextRequest) {
   if (!file || !businessId || !departmentId) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
   }
+  if (file.size <= 0 || file.size > MAX_FILE_BYTES) {
+    return NextResponse.json({ error: "Invalid file size" }, { status: 400 });
+  }
+  if (!ALLOWED_FILE_TYPES.has(file.type)) {
+    return NextResponse.json({ error: "Unsupported file type" }, { status: 400 });
+  }
 
   // Verify ownership
   const { data: business } = await supabaseAdmin
@@ -28,9 +45,20 @@ export async function POST(req: NextRequest) {
 
   if (!business) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
+  const { data: department } = await supabaseAdmin
+    .from("departments")
+    .select("id")
+    .eq("id", departmentId)
+    .eq("business_id", businessId)
+    .single();
+  if (!department) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+
   const bytes = await file.arrayBuffer();
   const buffer = Buffer.from(bytes);
-  const fileName = `${businessId}/${departmentId}/${Date.now()}_${file.name}`;
+  const safeFileName = path
+    .basename(file.name)
+    .replace(/[^a-zA-Z0-9._-]/g, "_");
+  const fileName = `${businessId}/${departmentId}/${Date.now()}_${safeFileName}`;
 
   // Upload to Supabase storage
   const { error: storageError } = await supabaseAdmin.storage

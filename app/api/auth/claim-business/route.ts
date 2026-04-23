@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Read the auth user from session cookies set by the browser client
-    let response = NextResponse.next({ request: req });
+    const response = NextResponse.next({ request: req });
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -51,31 +51,34 @@ export async function POST(req: NextRequest) {
     });
     if (userError) console.error("Failed to upsert user row:", userError);
 
-    // Link business to the new user — only if still unclaimed (user_id IS NULL)
-    const { error: bizError } = await supabaseAdmin
+    // Legacy anonymous claim flow is disabled until it's bound to a server-issued claim session.
+    // This prevents authenticated users from claiming arbitrary unowned business IDs.
+    const { data: business, error: businessError } = await supabaseAdmin
       .from("businesses")
-      .update({ user_id: user.id })
+      .select("id, user_id")
       .eq("id", businessId)
-      .is("user_id", null);
-
-    if (bizError) {
-      console.error("Failed to claim business:", bizError);
-      return NextResponse.json({ error: "Failed to link business" }, { status: 500 });
+      .maybeSingle();
+    if (businessError) {
+      console.error("Failed to fetch business before claim:", businessError);
+      return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    }
+    if (!business) {
+      return NextResponse.json({ error: "Business not found" }, { status: 404 });
+    }
+    if (business.user_id === user.id) {
+      return NextResponse.json({ success: true });
+    }
+    if (business.user_id !== null) {
+      return NextResponse.json({ error: "Business already claimed" }, { status: 409 });
     }
 
-    // Initialize user points (ignoring duplicates if they already exist)
-    const { error: pointsError } = await supabaseAdmin.from("user_points").upsert({
-      user_id: user.id,
-      business_id: businessId,
-      total_points: 0,
-      level: 1
-    }, { onConflict: 'user_id, business_id' });
-    
-    if (pointsError) console.error("Failed to init user points:", pointsError);
+    return NextResponse.json(
+      { error: "Anonymous claim flow is disabled. Please complete onboarding while signed in." },
+      { status: 410 }
+    );
 
-    return NextResponse.json({ success: true });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("Claim business error:", err);
-    return NextResponse.json({ error: err.message ?? "Internal error" }, { status: 500 });
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

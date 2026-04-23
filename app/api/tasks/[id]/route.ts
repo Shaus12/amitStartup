@@ -47,29 +47,38 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
     // Handle rewards if user is logged in
     if (status === "done" && existing.status !== "done" && user) {
-      // Create point_event
-      await supabase.from("point_events").insert({
-        user_id: user.id,
-        business_id: existing.business_id,
-        event_type: "task_completed",
-        points_earned: 50,
-        reference_id: taskId
-      });
-
-      // 2. Add points
-      const { data: currentPoints } = await supabase
-        .from("user_points")
-        .select("total_points")
+      const { data: existingPointEvent } = await supabase
+        .from("point_events")
+        .select("id")
         .eq("user_id", user.id)
         .eq("business_id", existing.business_id)
-        .single();
-        
-      if (currentPoints) {
-        await supabase
+        .eq("event_type", "task_completed")
+        .eq("reference_id", taskId)
+        .maybeSingle();
+
+      if (!existingPointEvent) {
+        await supabase.from("point_events").insert({
+          user_id: user.id,
+          business_id: existing.business_id,
+          event_type: "task_completed",
+          points_earned: 50,
+          reference_id: taskId
+        });
+
+        const { data: currentPoints } = await supabase
           .from("user_points")
-          .update({ total_points: currentPoints.total_points + 50 })
+          .select("total_points")
           .eq("user_id", user.id)
-          .eq("business_id", existing.business_id);
+          .eq("business_id", existing.business_id)
+          .single();
+          
+        if (currentPoints) {
+          await supabase
+            .from("user_points")
+            .update({ total_points: currentPoints.total_points + 50 })
+            .eq("user_id", user.id)
+            .eq("business_id", existing.business_id);
+        }
       }
     }
 
@@ -107,6 +116,6 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     return NextResponse.json({ ...updatedTask, new_health_score: newScore });
   } catch (err: any) {
     console.error("Task patch error:", err);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

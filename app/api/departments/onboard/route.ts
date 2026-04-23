@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { createClient } from "@/lib/supabase/server";
+import { env } from "@/lib/env";
 
 export async function POST(req: NextRequest) {
   const authClient = await createClient();
@@ -84,11 +85,15 @@ export async function POST(req: NextRequest) {
 
   // Trigger opportunity generation for this business
   try {
-    await fetch(`${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/opportunities/generate`, {
+    const appUrl = env.NEXT_PUBLIC_APP_URL.replace(/\/$/, "");
+    const generateRes = await fetch(`${appUrl}/api/opportunities/generate`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ businessId }),
     });
+    if (!generateRes.ok) {
+      console.error("Opportunity generation returned non-OK status:", generateRes.status);
+    }
   } catch (e) {
     console.error("Opportunity gen error:", e);
   }

@@ -4,6 +4,7 @@ import { supabaseAdmin as supabase } from "@/lib/supabase-admin";
 import { analyzeBusinessData } from "@/lib/ai/analyzeBusinessData";
 import { createClient } from "@/lib/supabase/server";
 import { verifyBusinessAccess } from "@/lib/supabase/verify-business-access";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export async function POST(req: NextRequest) {
   try {
@@ -19,6 +20,10 @@ export async function POST(req: NextRequest) {
 
     const owned = await verifyBusinessAccess(supabase, businessId, user);
     if (!owned) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    const rateLimit = checkRateLimit(req, `opportunities-generate:${user?.id ?? "anon"}`, 10, 60_000);
+    if (!rateLimit.allowed) {
+      return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+    }
 
     // ── 1. Fetch departments + knowledge + latest onboarding snapshot ─────
     const [
@@ -81,12 +86,28 @@ export async function POST(req: NextRequest) {
     const protectedOppIds = tasksWithOpps?.map((t) => t.opportunity_id).filter(Boolean) ?? [];
     console.log("[generate] Protected opportunity IDs (have tasks):", protectedOppIds.length);
 
-    // Delete old opportunities that are NOT protected by tasks
-    let delOppsQuery = supabase.from("ai_opportunities").delete().eq("business_id", businessId);
-    if (protectedOppIds.length > 0) {
-      delOppsQuery = delOppsQuery.not("id", "in", `(${protectedOppIds.join(",")})`);
+    // Delete old opportunities that are NOT protected by tasks.
+    const { data: existingOpps, error: existingOppsError } = await supabase
+      .from("ai_opportunities")
+      .select("id")
+      .eq("business_id", businessId);
+    if (existingOppsError) throw existingOppsError;
+
+    const deletableOppIds = (existingOpps ?? [])
+      .map((opp) => opp.id)
+      .filter((id) => !protectedOppIds.includes(id));
+
+    let delOppsErr: Error | null = null;
+    let delOppsCount = 0;
+    if (deletableOppIds.length > 0) {
+      const deleteResult = await supabase
+        .from("ai_opportunities")
+        .delete({ count: "exact" })
+        .eq("business_id", businessId)
+        .in("id", deletableOppIds);
+      delOppsErr = deleteResult.error;
+      delOppsCount = deleteResult.count ?? 0;
     }
-    const { error: delOppsErr, count: delOppsCount } = await delOppsQuery;
     if (delOppsErr) console.error("[generate] Delete opportunities ERROR:", delOppsErr);
     else console.log("[generate] Deleted opportunities count:", delOppsCount);
 
@@ -207,9 +228,6 @@ export async function POST(req: NextRequest) {
     });
   } catch (err: any) {
     console.error("[generate] FAILED:", err);
-    return NextResponse.json(
-      { error: "Analysis failed", details: err.message ?? String(err) },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

@@ -1,10 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
+import { createClient } from "@/lib/supabase/server";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 export async function POST(req: NextRequest) {
   try {
+    const authClient = await createClient();
+    const {
+      data: { user },
+    } = await authClient.auth.getUser();
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    const rateLimit = checkRateLimit(req, `process-breakdown:${user.id}`, 20, 60_000);
+    if (!rateLimit.allowed) {
+      return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+    }
+
     const { processName, departmentName, isManual, frequency, hoursPerWeek } = await req.json();
     if (!processName || !departmentName) {
       return NextResponse.json({ error: "Missing fields" }, { status: 400 });
@@ -52,6 +66,6 @@ Rules:
     return NextResponse.json(data);
   } catch (err: any) {
     console.error("Breakdown error:", err);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

@@ -3,6 +3,7 @@ import { supabaseAdmin as supabase } from "@/lib/supabase-admin";
 import { createClient } from "@/lib/supabase/server";
 import { verifyBusinessAccess } from "@/lib/supabase/verify-business-access";
 import Anthropic from "@anthropic-ai/sdk";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export async function GET(req: NextRequest) {
   try {
@@ -17,6 +18,10 @@ export async function GET(req: NextRequest) {
 
     const owned = await verifyBusinessAccess(supabase, businessId, user);
     if (!owned) return NextResponse.json({ popup: null });
+    const rateLimit = checkRateLimit(req, `knowledge-requests-next:${user?.id ?? "anon"}`, 20, 60_000);
+    if (!rateLimit.allowed) {
+      return NextResponse.json({ popup: null });
+    }
 
     const today = new Date().toISOString().split("T")[0];
 

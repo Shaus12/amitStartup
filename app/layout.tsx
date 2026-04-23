@@ -22,7 +22,6 @@ export const metadata: Metadata = {
   description: "Understand every process in your business and find where AI can save you time and money.",
 };
 
-import Script from "next/script";
 import { AccessibilityWidget } from "@/components/AccessibilityWidget";
 import { CookieBanner } from "@/components/CookieBanner";
 

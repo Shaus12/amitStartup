@@ -3,6 +3,7 @@ import { supabaseAdmin as supabase } from "@/lib/supabase-admin";
 import { createClient } from "@/lib/supabase/server";
 import { verifyBusinessAccess } from "@/lib/supabase/verify-business-access";
 import { callClaudeForChat, generateConstraintQuestion, generateProjectPlan } from "@/lib/ai/analyzeBusinessData";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 function parseProjectFromMarkdown(markdown: string) {
   const nameMatch = markdown.match(/📋 \*\*([^*]+)\*\*/);
@@ -48,6 +49,10 @@ export async function POST(req: NextRequest) {
 
     const owned = await verifyBusinessAccess(supabase, businessId, user);
     if (!owned) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    const rateLimit = checkRateLimit(req, `chat:${user?.id ?? "anon"}`, 40, 60_000);
+    if (!rateLimit.allowed) {
+      return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+    }
 
     let sessionId = session_id as string | undefined;
     let sessionRow: { id: string; title: string | null; created_at: string; updated_at: string } | null = null;
@@ -64,7 +69,7 @@ export async function POST(req: NextRequest) {
 
       if (createSessionError || !createdSession) {
         return NextResponse.json(
-          { error: createSessionError?.message || "Failed to create chat session" },
+          { error: "Internal server error" },
           { status: 500 }
         );
       }
@@ -232,6 +237,6 @@ export async function POST(req: NextRequest) {
     });
   } catch (err: any) {
     console.error("Chat error:", err);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

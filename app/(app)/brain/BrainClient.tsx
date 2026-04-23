@@ -48,6 +48,7 @@ export function BrainClient({ businessId, businessName, departments }: BrainClie
   const [uploads, setUploads] = useState<UploadedDoc[]>([]);
   const [dragging, setDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const selectedDept = departments.find((d) => d.id === selectedDeptId);
@@ -55,6 +56,7 @@ export function BrainClient({ businessId, businessName, departments }: BrainClie
   async function handleFiles(files: FileList | null) {
     if (!files || files.length === 0 || !selectedDeptId) return;
     setUploading(true);
+    setUploadError(null);
 
     for (const file of Array.from(files)) {
       const formData = new FormData();
@@ -87,26 +89,11 @@ export function BrainClient({ businessId, businessName, departments }: BrainClie
               prev.map((u) => (u.name === file.name ? { ...u, status: "ready" } : u))
             );
           }, 3000);
+        } else {
+          setUploadError(data?.error || "העלאת הקובץ נכשלה");
         }
       } catch {
-        // Show file as uploaded anyway for UX
-        setUploads((prev) => [
-          {
-            id: crypto.randomUUID(),
-            name: file.name,
-            departmentId: selectedDeptId,
-            departmentName: selectedDept?.name ?? "",
-            size: formatSize(file.size),
-            uploadedAt: new Date().toLocaleTimeString("he-IL"),
-            status: "processing",
-          },
-          ...prev,
-        ]);
-        setTimeout(() => {
-          setUploads((prev) =>
-            prev.map((u) => (u.name === file.name ? { ...u, status: "ready" } : u))
-          );
-        }, 3000);
+        setUploadError("אירעה שגיאה בהעלאה. נסה שוב.");
       }
     }
     setUploading(false);
@@ -296,6 +283,18 @@ export function BrainClient({ businessId, businessName, departments }: BrainClie
             </>
           )}
         </div>
+        {uploadError && (
+          <div
+            style={{
+              marginBottom: 16,
+              color: "#f87171",
+              fontSize: 12,
+              fontFamily: "var(--font-inter)",
+            }}
+          >
+            {uploadError}
+          </div>
+        )}
 
         {/* Uploaded docs for selected dept */}
         {deptUploads.length > 0 && (

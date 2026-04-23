@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
     .eq("business_id", businessId)
     .order("created_at", { ascending: false });
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   
   const tasks = rawTasks.map((t: any) => {
     let deptName = t.department_name || null;
@@ -88,11 +88,13 @@ export async function POST(req: NextRequest) {
       await supabase
         .from("ai_opportunities")
         .update({ status: "in_progress" })
-        .eq("id", opportunityId);
+        .eq("id", opportunityId)
+        .eq("business_id", businessId);
     }
 
     return NextResponse.json(task);
   } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    console.error("Task create error:", err);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

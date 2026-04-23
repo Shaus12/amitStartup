@@ -11,7 +11,7 @@ export default async function DashboardPage() {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect("/onboarding");
+    redirect("/login");
   }
 
   const { data: business } = await supabaseAdmin

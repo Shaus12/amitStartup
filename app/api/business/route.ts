@@ -9,18 +9,17 @@ export async function GET() {
       data: { user },
     } = await authClient.auth.getUser();
 
-    let query = supabase
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const query = supabase
       .from("businesses")
       .select("*")
       .eq("onboarding_completed", true)
+      .eq("user_id", user.id)
       .order("created_at", { ascending: false })
       .limit(1);
-
-    if (user) {
-      query = query.eq("user_id", user.id);
-    } else {
-      query = query.is("user_id", null);
-    }
 
     const { data: business, error } = await query.single();
 

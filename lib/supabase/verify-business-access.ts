@@ -2,8 +2,8 @@ import type { SupabaseClient, User } from "@supabase/supabase-js";
 
 /**
  * Verifies that the given user has access to the given businessId.
+ * - User must be authenticated
  * - Authenticated user must own the business (user_id = user.id)
- * - Anonymous user may only access unclaimed businesses (user_id IS NULL)
  *
  * Returns the business row on success, null on access denied or not found.
  */
@@ -12,6 +12,8 @@ export async function verifyBusinessAccess(
   businessId: string,
   user: User | null
 ): Promise<{ id: string; user_id: string | null } | null> {
+  if (!user) return null;
+
   const { data: business } = await adminClient
     .from("businesses")
     .select("id, user_id")
@@ -19,8 +21,7 @@ export async function verifyBusinessAccess(
     .single();
 
   if (!business) return null;
-  if (user !== null && business.user_id !== user.id) return null;
-  if (user === null && business.user_id !== null) return null;
+  if (business.user_id !== user.id) return null;
 
   return business;
 }

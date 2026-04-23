@@ -38,7 +38,10 @@ export async function GET(
     .eq("session_id", id)
     .order("created_at", { ascending: true });
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) {
+    console.error("Chat session messages fetch error:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
 
   return NextResponse.json({ session, messages: messages || [] });
 }
@@ -72,11 +75,15 @@ export async function PATCH(
       .select("id, title, created_at, updated_at")
       .single();
 
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error) {
+      console.error("Chat session update error:", error);
+      return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    }
 
     return NextResponse.json({ session: updated });
   } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    console.error("Chat session patch route error:", err);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
 
@@ -101,7 +108,8 @@ export async function DELETE(
       .eq("session_id", id);
 
     if (messagesError) {
-      return NextResponse.json({ error: messagesError.message }, { status: 500 });
+      console.error("Chat session messages delete error:", messagesError);
+      return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }
 
     const { error: sessionDeleteError } = await supabase
@@ -110,11 +118,13 @@ export async function DELETE(
       .eq("id", id);
 
     if (sessionDeleteError) {
-      return NextResponse.json({ error: sessionDeleteError.message }, { status: 500 });
+      console.error("Chat session delete error:", sessionDeleteError);
+      return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }
 
     return NextResponse.json({ success: true });
   } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    console.error("Chat session delete route error:", err);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

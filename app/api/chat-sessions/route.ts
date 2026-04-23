@@ -27,7 +27,8 @@ export async function GET(req: NextRequest) {
     .order("updated_at", { ascending: false });
 
   if (sessionsError) {
-    return NextResponse.json({ error: sessionsError.message }, { status: 500 });
+    console.error("Chat sessions fetch error:", sessionsError);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 
   if (!sessions || sessions.length === 0) {
@@ -42,7 +43,8 @@ export async function GET(req: NextRequest) {
     .order("created_at", { ascending: false });
 
   if (messagesError) {
-    return NextResponse.json({ error: messagesError.message }, { status: 500 });
+    console.error("Chat messages fetch error:", messagesError);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 
   const lastMessageBySession = new Map<
@@ -96,10 +98,8 @@ export async function POST(req: NextRequest) {
       .single();
 
     if (sessionError || !session) {
-      return NextResponse.json(
-        { error: sessionError?.message || "Could not create session" },
-        { status: 500 }
-      );
+      if (sessionError) console.error("Chat session create error:", sessionError);
+      return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }
 
     const { data: greetingMessage } = await supabase
@@ -123,6 +123,7 @@ export async function POST(req: NextRequest) {
       message: greetingMessage,
     });
   } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    console.error("Chat session create route error:", err);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
