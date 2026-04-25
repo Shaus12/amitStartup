@@ -72,6 +72,12 @@ export function FloatingAgent({ businessId }: { businessId: string }) {
   const [deletingSessionId, setDeletingSessionId] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [dragOffset, setDragOffset] = useState<{ x: number; y: number }>(() => {
+    if (typeof window === "undefined") return { x: 0, y: 0 };
+    try { const s = localStorage.getItem("aria-pos"); return s ? JSON.parse(s) : { x: 0, y: 0 }; } catch { return { x: 0, y: 0 }; }
+  });
+  const dragState = useRef<{ startX: number; startY: number; initDx: number; initDy: number } | null>(null);
+  const didDrag = useRef(false);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -216,6 +222,25 @@ export function FloatingAgent({ businessId }: { businessId: string }) {
     return () => window.removeEventListener("bm-open-agent", handler);
   }, []);
 
+  useEffect(() => {
+    try { localStorage.setItem("aria-pos", JSON.stringify(dragOffset)); } catch {}
+  }, [dragOffset]);
+
+  function handleBtnPointerDown(e: React.PointerEvent<HTMLButtonElement>) {
+    if (e.button !== 0) return;
+    (e.currentTarget as HTMLButtonElement).setPointerCapture(e.pointerId);
+    dragState.current = { startX: e.clientX, startY: e.clientY, initDx: dragOffset.x, initDy: dragOffset.y };
+    didDrag.current = false;
+  }
+  function handleBtnPointerMove(e: React.PointerEvent<HTMLButtonElement>) {
+    if (!dragState.current) return;
+    const dx = e.clientX - dragState.current.startX;
+    const dy = e.clientY - dragState.current.startY;
+    if (Math.abs(dx) > 4 || Math.abs(dy) > 4) didDrag.current = true;
+    if (didDrag.current) setDragOffset({ x: dragState.current.initDx + dx, y: dragState.current.initDy + dy });
+  }
+  function handleBtnPointerUp() { dragState.current = null; }
+
   async function send() {
     const text = input.trim();
     if (!text || isLoading) return;
@@ -299,13 +324,14 @@ export function FloatingAgent({ businessId }: { businessId: string }) {
       {/* Chat panel */}
       {isOpen && (
         <div
+          className="bottom-[148px] md:bottom-[88px]"
           style={{
             position: "fixed",
             left: 24,
-            bottom: 88,
             zIndex: 9998,
             width: 340,
             height: 470,
+            transform: `translate(${dragOffset.x}px, ${dragOffset.y}px)`,
             backgroundColor: "#13151d",
             border: "1px solid #282a30",
             borderRadius: 20,
@@ -903,12 +929,15 @@ export function FloatingAgent({ businessId }: { businessId: string }) {
 
       {/* Toggle button */}
       <button
-        onClick={() => setIsOpen((o) => !o)}
+        onClick={() => { if (didDrag.current) return; setIsOpen((o) => !o); }}
+        onPointerDown={handleBtnPointerDown}
+        onPointerMove={handleBtnPointerMove}
+        onPointerUp={handleBtnPointerUp}
         title={isOpen ? "סגור" : "שוחח עם ARIA"}
+        className="bottom-20 md:bottom-5"
         style={{
           position: "fixed",
           left: 20,
-          bottom: 20,
           zIndex: 9999,
           width: 56,
           height: 56,
@@ -920,17 +949,14 @@ export function FloatingAgent({ businessId }: { businessId: string }) {
           boxShadow: isOpen
             ? "0 4px 12px rgba(0,0,0,0.4)"
             : "0 8px 28px rgba(77,142,255,0.45), 0 0 0 1px rgba(77,142,255,0.2)",
-          cursor: "pointer",
+          cursor: "grab",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          transition: "all 0.22s cubic-bezier(0.16,1,0.3,1)",
-        }}
-        onMouseEnter={(e) => {
-          if (!isOpen) e.currentTarget.style.transform = "scale(1.08)";
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.transform = "scale(1)";
+          transition: "background 0.22s cubic-bezier(0.16,1,0.3,1), box-shadow 0.22s",
+          transform: `translate(${dragOffset.x}px, ${dragOffset.y}px)`,
+          touchAction: "none",
+          userSelect: "none",
         }}
       >
         <div

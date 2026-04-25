@@ -239,7 +239,7 @@ export function DashboardClient({ businessId, businessName }: DashboardClientPro
               }}
             >
               <RotateCcw className={`w-3 h-3 ${isRegenerating ? "animate-spin" : ""}`} strokeWidth={2} />
-              {isRegenerating ? "Analyzing…" : "Refresh AI"}
+              <span className="hidden sm:inline">{isRegenerating ? "Analyzing…" : "Refresh AI"}</span>
             </button>
           </div>
         </div>
@@ -247,7 +247,7 @@ export function DashboardClient({ businessId, businessName }: DashboardClientPro
         {/* Sub-header hint */}
         {!isLoading && data && (
           <div
-            className="px-6 pb-2.5 flex items-center gap-1.5 text-[10px]"
+            className="hidden sm:flex px-6 pb-2.5 items-center gap-1.5 text-[10px]"
             style={{ color: "#424754", fontFamily: "var(--font-inter)" }}
           >
             <span>Drag nodes to rearrange</span>

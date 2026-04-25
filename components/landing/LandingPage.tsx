@@ -846,7 +846,7 @@ function FeatureAI() {
                 style={{ backgroundColor: `${C.blue}15`, color: C.glow, ...IF }}>{f.tHead.badge}</span>
             </div>
             <div className="flex items-center gap-3">
-              <span className="text-xs" style={{ ...IF, color: C.outline }}>{f.tHead.savLbl}</span>
+              <span className="hidden sm:inline text-xs" style={{ ...IF, color: C.outline }}>{f.tHead.savLbl}</span>
               <span className="text-sm font-bold" style={{ ...MF, color: C.glow }}>{f.tHead.sav}</span>
             </div>
           </div>
