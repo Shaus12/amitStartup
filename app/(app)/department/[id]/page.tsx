@@ -60,7 +60,7 @@ export default async function DepartmentPage({
   );
 
   return (
-    <div className="p-8 max-w-4xl mx-auto">
+    <div className="p-4 sm:p-8 max-w-4xl mx-auto">
       {/* Back */}
       <Link
         href="/dashboard"
@@ -85,7 +85,7 @@ export default async function DepartmentPage({
       </div>
 
       {/* Stats row */}
-      <div className="grid grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-8">
         <StatCard
           icon={<Zap className="w-4 h-4 text-indigo-400" />}
           label="Processes"

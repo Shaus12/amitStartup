@@ -1,4 +1,4 @@
-import { Sidebar } from "@/components/layout/Sidebar";
+import { Sidebar, MobileNav } from "@/components/layout/Sidebar";
 import { FloatingAgent } from "@/components/dashboard/FloatingAgent";
 import { FeedbackWidget } from "@/components/feedback/FeedbackWidget";
 import { supabaseAdmin } from "@/lib/supabase-admin";
@@ -25,9 +25,10 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   return (
     <div className="flex h-screen overflow-hidden">
       <Sidebar />
-      <main className="flex-1 overflow-auto">{children}</main>
+      <main className="flex-1 overflow-auto pb-16 md:pb-0">{children}</main>
       {business && <FloatingAgent businessId={business.id} />}
       {business && <FeedbackWidget businessId={business.id} />}
+      <MobileNav />
     </div>
   );
 }

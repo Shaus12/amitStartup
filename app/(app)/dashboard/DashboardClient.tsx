@@ -206,7 +206,7 @@ export function DashboardClient({ businessId, businessName }: DashboardClientPro
             </button>
             <Link
               href="/report"
-              className="inline-flex items-center gap-1.5 rounded px-3 py-1.5 text-xs font-medium transition-all duration-150"
+              className="hidden sm:inline-flex items-center gap-1.5 rounded px-3 py-1.5 text-xs font-medium transition-all duration-150"
               style={{
                 fontFamily: "var(--font-inter)",
                 backgroundColor: "#1e1f26",
