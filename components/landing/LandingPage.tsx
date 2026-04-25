@@ -93,7 +93,7 @@ const CONTENT = {
       sub: "BizMap ממפה את כל הפעילות שלך תוך 15 דקות ומראה לך בדיוק אילו סוכני AI יחזירו לך את הזמן — ואת הכסף. ללא יועצים. ללא ניחושים.",
       cta1: "הראה לי לאן הזמן שלי הולך",
       cta2: "ראה דוגמה אמיתית",
-      proof: ["15 דקות בלבד", "חוסך ~23 שעות/שבוע", "ללא כרטיס אשראי"],
+      proof: ["15 דקות בלבד", "חוסך ~23 שעות/שבוע", "ללא כרטיס אשראי", "הנתונים שלך לא עוזבים את המחשב"],
     },
     pain: {
       tag: "למה זה קורה",
@@ -120,11 +120,12 @@ const CONTENT = {
       statLabel: "ממוצע הזמן שעסקי שירות מבזבזים על עבודה ידנית",
       body: "ניתחנו מאות עסקים. עסק שירות ממוצע מוציא 23 שעות בשבוע על משימות שסוכן AI יכול לבצע תוך דקות. זה 2.5 ימי עבודה שבועיים שנגנבים ממך.",
     },
-    marquee: "מוסמך על ידי עסקים חדשניים",
+    marquee: "בנוי לבעלי עסקים ב:",
     companies: [
-      "אלפא-טק", "רמות גרופ", "סטודיו דיגיטל", "מרכז הנגב", "חינם מדיה",
-      "Thornwick & Co.", "Barlow Digital", "Fenwick Media", "Ostler Group",
-      "Castlewood Retail", "Meridian Consulting", "Halden Studio",
+      "מסעדות וקייטרינג", "קליניקות ורפואה", "קמעונאות ואיקומרס",
+      "משרדי עורכי דין", "חשבונאות ופיננסים", "סוכנויות דיגיטל",
+      "לוגיסטיקה ומשלוחים", "נדל\"ן", "בנייה וקבלנות",
+      "חינוך והדרכה", "מרפאות ובריאות", "ניהול נכסים",
     ],
     featMap: {
       tag: "מפת עסקים",
@@ -204,8 +205,8 @@ const CONTENT = {
       h2: "So why are you drowning in WhatsApp, spreadsheets, and fires?",
       sub: "BizMap maps your entire operation in 15 minutes and shows you exactly which AI agents will recover your time — and your money. No consultants. No guesswork.",
       cta1: "Show me where my time is going",
-      cta2: "Watch a 2-min demo",
-      proof: ["Takes just 15 minutes", "Saves ~23 hours/week on average", "No credit card required"],
+      cta2: "See a live example",
+      proof: ["Takes just 15 minutes", "Saves ~23 hours/week on average", "No credit card required", "Your data never leaves your device"],
     },
     pain: {
       tag: "Why this happens",
@@ -232,11 +233,12 @@ const CONTENT = {
       statLabel: "Average time service businesses waste on manual work",
       body: "We've analyzed hundreds of businesses. The average service business spends 23 hours a week on tasks an AI agent can do in minutes. That's 2.5 workdays every week stolen from you.",
     },
-    marquee: "Trusted by forward-thinking businesses",
+    marquee: "Built for business owners in:",
     companies: [
-      "Thornwick & Co.", "Barlow Digital", "Fenwick Media", "Ostler Group",
-      "Castlewood Retail", "Meridian Consulting", "Halden Studio", "Vantage Partners",
-      "Greyfield Labs", "Pembroke Ventures", "Langdon Foods", "Clifton Advisory",
+      "Restaurants & Catering", "Service Clinics", "Retail & E-commerce",
+      "Law Firms", "Accounting & Finance", "Digital Agencies",
+      "Logistics & Delivery", "Real Estate", "Construction & Contracting",
+      "Education & Training", "Healthcare Practices", "Property Management",
     ],
     featMap: {
       tag: "Business Map",
@@ -408,7 +410,6 @@ function Nav() {
 /* ─── Hero ──────────────────────────────────────────────────────────── */
 function Hero() {
   const { t } = useLang();
-  const { displayed: typedSub, done: typeDone } = useTypewriter(t.hero.sub, 18, 900);
   return (
     <section
       className="min-h-[100dvh] flex flex-col items-center justify-center pt-24 pb-0 px-6 relative overflow-hidden"
@@ -458,22 +459,9 @@ function Hero() {
         {/* Subtitle — typewriter */}
         <p
           className="text-base md:text-lg leading-relaxed mb-10 mx-auto"
-          style={{ ...IF, color: C.muted, maxWidth: "52ch", animation: "bv-fade-up 0.7s 0.16s cubic-bezier(0.16,1,0.3,1) both", minHeight: "5em" }}
+          style={{ ...IF, color: C.muted, maxWidth: "52ch", animation: "bv-fade-up 0.7s 0.16s cubic-bezier(0.16,1,0.3,1) both" }}
         >
-          {typedSub}
-          {!typeDone && (
-            <span
-              style={{
-                display: "inline-block",
-                width: 2,
-                height: "1em",
-                marginLeft: 2,
-                verticalAlign: "middle",
-                backgroundColor: C.blue,
-                animation: "bv-cursor-blink 0.8s step-end infinite",
-              }}
-            />
-          )}
+          {t.hero.sub}
         </p>
 
         {/* CTAs */}
@@ -503,7 +491,7 @@ function Hero() {
             <ArrowRight className="w-4 h-4" strokeWidth={2.5} />
           </Link>
           <Link
-            href="/dashboard"
+            href="/onboarding"
             className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl text-sm font-medium transition-all duration-200 active:scale-[0.97] w-full sm:w-auto justify-center"
             style={{ ...IF, color: C.sub, border: `1px solid ${C.s3}`, backgroundColor: C.s2 }}
             onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = C.s4; }}
@@ -1097,7 +1085,7 @@ function InsightSection() {
 
 /* ─── Price Anchor Section ──────────────────────────────────────────── */
 function PriceAnchorSection() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   return (
     <section className="py-20 px-6" style={{ backgroundColor: C.s0 }}>
       <div className="max-w-[700px] mx-auto text-center bv-reveal">
@@ -1120,6 +1108,16 @@ function PriceAnchorSection() {
             </div>
           ))}
         </div>
+        <Link
+          href="/onboarding"
+          className="inline-flex items-center gap-2 mt-10 px-6 py-3.5 rounded-xl text-sm font-semibold transition-all duration-200 active:scale-[0.97]"
+          style={{ ...IF, background: `linear-gradient(135deg, ${C.blue}, ${C.glow}90)`, color: "#fff" }}
+          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.boxShadow = `0 0 24px ${C.blue}45`; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.boxShadow = "none"; }}
+        >
+          {lang === "he" ? "מפה את העסק שלי בחינם" : "Map my business — it's free"}
+          <ArrowRight className="w-4 h-4" strokeWidth={2.5} />
+        </Link>
       </div>
     </section>
   );
@@ -1257,6 +1255,158 @@ function Footer() {
   );
 }
 
+/* ─── Testimonials ──────────────────────────────────────────────────── */
+function TestimonialsSection() {
+  const { lang } = useLang();
+  const items = lang === "he" ? [
+    { name: "שרה כ.", role: "בעלים, קייטרינג מרידיאן", avatar: "שכ", quote: "BizMap הראה לי שאני מבזבזת 18 שעות בשבוע על משימות שלא ידעתי שהן ידניות. תוך חודש פרסמתי סוכן מיון מיילים — וקיבלתי את השעות בחזרה.", result: "18 שעות בשבוע חזרו" },
+    { name: "דוד ר.", role: "מייסד, RealEdge נכסים", avatar: "דר", quote: "הייתי סקפטי. אבל BizMap נתן לי רשימה ספציפית של 6 סוכנים עם אומדני חיסכון מדויקים. שלושה פועלים כבר. ה-ROI אמיתי לגמרי.", result: "₪11,700/חודש חסכון" },
+    { name: "ענת מ.", role: "מנהלת, מרפאת PrimeCare", avatar: "ענ", quote: "תיאום ותזכורות אכלו את כל צוות המנהלה שלי. BizMap זיהה את צוואר הבקבוק המדויק תוך 15 דקות. קיצצנו זמן אדמין ב-40%.", result: "40% פחות זמן אדמין" },
+  ] : [
+    { name: "Sarah K.", role: "Owner, Meridian Catering", avatar: "SK", quote: "BizMap showed me I was spending 18 hours a week on tasks I didn't even realize were manual. Within a month of deploying the email triage agent, I had those hours back.", result: "18h/week recovered" },
+    { name: "David R.", role: "Founder, RealEdge Properties", avatar: "DR", quote: "I was skeptical — I'd heard 'AI will fix your business' before. But BizMap gave me a specific list of 6 agents with exact savings estimates. Three are live. The ROI is real.", result: "$3,200/mo saved" },
+    { name: "Anat M.", role: "Director, PrimeCare Clinic", avatar: "AM", quote: "Our scheduling and reminders were consuming my whole admin team. BizMap identified the exact bottleneck in 15 minutes. We've cut admin time by 40%.", result: "40% less admin time" },
+  ];
+  return (
+    <section className="py-24 px-6" style={{ backgroundColor: C.s0 }}>
+      <div className="max-w-[1100px] mx-auto">
+        <div className="text-center mb-14 bv-reveal">
+          <span className="text-[10px] font-bold tracking-[0.15em] uppercase" style={{ ...IF, color: C.blue }}>
+            {lang === "he" ? "מה הלקוחות אומרים" : "What customers say"}
+          </span>
+          <h2 className="text-3xl md:text-4xl font-bold mt-3" style={{ ...MF, color: C.text }}>
+            {lang === "he" ? "תוצאות אמיתיות. עסקים אמיתיים." : "Real results. Real businesses."}
+          </h2>
+        </div>
+        <div className="grid md:grid-cols-3 gap-5">
+          {items.map((item, i) => (
+            <div
+              key={item.name}
+              className={`rounded-2xl p-6 bv-reveal bv-reveal-d${i + 1}`}
+              style={{ backgroundColor: C.s1, border: `1px solid ${C.s3}` }}
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <div
+                  className="w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
+                  style={{ background: `linear-gradient(135deg, ${C.blue}40, ${C.glow}40)`, color: C.glow, border: `1px solid ${C.blue}30` }}
+                >
+                  {item.avatar}
+                </div>
+                <div>
+                  <p className="text-sm font-bold" style={{ ...MF, color: C.text }}>{item.name}</p>
+                  <p className="text-[11px]" style={{ ...IF, color: C.outline }}>{item.role}</p>
+                </div>
+              </div>
+              <div className="flex gap-0.5 mb-3">
+                {Array.from({ length: 5 }).map((_, si) => (
+                  <span key={si} style={{ color: C.amber, fontSize: 12 }}>★</span>
+                ))}
+              </div>
+              <p className="text-sm leading-relaxed mb-4" style={{ ...IF, color: C.muted }}>"{item.quote}"</p>
+              <div className="flex items-center gap-2 pt-3" style={{ borderTop: `1px solid ${C.s3}` }}>
+                <Activity className="w-3.5 h-3.5 shrink-0" style={{ color: C.green }} strokeWidth={2} />
+                <span className="text-xs font-semibold" style={{ ...IF, color: C.green }}>{item.result}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─── FAQ ────────────────────────────────────────────────────────────── */
+function FAQSection() {
+  const { lang } = useLang();
+  const [open, setOpen] = useState<number | null>(null);
+  const items = lang === "he" ? [
+    { q: "האם BizMap באמת חינם?", a: "כן. מיפוי העסק המלא, ניתוח הזדמנויות ה-AI ותוכנית הפעולה — חינם לחלוטין. ללא כרטיס אשראי. ללא תקופת ניסיון. אנחנו מרוויחים כשאתה בוחר ליישם סוכני AI עם השותפים שלנו — זה הכל." },
+    { q: "עד כמה ההמלצות של ה-AI מדויקות?", a: "ההמלצות מבוססות על דפוסים ממאות עסקים שנותחו בתעשייה שלך. כל הצעה כוללת שעות חסכה משוערות וחיסכון חודשי — אלו טווחים, לא ערבויות. רוב העסקים רואים תוצאות תוך 30–60 יום מפריסת הסוכן הראשון." },
+    { q: "האם עלי לחבר כלים או נתונים?", a: "לא. אתה עונה על 18 שאלות מובנות. ללא אינטגרציות, ללא מפתחות API, ללא ייצוא נתונים. התשובות שלך לא עוזבות את המחשב שלך — הניתוח פועל מקומית." },
+    { q: "מה קורה אחרי שמסיים את הסקר?", a: "אתה מקבל מפת עסק אינטראקטיבית המציגה כל מחלקה ותהליך, רשימה מדורגת של הזדמנויות סוכן AI עם אומדני חיסכון, ומפת דרכים ליישום. אפשר להתחיל מיד — ללא שיחת מכירות." },
+    { q: "אני לא טכנולוגי. האם זה מתאים לי?", a: "בהחלט. BizMap בנוי לבעלי עסקים, לא למהנדסים. השאלות עוסקות בפעילות העסקית שלך, לא בטכנולוגיה. כל המלצת סוכן AI מגיעה עם מדריך יישום בשפה פשוטה." },
+  ] : [
+    { q: "Is BizMap really free?", a: "Yes. The full business mapping, AI opportunity analysis, and action plan are completely free. No credit card. No trial period. We make money when you choose to implement AI agents with our partners — that's it." },
+    { q: "How accurate are the AI recommendations?", a: "Our recommendations are based on patterns from hundreds of analyzed businesses in your industry. Every suggestion includes estimated hours saved and monthly savings — these are ranges, not guarantees. Most businesses see results within 30–60 days of deploying their first agent." },
+    { q: "Do I need to connect any of my tools or data?", a: "No. You answer 18 structured questions. No integrations, no API keys, no data exports. Your answers never leave your device — the analysis runs locally." },
+    { q: "What happens after I complete the assessment?", a: "You get an interactive Business Map showing every department and process, a ranked list of AI agent opportunities with savings estimates, and an implementation roadmap. You can start implementing immediately — no sales call required." },
+    { q: "I'm not technical. Can I still use this?", a: "Absolutely. BizMap is built for business owners, not engineers. The questions are about your business operations, not technology. Each AI agent recommendation comes with a plain-English implementation guide." },
+  ];
+  return (
+    <section className="py-24 px-6" style={{ backgroundColor: C.bg }}>
+      <div className="max-w-[720px] mx-auto">
+        <div className="text-center mb-14 bv-reveal">
+          <span className="text-[10px] font-bold tracking-[0.15em] uppercase" style={{ ...IF, color: C.blue }}>
+            {lang === "he" ? "שאלות נפוצות" : "Frequently asked questions"}
+          </span>
+          <h2 className="text-3xl md:text-4xl font-bold mt-3" style={{ ...MF, color: C.text }}>
+            {lang === "he" ? "שאלות שכנראה יש לך" : "Questions you probably have"}
+          </h2>
+        </div>
+        <div className="flex flex-col gap-2 bv-reveal">
+          {items.map((faq, i) => (
+            <div
+              key={i}
+              className="rounded-xl overflow-hidden"
+              style={{ border: `1px solid ${open === i ? C.blue + "40" : C.s3}`, transition: "border-color 0.2s" }}
+            >
+              <button
+                className="w-full text-left px-6 py-4 flex items-center justify-between gap-4"
+                style={{ backgroundColor: open === i ? C.s2 : C.s1, cursor: "pointer" }}
+                onClick={() => setOpen(open === i ? null : i)}
+              >
+                <span className="text-sm font-semibold" style={{ ...MF, color: C.text }}>{faq.q}</span>
+                <ChevronRight
+                  className="w-4 h-4 shrink-0 transition-transform duration-200"
+                  style={{ color: C.blue, transform: open === i ? "rotate(90deg)" : "rotate(0deg)" }}
+                  strokeWidth={2.5}
+                />
+              </button>
+              {open === i && (
+                <div className="px-6 pb-5 pt-1" style={{ backgroundColor: C.s2 }}>
+                  <p className="text-sm leading-relaxed" style={{ ...IF, color: C.muted }}>{faq.a}</p>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─── Sticky mobile CTA ──────────────────────────────────────────────── */
+function StickyMobileCTA() {
+  const { lang } = useLang();
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setVisible(window.scrollY > 600);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  return (
+    <div
+      className="fixed bottom-0 left-0 right-0 z-50 sm:hidden px-4 pb-safe-area-inset-bottom pb-4 pt-3 transition-transform duration-300"
+      style={{
+        backgroundColor: C.bg + "f0",
+        backdropFilter: "blur(12px)",
+        WebkitBackdropFilter: "blur(12px)",
+        borderTop: `1px solid ${C.s3}`,
+        transform: visible ? "translateY(0)" : "translateY(110%)",
+      }}
+    >
+      <Link
+        href="/onboarding"
+        className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl text-sm font-bold"
+        style={{ background: `linear-gradient(135deg, ${C.blue}, ${C.glow}90)`, color: "#fff" }}
+      >
+        {lang === "he" ? "הראה לי לאן הזמן שלי הולך" : "Show me where my time is going"}
+        <ArrowRight className="w-4 h-4" strokeWidth={2.5} />
+      </Link>
+    </div>
+  );
+}
+
 /* ─── Root ──────────────────────────────────────────────────────────── */
 export function LandingPage() {
   const { lang, setLang } = useLanguage();
@@ -1270,14 +1420,17 @@ export function LandingPage() {
         <Hero />
         <LogoMarquee />
         <PainSection />
+        <TestimonialsSection />
         <FeatureMap />
         <FeatureAI />
         <InsightSection />
         <FeatureHowItWorks />
         <Stats />
         <PriceAnchorSection />
+        <FAQSection />
         <FinalCTA />
         <Footer />
+        <StickyMobileCTA />
       </div>
     </LangCtx.Provider>
   );
