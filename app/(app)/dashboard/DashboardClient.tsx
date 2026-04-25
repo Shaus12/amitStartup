@@ -206,7 +206,7 @@ export function DashboardClient({ businessId, businessName }: DashboardClientPro
             </button>
             <Link
               href="/report"
-              className="inline-flex items-center gap-1.5 rounded px-3 py-1.5 text-xs font-medium transition-all duration-150"
+              className="hidden sm:inline-flex items-center gap-1.5 rounded px-3 py-1.5 text-xs font-medium transition-all duration-150"
               style={{
                 fontFamily: "var(--font-inter)",
                 backgroundColor: "#1e1f26",
@@ -239,7 +239,7 @@ export function DashboardClient({ businessId, businessName }: DashboardClientPro
               }}
             >
               <RotateCcw className={`w-3 h-3 ${isRegenerating ? "animate-spin" : ""}`} strokeWidth={2} />
-              {isRegenerating ? "מנתח..." : "רענן ניתוח"}
+              <span className="hidden sm:inline">{isRegenerating ? "מנתח..." : "רענן ניתוח"}</span>
             </button>
           </div>
         </div>
@@ -247,7 +247,7 @@ export function DashboardClient({ businessId, businessName }: DashboardClientPro
         {/* Sub-header hint */}
         {!isLoading && data && (
           <div
-            className="px-6 pb-2.5 flex items-center gap-1.5 text-[10px]"
+            className="hidden sm:flex px-6 pb-2.5 items-center gap-1.5 text-[10px]"
             style={{ color: "#424754", fontFamily: "var(--font-inter)" }}
           >
             <span>Drag nodes to rearrange</span>

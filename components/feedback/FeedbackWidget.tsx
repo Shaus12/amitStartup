@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Lightbulb, Send, X } from "lucide-react";
 
 interface FeedbackWidgetProps {
@@ -12,6 +12,31 @@ export function FeedbackWidget({ businessId }: FeedbackWidgetProps) {
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
+  const [dragOffset, setDragOffset] = useState<{ x: number; y: number }>(() => {
+    if (typeof window === "undefined") return { x: 0, y: 0 };
+    try { const s = localStorage.getItem("feedback-pos"); return s ? JSON.parse(s) : { x: 0, y: 0 }; } catch { return { x: 0, y: 0 }; }
+  });
+  const dragState = useRef<{ startX: number; startY: number; initDx: number; initDy: number } | null>(null);
+  const didDrag = useRef(false);
+
+  useEffect(() => {
+    try { localStorage.setItem("feedback-pos", JSON.stringify(dragOffset)); } catch {}
+  }, [dragOffset]);
+
+  function handleFBPointerDown(e: React.PointerEvent<HTMLButtonElement>) {
+    if (e.button !== 0) return;
+    (e.currentTarget as HTMLButtonElement).setPointerCapture(e.pointerId);
+    dragState.current = { startX: e.clientX, startY: e.clientY, initDx: dragOffset.x, initDy: dragOffset.y };
+    didDrag.current = false;
+  }
+  function handleFBPointerMove(e: React.PointerEvent<HTMLButtonElement>) {
+    if (!dragState.current) return;
+    const dx = e.clientX - dragState.current.startX;
+    const dy = e.clientY - dragState.current.startY;
+    if (Math.abs(dx) > 4 || Math.abs(dy) > 4) didDrag.current = true;
+    if (didDrag.current) setDragOffset({ x: dragState.current.initDx + dx, y: dragState.current.initDy + dy });
+  }
+  function handleFBPointerUp() { dragState.current = null; }
 
   async function submit() {
     const trimmed = message.trim();
@@ -47,12 +72,13 @@ export function FeedbackWidget({ businessId }: FeedbackWidgetProps) {
     <>
       {open && (
         <div
+          className="bottom-20 md:bottom-5"
           style={{
             position: "fixed",
             right: 20,
-            bottom: 20,
             zIndex: 9998,
             width: 300,
+            transform: `translate(${dragOffset.x}px, ${dragOffset.y}px)`,
             backgroundColor: "#13151d",
             border: "1px solid #282a30",
             borderRadius: 14,
@@ -132,12 +158,15 @@ export function FeedbackWidget({ businessId }: FeedbackWidgetProps) {
 
       {!open && (
         <button
-          onClick={() => setOpen(true)}
+          onClick={() => { if (didDrag.current) return; setOpen(true); }}
+          onPointerDown={handleFBPointerDown}
+          onPointerMove={handleFBPointerMove}
+          onPointerUp={handleFBPointerUp}
           title="שלח פידבק לצוות BizMap"
+          className="bottom-20 md:bottom-5"
           style={{
             position: "fixed",
             right: 20,
-            bottom: 20,
             zIndex: 9997,
             height: 34,
             padding: "0 12px",
@@ -151,7 +180,10 @@ export function FeedbackWidget({ businessId }: FeedbackWidgetProps) {
             display: "flex",
             alignItems: "center",
             gap: 6,
-            cursor: "pointer",
+            cursor: "grab",
+            transform: `translate(${dragOffset.x}px, ${dragOffset.y}px)`,
+            touchAction: "none",
+            userSelect: "none",
           }}
         >
           <Lightbulb size={13} />

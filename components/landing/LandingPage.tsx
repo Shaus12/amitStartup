@@ -530,7 +530,7 @@ function Hero() {
 
       {/* Product mockup */}
       <div
-        className="relative z-10 mt-16 w-full max-w-[1180px] mx-auto"
+        className="relative z-10 mt-16 w-full max-w-[1180px] mx-auto hidden sm:block"
         style={{ animation: "bv-fade-up 0.9s 0.4s cubic-bezier(0.16,1,0.3,1) both" }}
       >
         <HeroBrowserMockup />
@@ -846,7 +846,7 @@ function FeatureAI() {
                 style={{ backgroundColor: `${C.blue}15`, color: C.glow, ...IF }}>{f.tHead.badge}</span>
             </div>
             <div className="flex items-center gap-3">
-              <span className="text-xs" style={{ ...IF, color: C.outline }}>{f.tHead.savLbl}</span>
+              <span className="hidden sm:inline text-xs" style={{ ...IF, color: C.outline }}>{f.tHead.savLbl}</span>
               <span className="text-sm font-bold" style={{ ...MF, color: C.glow }}>{f.tHead.sav}</span>
             </div>
           </div>
@@ -1196,7 +1196,7 @@ function Footer() {
       <div className="max-w-[1400px] mx-auto px-6 md:px-10 lg:px-16 pt-16 pb-10">
         <div className="grid grid-cols-2 md:grid-cols-[2fr_1fr_1fr_1fr_1fr] gap-10 mb-16">
           {/* Brand */}
-          <div>
+          <div className="col-span-2 md:col-span-1">
             <div className="flex items-center gap-2.5 mb-5">
               <div className="w-7 h-7 rounded-md flex items-center justify-center"
                 style={{ background: `linear-gradient(135deg, ${C.blue}, ${C.glow})` }}>
