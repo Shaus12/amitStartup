@@ -104,15 +104,24 @@ export async function POST(req: NextRequest) {
 
     const bizId = business.id;
 
-    const { error: pointsError } = await supabase.from("user_points").upsert(
-      {
-        user_id: user.id,
-        business_id: bizId,
-        total_points: 0,
-        level: 1,
-      },
-      { onConflict: "user_id" }
-    );
+    const pointsPayload = {
+      user_id: user.id,
+      business_id: bizId,
+      total_points: 0,
+      level: 1,
+    };
+    let { error: pointsError } = await supabase
+      .from("user_points")
+      .upsert(pointsPayload, { onConflict: "user_id" });
+
+    // Fallback for schemas where only (user_id, business_id) is unique.
+    if (pointsError?.code === "42P10") {
+      const retry = await supabase
+        .from("user_points")
+        .upsert(pointsPayload, { onConflict: "user_id, business_id" });
+      pointsError = retry.error;
+    }
+
     if (pointsError) {
       console.error("Failed to init user_points:", {
         code: pointsError.code,

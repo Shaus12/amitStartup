@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useOnboardingStore, TOTAL_STEPS } from "@/lib/hooks/useOnboardingStore";
 import { useT } from "@/lib/i18n";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Step00_Welcome } from "@/components/onboarding/steps/Step00_Welcome";
 import { Step02_TeamSize } from "@/components/onboarding/steps/Step02_TeamSize";
 import { Step03_Revenue } from "@/components/onboarding/steps/Step03_Revenue";
@@ -66,10 +67,20 @@ function RegistrationModeSelector({ onSelect }: { onSelect: (mode: "quick" | "fu
     <div className="min-h-[100dvh] flex items-center justify-center px-6" style={{ backgroundColor: "#111319" }}>
       <div style={{ maxWidth: 480, width: "100%" }}>
         {/* Logo */}
-        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 40, justifyContent: "center" }}>
+        <Link
+          href="/"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            marginBottom: 40,
+            justifyContent: "center",
+            textDecoration: "none",
+          }}
+        >
           <img src="/logo.png" alt="BizMap Logo" style={{ width: 40, height: 40, objectFit: "contain" }} />
           <span style={{ fontSize: 18, fontWeight: 700, color: "#e2e2eb", fontFamily: "var(--font-manrope)" }}>BizMap</span>
-        </div>
+        </Link>
 
         <div style={{ textAlign: "center", marginBottom: 32 }}>
           <h1 style={{ fontSize: 26, fontWeight: 800, color: "#e2e2eb", fontFamily: "var(--font-manrope)", letterSpacing: "-0.02em", marginBottom: 8 }}>
@@ -269,7 +280,7 @@ export function OnboardingWizard() {
         />
 
         <div className="relative">
-          <div className="flex items-center gap-3 mb-14">
+          <Link href="/" className="flex items-center gap-3 mb-14" style={{ textDecoration: "none" }}>
             <img src="/logo.png" alt="BizMap Logo" className="w-8 h-8 object-contain" />
             <span
               className="text-sm font-semibold tracking-tight"
@@ -277,7 +288,7 @@ export function OnboardingWizard() {
             >
               BizMap
             </span>
-          </div>
+          </Link>
 
           <div className="mb-2">
             <span
@@ -376,10 +387,10 @@ export function OnboardingWizard() {
           className="flex md:hidden items-center justify-between gap-3 px-5 py-3 border-b min-w-0"
           style={{ borderColor: "#282a30" }}
         >
-          <div className="flex items-center gap-2 shrink-0 min-w-0">
+          <Link href="/" className="flex items-center gap-2 shrink-0 min-w-0" style={{ textDecoration: "none" }}>
             <img src="/logo.png" alt="BizMap Logo" className="w-5 h-5 shrink-0 object-contain" />
             <span className="text-xs font-semibold truncate" style={{ color: "#c2c6d6", fontFamily: "var(--font-manrope)" }}>BizMap</span>
-          </div>
+          </Link>
           <span className="text-[11px] tabular-nums shrink-0" style={{ color: "#424754" }}>
             {currentStep + 1} / {TOTAL_STEPS}
           </span>
