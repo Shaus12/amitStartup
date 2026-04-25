@@ -455,7 +455,7 @@ const TRANSLATIONS = {
         { href: "/roadmap", label: "מפת דרכים", description: "תוכנית מימוש" },
         { href: "/report", label: "ייצוא דוח", description: "סיכום PDF" },
       ],
-      footer: "BizMap Intelligence v1.0",
+      footer: "BizMap v1.0",
     },
     login: {
       welcome: "ברוך שובך",
@@ -913,7 +913,7 @@ const TRANSLATIONS = {
         { href: "/roadmap", label: "Roadmap", description: "Implementation plan" },
         { href: "/report", label: "Export Report", description: "PDF summary" },
       ],
-      footer: "BizMap Intelligence v1.0",
+      footer: "BizMap v1.0",
     },
     login: {
       welcome: "Welcome back",

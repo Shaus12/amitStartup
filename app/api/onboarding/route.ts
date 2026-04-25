@@ -4,6 +4,39 @@ import { supabaseAdmin as supabase } from "@/lib/supabase-admin";
 import { createClient } from "@/lib/supabase/server";
 import { OnboardingAnswers, ONBOARDING_COMPLETED_STEP_INDEX } from "@/lib/types/onboarding";
 import { buildOnboardingKnowledgeRows } from "@/lib/onboarding/knowledgeFromAnswers";
+import type { SupabaseClient } from "@supabase/supabase-js";
+
+async function rollbackOnboardingBusiness(
+  supabase: SupabaseClient,
+  businessId: string
+) {
+  const log = (err: { message?: string } | null) => {
+    if (err) console.error("Onboarding rollback step error:", err);
+  };
+  log(
+    (await supabase.from("user_points").delete().eq("business_id", businessId))
+      .error
+  );
+  log(
+    (await supabase.from("departments").delete().eq("business_id", businessId))
+      .error
+  );
+  log(
+    (await supabase
+      .from("onboarding_sessions")
+      .delete()
+      .eq("business_id", businessId)).error
+  );
+  log(
+    (await supabase
+      .from("business_knowledge")
+      .delete()
+      .eq("business_id", businessId)).error
+  );
+  log(
+    (await supabase.from("businesses").delete().eq("id", businessId)).error
+  );
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -66,7 +99,7 @@ export async function POST(req: NextRequest) {
 
     if (bizError || !business) {
       console.error("Business insert error:", bizError);
-      throw bizError || new Error("Business creation failed");
+      return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }
 
     const bizId = business.id;
@@ -80,7 +113,11 @@ export async function POST(req: NextRequest) {
       },
       { onConflict: "user_id, business_id" }
     );
-    if (pointsError) console.error("Failed to init user_points:", pointsError);
+    if (pointsError) {
+      console.error("Failed to init user_points:", pointsError);
+      await rollbackOnboardingBusiness(supabase, bizId);
+      return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    }
 
     // ── 2. Create departments ─────
     const DEPT_COLORS = [
@@ -105,7 +142,10 @@ export async function POST(req: NextRequest) {
 
       if (deptError) {
         console.error("Department insert error:", deptError);
-      } else if (insertedDepts) {
+        await rollbackOnboardingBusiness(supabase, bizId);
+        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+      }
+      if (insertedDepts) {
         for (const d of insertedDepts) {
           deptNameToId[d.name] = d.id;
         }
@@ -120,7 +160,11 @@ export async function POST(req: NextRequest) {
       answers,
     });
 
-    if (sessionError) console.error("Failed to insert onboarding_session:", sessionError);
+    if (sessionError) {
+      console.error("Failed to insert onboarding_session:", sessionError);
+      await rollbackOnboardingBusiness(supabase, bizId);
+      return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    }
 
     // ── 4. business_knowledge — consumed by /api/opportunities/generate & chat ──
     const knowledgeToInsert = buildOnboardingKnowledgeRows(answers, bizId, deptNameToId);
@@ -128,7 +172,11 @@ export async function POST(req: NextRequest) {
     if (knowledgeToInsert.length > 0) {
       const { error: knowledgeError } = await supabase.from("business_knowledge").insert(knowledgeToInsert);
 
-      if (knowledgeError) console.error("Failed to insert business knowledge:", knowledgeError);
+      if (knowledgeError) {
+        console.error("Failed to insert business knowledge:", knowledgeError);
+        await rollbackOnboardingBusiness(supabase, bizId);
+        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+      }
     }
 
     return NextResponse.json({ businessId: bizId });

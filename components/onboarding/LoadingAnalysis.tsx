@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { toast } from "sonner";
+import Link from "next/link";
 import { Sparkles, Cpu } from "lucide-react";
 import { useOnboardingStore } from "@/lib/hooks/useOnboardingStore";
 
@@ -42,7 +42,50 @@ export function LoadingAnalysis() {
   const searchParams = useSearchParams();
   const businessId = searchParams.get("businessId");
   const [progress, setProgress] = useState(0);
+  const [analysisFailed, setAnalysisFailed] = useState(false);
+  const [retryTick, setRetryTick] = useState(0);
   const resetOnboarding = useOnboardingStore((s) => s.reset);
+
+  const acRef = useRef<AbortController | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const clearProgressInterval = useCallback(() => {
+    if (intervalRef.current != null) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  }, []);
+
+  const runAnalysis = useCallback(
+    (signal: AbortSignal): Promise<void> => {
+      if (!businessId) return Promise.resolve();
+      return (async () => {
+        setAnalysisFailed(false);
+        const res = await fetch("/api/opportunities/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ businessId }),
+          signal,
+        });
+        if (signal.aborted) return;
+        if (!res.ok) {
+          const body = await res.json().catch(() => ({}));
+          throw new Error(
+            (body as { details?: string; error?: string }).details ||
+              (body as { error?: string }).error ||
+              "יצירת הניתוח נכשלה"
+          );
+        }
+        clearProgressInterval();
+        setProgress(100);
+        await new Promise((r) => setTimeout(r, 550));
+        if (signal.aborted) return;
+        router.replace("/dashboard?fromAnalysis=1");
+        router.refresh();
+      })();
+    },
+    [businessId, clearProgressInterval, router]
+  );
 
   useEffect(() => {
     if (!businessId) {
@@ -50,56 +93,90 @@ export function LoadingAnalysis() {
       return;
     }
 
-    // Clear wizard state after we’re on the loading screen (avoids pre-navigation flash to step 0)
     resetOnboarding();
+    setProgress(0);
+    setAnalysisFailed(false);
 
-    const ac = new AbortController();
+    acRef.current = new AbortController();
+    const signal = acRef.current.signal;
     const startedAt = Date.now();
 
-    const intervalId = window.setInterval(() => {
+    clearProgressInterval();
+    intervalRef.current = setInterval(() => {
+      if (signal.aborted) return;
       const elapsed = Date.now() - startedAt;
       setProgress(progressWhileWaiting(elapsed));
     }, 220);
 
-    (async () => {
+    void (async () => {
       try {
-        const res = await fetch("/api/opportunities/generate", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ businessId }),
-          signal: ac.signal,
-        });
-        if (ac.signal.aborted) return;
-        if (!res.ok) {
-          const body = await res.json().catch(() => ({}));
-          throw new Error(body.details || body.error || "יצירת הניתוח נכשלה");
-        }
-        window.clearInterval(intervalId);
-        setProgress(100);
-        await new Promise((r) => setTimeout(r, 550));
-        if (ac.signal.aborted) return;
-        router.replace("/dashboard?fromAnalysis=1");
-        router.refresh();
+        await runAnalysis(signal);
       } catch (e) {
-        window.clearInterval(intervalId);
         if (e instanceof Error && e.name === "AbortError") return;
-        toast.error(e instanceof Error ? e.message : "שגיאה בניתוח");
-        if (!ac.signal.aborted) {
-          router.replace("/dashboard?fromAnalysis=1");
-          router.refresh();
-        }
+        if (signal.aborted) return;
+        clearProgressInterval();
+        setAnalysisFailed(true);
       }
     })();
 
     return () => {
-      ac.abort();
-      window.clearInterval(intervalId);
+      acRef.current?.abort();
+      clearProgressInterval();
     };
-  }, [businessId, router, resetOnboarding]);
+  }, [businessId, router, resetOnboarding, retryTick, runAnalysis, clearProgressInterval]);
 
   const displayProgress = Math.min(100, Math.round(progress));
   const stageIdx = stageIndexForProgress(displayProgress);
   const done = displayProgress >= 100;
+
+  if (analysisFailed) {
+    return (
+      <div
+        className="relative min-h-[100dvh] flex flex-col items-center justify-center overflow-hidden px-5 py-12"
+        style={{
+          fontFamily: "var(--font-inter), system-ui, sans-serif",
+          background:
+            "radial-gradient(ellipse 120% 80% at 50% -20%, rgba(77,142,255,0.18), transparent 55%), radial-gradient(ellipse 90% 60% at 100% 50%, rgba(139,92,246,0.12), transparent 45%), #0b0c11",
+        }}
+        dir="rtl"
+      >
+        <div className="relative z-10 w-full max-w-lg text-center" style={{ fontFamily: "var(--font-manrope), system-ui, sans-serif" }}>
+          <p className="text-base font-bold text-red-200/90 mb-6" style={{ color: "#f87171" }}>
+            משהו השתבש בניתוח
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center items-stretch sm:items-center">
+            <button
+              type="button"
+              onClick={() => setRetryTick((t) => t + 1)}
+              className="rounded-lg px-5 py-2.5 text-sm font-semibold"
+              style={{
+                background: "linear-gradient(135deg, #6366f1, #8b5cf6)",
+                color: "#fff",
+                fontFamily: "var(--font-inter)",
+                border: "none",
+                cursor: "pointer",
+              }}
+            >
+              נסה שוב
+            </button>
+            <Link
+              href="/dashboard"
+              className="inline-flex items-center justify-center rounded-lg px-5 py-2.5 text-sm font-medium"
+              style={{
+                background: "#1e1f26",
+                border: "1px solid #282a30",
+                color: "#8c909f",
+                textDecoration: "none",
+                fontFamily: "var(--font-inter)",
+              }}
+            >
+              דלג לדאשבורד
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div

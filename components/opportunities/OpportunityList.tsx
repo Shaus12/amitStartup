@@ -58,22 +58,22 @@ export function OpportunityList({ opportunities, onPin, onDismiss }: Opportunity
   return (
     <div>
       <OpportunitySection
-        title="🤖 AI Agents"
+        title="🤖 סוכני AI"
         items={agents}
         onPin={onPin}
         onDismiss={onDismiss}
       />
       <OpportunitySection
-        title="⚡ Automations & Tools"
+        title="⚡ אוטומציה וכלים"
         items={automations}
         onPin={onPin}
         onDismiss={onDismiss}
       />
       {opportunities.length === 0 && (
         <div className="flex flex-col items-center justify-center py-16 text-center">
-          <p className="text-zinc-400 font-medium mb-1">No opportunities found</p>
+          <p className="text-zinc-400 font-medium mb-1">לא נמצאו הזדמנויות</p>
           <p className="text-sm text-zinc-600">
-            Try adjusting your filters or regenerate the AI analysis.
+            נסו לשנות מסננים או להריץ מחדש את ניתוח ה-AI.
           </p>
         </div>
       )}

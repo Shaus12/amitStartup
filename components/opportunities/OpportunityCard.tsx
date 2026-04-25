@@ -10,16 +10,16 @@ interface OpportunityCardProps {
 }
 
 const CATEGORY_STYLE: Record<string, { color: string; bg: string; label: string; icon: React.ReactNode }> = {
-  ai_agent: { color: "#a78bfa", bg: "rgba(167,139,250,0.12)", label: "AI Agent", icon: <Bot className="w-3 h-3" /> },
-  automation: { color: "#4d8eff", bg: "rgba(77,142,255,0.12)", label: "Automation", icon: <Zap className="w-3 h-3" /> },
-  ai_tool: { color: "#34d399", bg: "rgba(52,211,153,0.12)", label: "AI Tool", icon: <Zap className="w-3 h-3" /> },
-  process_change: { color: "#fb923c", bg: "rgba(251,146,60,0.12)", label: "Process", icon: <Layers className="w-3 h-3" /> },
+  ai_agent: { color: "#a78bfa", bg: "rgba(167,139,250,0.12)", label: "סוכן AI", icon: <Bot className="w-3 h-3" /> },
+  automation: { color: "#4d8eff", bg: "rgba(77,142,255,0.12)", label: "אוטומציה", icon: <Zap className="w-3 h-3" /> },
+  ai_tool: { color: "#34d399", bg: "rgba(52,211,153,0.12)", label: "כלי AI", icon: <Zap className="w-3 h-3" /> },
+  process_change: { color: "#fb923c", bg: "rgba(251,146,60,0.12)", label: "תהליך", icon: <Layers className="w-3 h-3" /> },
 };
 
 const EFFORT_STYLE: Record<string, { color: string; label: string }> = {
-  low: { color: "#34d399", label: "Easy win" },
-  medium: { color: "#fbbf24", label: "Medium effort" },
-  high: { color: "#f87171", label: "Big project" },
+  low: { color: "#34d399", label: "ניצחון קל" },
+  medium: { color: "#fbbf24", label: "מאמץ בינוני" },
+  high: { color: "#f87171", label: "פרויקט גדול" },
 };
 
 const IMPACT_COLOR: Record<string, string> = {
@@ -102,7 +102,7 @@ export function OpportunityCard({ opportunity, onPin, onDismiss }: OpportunityCa
           <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
             <button
               onClick={onPin}
-              aria-label={isPinned ? "Unpin" : "Pin"}
+              aria-label={isPinned ? "הסר נעיצה" : "נעץ"}
               className="p-1.5 rounded-md transition-colors"
               style={{ color: isPinned ? "#fbbf24" : "#424754" }}
               onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "#fbbf24"; }}
@@ -112,7 +112,7 @@ export function OpportunityCard({ opportunity, onPin, onDismiss }: OpportunityCa
             </button>
             <button
               onClick={onDismiss}
-              aria-label="Dismiss"
+              aria-label="התעלם"
               className="p-1.5 rounded-md transition-colors"
               style={{ color: "#424754" }}
               onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "#f87171"; }}
@@ -154,7 +154,7 @@ export function OpportunityCard({ opportunity, onPin, onDismiss }: OpportunityCa
                 <span style={{ color: "#424754" }}>·</span>
                 <span className="text-[10px]" style={{ color: "#8c909f" }}>
                   {agentTools.join(", ")}
-                  {(opportunity.agentTools?.split(",").length ?? 0) > 3 ? " +more" : ""}
+                  {(opportunity.agentTools?.split(",").length ?? 0) > 3 ? " +עוד" : ""}
                 </span>
               </>
             )}
@@ -169,7 +169,7 @@ export function OpportunityCard({ opportunity, onPin, onDismiss }: OpportunityCa
               style={{ backgroundColor: "rgba(77,142,255,0.1)", color: "#4d8eff" }}
             >
               <Clock className="w-3 h-3" />
-              {opportunity.estimatedHoursSaved}h/wk saved
+              {opportunity.estimatedHoursSaved}ש׳/שבוע — חיסכון
             </span>
           )}
           {(opportunity.estimatedCostSaved ?? 0) > 0 && (
@@ -178,7 +178,7 @@ export function OpportunityCard({ opportunity, onPin, onDismiss }: OpportunityCa
               style={{ backgroundColor: "rgba(52,211,153,0.1)", color: "#34d399" }}
             >
               <DollarSign className="w-3 h-3" />
-              ₪{(opportunity.estimatedCostSaved ?? 0).toLocaleString()}/mo
+              ₪{(opportunity.estimatedCostSaved ?? 0).toLocaleString()}/חודש
             </span>
           )}
           {opportunity.setupComplexity && (
@@ -186,8 +186,8 @@ export function OpportunityCard({ opportunity, onPin, onDismiss }: OpportunityCa
               className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-[10px]"
               style={{ backgroundColor: "#1e1f26", color: "#424754", border: "1px solid #282a30" }}
             >
-              {opportunity.setupComplexity === "plug_and_play" ? "Plug & Play" :
-               opportunity.setupComplexity === "some_setup" ? "Some Setup" : "Custom Build"}
+              {opportunity.setupComplexity === "plug_and_play" ? "מוכן לשימוש" :
+               opportunity.setupComplexity === "some_setup" ? "דורש התקנה" : "בנייה מותאמת"}
             </span>
           )}
 

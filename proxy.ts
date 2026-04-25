@@ -9,7 +9,13 @@ export async function proxy(request: NextRequest) {
 
   if (!supabaseUrl || !supabaseAnonKey) {
     const pathname = request.nextUrl.pathname;
-    if (pathname.startsWith("/dashboard") || pathname === "/loading") {
+    if (
+      pathname.startsWith("/dashboard") ||
+      pathname === "/loading" ||
+      pathname.startsWith("/tasks") ||
+      pathname.startsWith("/opportunities") ||
+      pathname.startsWith("/roadmap")
+    ) {
       const url = request.nextUrl.clone();
       url.pathname = "/login";
       return NextResponse.redirect(url);
@@ -44,9 +50,15 @@ export async function proxy(request: NextRequest) {
   const isDashboard = pathname.startsWith("/dashboard");
   const isLogin = pathname === "/login";
   const isLoadingAnalysis = pathname === "/loading";
+  const isTasks = pathname.startsWith("/tasks");
+  const isOpportunities = pathname.startsWith("/opportunities");
+  const isRoadmap = pathname.startsWith("/roadmap");
 
-  // Protect /dashboard and /loading — must be signed in
-  if ((isDashboard || isLoadingAnalysis) && !user) {
+  // Protect /dashboard, /loading, /tasks, /opportunities, /roadmap — must be signed in
+  if (
+    (isDashboard || isLoadingAnalysis || isTasks || isOpportunities || isRoadmap) &&
+    !user
+  ) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);
@@ -63,5 +75,12 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/login", "/loading"],
+  matcher: [
+    "/dashboard/:path*",
+    "/login",
+    "/loading",
+    "/tasks/:path*",
+    "/opportunities/:path*",
+    "/roadmap/:path*",
+  ],
 };

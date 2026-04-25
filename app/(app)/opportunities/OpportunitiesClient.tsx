@@ -45,7 +45,7 @@ export function OpportunitiesClient({ businessId, businessName }: OpportunitiesC
       const res = await fetch(`/api/business/opportunities?businessId=${businessId}`);
       if (!res.ok) {
         const text = await res.text();
-        throw new Error(text || "Failed to load opportunities");
+        throw new Error(text || "נכשל בטעינת ההזדמנויות");
       }
       const body = await res.json();
       return Array.isArray(body) ? body : (body.opportunities ?? []);
@@ -59,7 +59,7 @@ export function OpportunitiesClient({ businessId, businessName }: OpportunitiesC
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id, pinned }),
       });
-      if (!res.ok) throw new Error("Failed to update opportunity");
+      if (!res.ok) throw new Error("נכשל בעדכון ההזדמנות");
       return res.json();
     },
     onMutate: async ({ id, pinned }) => {
@@ -84,7 +84,7 @@ export function OpportunitiesClient({ businessId, businessName }: OpportunitiesC
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id, dismissedAt: new Date().toISOString() }),
       });
-      if (!res.ok) throw new Error("Failed to dismiss opportunity");
+      if (!res.ok) throw new Error("נכשל בהתעלמות מההזדמנות");
       return res.json();
     },
     onMutate: async ({ id }) => {
@@ -147,14 +147,14 @@ export function OpportunitiesClient({ businessId, businessName }: OpportunitiesC
               className="text-xl font-bold"
               style={{ color: "#e2e2eb", fontFamily: "var(--font-manrope)" }}
             >
-              AI Opportunities
+              הזדמנויות AI
             </h1>
             <span
               className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold"
               style={{ backgroundColor: "rgba(77,142,255,0.12)", color: "#4d8eff", border: "1px solid rgba(77,142,255,0.2)" }}
             >
               <Sparkles className="w-2.5 h-2.5" />
-              AI-Powered
+              מבוסס AI
             </span>
           </div>
           <p className="text-xs" style={{ color: "#424754", fontFamily: "var(--font-inter)" }}>
@@ -180,7 +180,7 @@ export function OpportunitiesClient({ businessId, businessName }: OpportunitiesC
             className="rounded-xl px-4 py-3.5 text-sm"
             style={{ backgroundColor: "rgba(248,113,113,0.06)", border: "1px solid rgba(248,113,113,0.2)", color: "#f87171" }}
           >
-            {error instanceof Error ? error.message : "Failed to load opportunities"}
+            {error instanceof Error ? error.message : "נכשל בטעינת ההזדמנויות"}
           </div>
         )}
 

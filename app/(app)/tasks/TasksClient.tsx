@@ -105,9 +105,11 @@ const COLUMNS = [
 function SubtaskRow({
   task,
   onToggle,
+  isPatching,
 }: {
   task: Task;
   onToggle: (id: string, done: boolean) => void;
+  isPatching: boolean;
 }) {
   const isDone = task.status === "done";
   return (
@@ -119,7 +121,9 @@ function SubtaskRow({
       }}
     >
       <button
+        type="button"
         onClick={() => onToggle(task.id, !isDone)}
+        disabled={isPatching}
         style={{
           width: 16,
           height: 16,
@@ -130,7 +134,8 @@ function SubtaskRow({
           alignItems: "center",
           justifyContent: "center",
           flexShrink: 0,
-          cursor: "pointer",
+          cursor: isPatching ? "not-allowed" : "pointer",
+          opacity: isPatching ? 0.5 : 1,
           transition: "all 0.15s",
         }}
       >
@@ -165,6 +170,7 @@ function TaskCard({
   onAddSubtask,
   isDragging,
   xpButtonRef,
+  patchingTaskId,
 }: {
   task: Task;
   subtasks: Task[];
@@ -173,6 +179,7 @@ function TaskCard({
   onAddSubtask: (parentId: string, title: string) => Promise<void>;
   isDragging: boolean;
   xpButtonRef?: React.RefObject<HTMLButtonElement | null>;
+  patchingTaskId: string | null;
 }) {
   const [expanded, setExpanded] = useState(false);
   const [addingSubtask, setAddingSubtask] = useState(false);
@@ -303,6 +310,8 @@ function TaskCard({
           {!isDone && (
             <button
               ref={btnRef}
+              type="button"
+              disabled={patchingTaskId === task.id}
               onClick={() =>
                 onStatusChange(
                   task.id,
@@ -318,12 +327,14 @@ function TaskCard({
                 border: `1px solid ${isInProgress ? "#34d39940" : "#fbbf2440"}`,
                 backgroundColor: isInProgress ? "#34d39910" : "#fbbf2410",
                 color: isInProgress ? "#34d399" : "#fbbf24",
-                cursor: "pointer",
+                cursor: patchingTaskId === task.id ? "not-allowed" : "pointer",
+                opacity: patchingTaskId === task.id ? 0.5 : 1,
                 fontFamily: "var(--font-inter)",
                 transition: "all 0.15s",
                 whiteSpace: "nowrap",
               }}
               onMouseEnter={(e) => {
+                if (patchingTaskId === task.id) return;
                 e.currentTarget.style.backgroundColor = isInProgress ? "#34d39920" : "#fbbf2420";
               }}
               onMouseLeave={(e) => {
@@ -420,7 +431,12 @@ function TaskCard({
           {subtasks.length > 0 && (
             <div className="flex flex-col gap-1.5 mb-2">
               {subtasks.map((sub) => (
-                <SubtaskRow key={sub.id} task={sub} onToggle={onSubtaskToggle} />
+                <SubtaskRow
+                  key={sub.id}
+                  task={sub}
+                  onToggle={onSubtaskToggle}
+                  isPatching={patchingTaskId === sub.id}
+                />
               ))}
             </div>
           )}
@@ -503,6 +519,7 @@ function KanbanColumn({
   onStatusChange,
   onSubtaskToggle,
   onAddSubtask,
+  patchingTaskId,
 }: {
   col: (typeof COLUMNS)[number];
   tasks: Task[];
@@ -510,6 +527,7 @@ function KanbanColumn({
   onStatusChange: (id: string, newStatus: Task["status"], ref?: React.RefObject<HTMLButtonElement | null>) => void;
   onSubtaskToggle: (id: string, done: boolean) => void;
   onAddSubtask: (parentId: string, title: string) => Promise<void>;
+  patchingTaskId: string | null;
 }) {
   return (
     <div
@@ -608,6 +626,7 @@ function KanbanColumn({
                         onSubtaskToggle={onSubtaskToggle}
                         onAddSubtask={onAddSubtask}
                         isDragging={snapshot.isDragging}
+                        patchingTaskId={patchingTaskId}
                       />
                     </div>
                   )}
@@ -663,6 +682,8 @@ interface TasksClientProps {
 export function TasksClient({ businessId, initialXp, initialLevel }: TasksClientProps) {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
+  const [patchingTaskId, setPatchingTaskId] = useState<string | null>(null);
   const [xp, setXp] = useState(initialXp);
   const [level, setLevel] = useState(initialLevel);
   const [xpAnimations, setXpAnimations] = useState<XpAnimation[]>([]);
@@ -671,13 +692,19 @@ export function TasksClient({ businessId, initialXp, initialLevel }: TasksClient
 
   // ── Fetch tasks ──────────────────────────────────────────────────────────
   const fetchTasks = useCallback(async () => {
+    setLoadError(false);
+    setLoading(true);
     try {
       const res = await fetch(`/api/tasks?businessId=${businessId}`);
-      if (!res.ok) return;
+      if (!res.ok) {
+        setLoadError(true);
+        return;
+      }
       const data: Task[] = await res.json();
       setTasks(data);
     } catch (e) {
       console.error(e);
+      setLoadError(true);
     } finally {
       setLoading(false);
     }
@@ -696,6 +723,8 @@ export function TasksClient({ businessId, initialXp, initialLevel }: TasksClient
     ) => {
       const prev = tasks.find((t) => t.id === id);
       if (!prev || prev.status === newStatus) return;
+
+      setPatchingTaskId(id);
 
       // Optimistic update
       setTasks((ts) => ts.map((t) => (t.id === id ? { ...t, status: newStatus } : t)));
@@ -795,6 +824,8 @@ export function TasksClient({ businessId, initialXp, initialLevel }: TasksClient
         // Rollback
         setTasks((ts) => ts.map((t) => (t.id === id ? { ...t, status: prev.status } : t)));
         toast.error("שגיאה בעדכון המשימה");
+      } finally {
+        setPatchingTaskId(null);
       }
     },
     [tasks, xp, level]
@@ -817,6 +848,7 @@ export function TasksClient({ businessId, initialXp, initialLevel }: TasksClient
   const handleSubtaskToggle = useCallback(
     async (id: string, done: boolean) => {
       const newStatus: Task["status"] = done ? "done" : "todo";
+      setPatchingTaskId(id);
       setTasks((ts) => ts.map((t) => (t.id === id ? { ...t, status: newStatus } : t)));
       try {
         await fetch(`/api/tasks/${id}`, {
@@ -826,6 +858,8 @@ export function TasksClient({ businessId, initialXp, initialLevel }: TasksClient
         });
       } catch {
         toast.error("שגיאה בעדכון תת-המשימה");
+      } finally {
+        setPatchingTaskId(null);
       }
     },
     []
@@ -866,7 +900,7 @@ export function TasksClient({ businessId, initialXp, initialLevel }: TasksClient
   const { pct: xpPct, next: xpNext } = xpToNextLevel(xp);
 
   // ── Empty check (no tasks at all) ─────────────────────────────────────────
-  const noTasks = rootTasks.length === 0 && !loading;
+  const noTasks = rootTasks.length === 0 && !loading && !loadError;
 
   return (
     <div
@@ -1021,6 +1055,37 @@ export function TasksClient({ businessId, initialXp, initialLevel }: TasksClient
 
       {/* ── Kanban board ───────────────────────────────────────────────────── */}
       <div className="flex-1 overflow-auto" style={{ padding: "20px 24px" }}>
+        {loadError && !loading && (
+          <div
+            className="mb-4 flex flex-col gap-2 rounded-xl px-4 py-3"
+            style={{
+              backgroundColor: "rgba(248,113,113,0.08)",
+              border: "1px solid rgba(248,113,113,0.25)",
+              maxWidth: 480,
+            }}
+          >
+            <p
+              className="text-sm font-medium"
+              style={{ color: "#f87171", fontFamily: "var(--font-inter)" }}
+            >
+              שגיאה בטעינת המשימות
+            </p>
+            <button
+              type="button"
+              onClick={() => void fetchTasks()}
+              className="self-start rounded-lg px-3 py-1.5 text-xs font-bold"
+              style={{
+                color: "#f87171",
+                background: "transparent",
+                border: "1px solid rgba(248,113,113,0.4)",
+                cursor: "pointer",
+                fontFamily: "var(--font-inter)",
+              }}
+            >
+              נסה שוב
+            </button>
+          </div>
+        )}
         {loading ? (
           <div className="flex items-center justify-center h-full">
             <div className="text-center">
@@ -1083,7 +1148,7 @@ export function TasksClient({ businessId, initialXp, initialLevel }: TasksClient
               </Link>
             </div>
           </div>
-        ) : (
+        ) : loadError && rootTasks.length === 0 ? null : (
           <DragDropContext onDragEnd={handleDragEnd}>
             <div className="flex gap-4 h-full" style={{ alignItems: "flex-start" }}>
               {columns.map((col) => (
@@ -1095,6 +1160,7 @@ export function TasksClient({ businessId, initialXp, initialLevel }: TasksClient
                   onStatusChange={updateStatus}
                   onSubtaskToggle={handleSubtaskToggle}
                   onAddSubtask={handleAddSubtask}
+                  patchingTaskId={patchingTaskId}
                 />
               ))}
             </div>

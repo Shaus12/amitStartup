@@ -9,21 +9,22 @@ export default async function OpportunitiesPage() {
     data: { user },
   } = await authClient.auth.getUser();
 
-  let businessQuery = supabase
-    .from("businesses")
-    .select("id, name")
-    .eq("onboarding_completed", true)
-    .order("created_at", { ascending: false })
-    .limit(1);
-
-  if (user) {
-    businessQuery = businessQuery.eq("user_id", user.id);
-  } else {
-    businessQuery = businessQuery.is("user_id", null);
+  if (!user) {
+    redirect("/login");
   }
 
-  const { data: business } = await businessQuery.single();
+  const { data: business } = await supabase
+    .from("businesses")
+    .select("id, name, user_id")
+    .eq("onboarding_completed", true)
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
 
-  if (!business) redirect("/onboarding");
+  if (!business) {
+    redirect("/onboarding");
+  }
+
   return <OpportunitiesClient businessId={business.id} businessName={business.name} />;
 }

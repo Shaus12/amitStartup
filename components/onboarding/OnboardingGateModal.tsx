@@ -169,7 +169,7 @@ export function OnboardingGateModal({ open, onClose, onboardingPayload }: Props)
               <input
                 type="email"
                 required
-                placeholder="your@email.com"
+                placeholder="האימייל שלך"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={loading}

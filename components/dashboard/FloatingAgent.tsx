@@ -60,6 +60,7 @@ export function FloatingAgent({ businessId }: { businessId: string }) {
   const [view, setView] = useState<"sessions" | "chat">("sessions");
   const [sessions, setSessions] = useState<ChatSession[]>([]);
   const [sessionsLoading, setSessionsLoading] = useState(false);
+  const [sessionsLoadError, setSessionsLoadError] = useState(false);
   const [activeSession, setActiveSession] = useState<ChatSession | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [messagesLoading, setMessagesLoading] = useState(false);
@@ -79,13 +80,14 @@ export function FloatingAgent({ businessId }: { businessId: string }) {
 
   const loadSessions = useCallback(async () => {
     setSessionsLoading(true);
+    setSessionsLoadError(false);
     try {
       const res = await fetch(`/api/chat-sessions?businessId=${encodeURIComponent(businessId)}`);
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to load sessions");
       setSessions(sortSessions(data.sessions || []));
     } catch {
-      setSessions([]);
+      setSessionsLoadError(true);
     } finally {
       setSessionsLoading(false);
     }
@@ -407,6 +409,37 @@ export function FloatingAgent({ businessId }: { businessId: string }) {
               >
                 {sessionsLoading ? (
                   <div style={{ color: "#8c909f", fontSize: 12, paddingTop: 10 }}>טוען שיחות...</div>
+                ) : sessionsLoadError ? (
+                  <div
+                    style={{
+                      marginTop: 8,
+                      padding: "10px 12px",
+                      borderRadius: 10,
+                      backgroundColor: "rgba(248,113,113,0.08)",
+                      border: "1px solid rgba(248,113,113,0.25)",
+                    }}
+                  >
+                    <p style={{ color: "#f87171", fontSize: 12, fontFamily: "var(--font-inter)", marginBottom: 8 }}>
+                      שגיאה בטעינת השיחות
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => void loadSessions()}
+                      style={{
+                        fontSize: 12,
+                        fontWeight: 700,
+                        fontFamily: "var(--font-inter)",
+                        color: "#f87171",
+                        background: "transparent",
+                        border: "1px solid rgba(248,113,113,0.4)",
+                        borderRadius: 8,
+                        padding: "6px 12px",
+                        cursor: "pointer",
+                      }}
+                    >
+                      נסה שוב
+                    </button>
+                  </div>
                 ) : sessions.length === 0 ? (
                   <div style={{ color: "#8c909f", fontSize: 12, paddingTop: 10 }}>
                     עדיין אין שיחות — התחל שיחה חדשה

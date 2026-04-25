@@ -217,7 +217,7 @@ export function DashboardClient({ businessId, businessName }: DashboardClientPro
               onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "#282a30"; }}
             >
               <FileText className="w-3 h-3" strokeWidth={2} />
-              Export PDF
+              ייצוא PDF
             </Link>
             <button
               onClick={handleRegenerateAnalysis}
@@ -239,7 +239,7 @@ export function DashboardClient({ businessId, businessName }: DashboardClientPro
               }}
             >
               <RotateCcw className={`w-3 h-3 ${isRegenerating ? "animate-spin" : ""}`} strokeWidth={2} />
-              {isRegenerating ? "Analyzing…" : "Refresh AI"}
+              {isRegenerating ? "מנתח..." : "רענן ניתוח"}
             </button>
           </div>
         </div>

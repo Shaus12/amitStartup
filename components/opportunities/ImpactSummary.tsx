@@ -13,28 +13,28 @@ const STATS = [
     icon: Sparkles,
     color: "#4d8eff",
     bg: "rgba(77,142,255,0.1)",
-    label: "Opportunities",
+    label: "הזדמנויות",
   },
   {
     key: "agents" as const,
     icon: Bot,
     color: "#a78bfa",
     bg: "rgba(167,139,250,0.1)",
-    label: "AI Agents",
+    label: "סוכני AI",
   },
   {
     key: "hours" as const,
     icon: Clock,
     color: "#34d399",
     bg: "rgba(52,211,153,0.1)",
-    label: "Hrs / Week",
+    label: "שעות/שבוע",
   },
   {
     key: "cost" as const,
     icon: DollarSign,
     color: "#fb923c",
     bg: "rgba(251,146,60,0.1)",
-    label: "Est. Savings",
+    label: "הערכת חיסכון",
   },
 ];
 
@@ -47,7 +47,7 @@ export function ImpactSummary({
   const values: Record<string, string | number> = {
     opps: opportunityCount,
     agents: agentCount,
-    hours: `${Math.round(totalHoursSaved)}h`,
+    hours: `${Math.round(totalHoursSaved)}ש׳`,
     cost: totalCostSaved > 0 ? `₪${Math.round(totalCostSaved).toLocaleString()}` : "—",
   };
 
