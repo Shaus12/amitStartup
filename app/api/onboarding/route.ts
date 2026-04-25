@@ -111,10 +111,15 @@ export async function POST(req: NextRequest) {
         total_points: 0,
         level: 1,
       },
-      { onConflict: "user_id, business_id" }
+      { onConflict: "user_id" }
     );
     if (pointsError) {
-      console.error("Failed to init user_points:", pointsError);
+      console.error("Failed to init user_points:", {
+        code: pointsError.code,
+        message: pointsError.message,
+        details: pointsError.details,
+        hint: pointsError.hint,
+      });
       await rollbackOnboardingBusiness(supabase, bizId);
       return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }
