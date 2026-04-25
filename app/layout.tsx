@@ -20,6 +20,9 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "BizMap — Your Business From Above",
   description: "Understand every process in your business and find where AI can save you time and money.",
+  verification: {
+    google: "qZc6cHqeRzSf8Smk_Sg7ZJgNRcrI5DSnhGiGntojQq8",
+  },
 };
 
 import { AccessibilityWidget } from "@/components/AccessibilityWidget";

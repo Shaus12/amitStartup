@@ -197,6 +197,18 @@ function RegistrationModeSelector({ onSelect }: { onSelect: (mode: "quick" | "fu
             </div>
           </button>
         </div>
+        <div
+          className="mt-8 flex items-center justify-center gap-3 text-xs"
+          style={{ color: "#8c909f", fontFamily: "var(--font-inter)" }}
+        >
+          <Link href="/privacy" className="underline">
+            מדיניות פרטיות
+          </Link>
+          <span style={{ color: "#424754" }}>•</span>
+          <Link href="/terms" className="underline">
+            תנאי שימוש
+          </Link>
+        </div>
       </div>
     </div>
   );
@@ -448,6 +460,19 @@ export function OnboardingWizard() {
               </AutoFillProvider>
             )}
           </div>
+        </div>
+
+        <div
+          className="shrink-0 flex items-center justify-center gap-3 px-5 py-3 text-xs"
+          style={{ borderTop: "1px solid #282a30", color: "#8c909f", fontFamily: "var(--font-inter)" }}
+        >
+          <Link href="/privacy" className="underline">
+            מדיניות פרטיות
+          </Link>
+          <span style={{ color: "#424754" }}>•</span>
+          <Link href="/terms" className="underline">
+            תנאי שימוש
+          </Link>
         </div>
       </div>
 

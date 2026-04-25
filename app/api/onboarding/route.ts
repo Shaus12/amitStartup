@@ -110,16 +110,24 @@ export async function POST(req: NextRequest) {
       total_points: 0,
       level: 1,
     };
-    let { error: pointsError } = await supabase
-      .from("user_points")
-      .upsert(pointsPayload, { onConflict: "user_id" });
+    let pointsError: { code?: string; message?: string; details?: string | null; hint?: string | null } | null =
+      null;
 
-    // Fallback for schemas where only (user_id, business_id) is unique.
-    if (pointsError?.code === "42P10") {
-      const retry = await supabase
-        .from("user_points")
-        .upsert(pointsPayload, { onConflict: "user_id, business_id" });
-      pointsError = retry.error;
+    // Constraint-agnostic write path: update existing row first, insert only if missing.
+    const updateRes = await supabase
+      .from("user_points")
+      .update({
+        business_id: bizId,
+      })
+      .eq("user_id", user.id)
+      .select("id")
+      .maybeSingle();
+
+    if (updateRes.error) {
+      pointsError = updateRes.error;
+    } else if (!updateRes.data) {
+      const insertRes = await supabase.from("user_points").insert(pointsPayload);
+      pointsError = insertRes.error;
     }
 
     if (pointsError) {

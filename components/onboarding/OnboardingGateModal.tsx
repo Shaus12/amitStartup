@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { useOnboardingStore } from "@/lib/hooks/useOnboardingStore";
 import { Loader2, Mail, Lock, X } from "lucide-react";
@@ -22,6 +23,7 @@ export function OnboardingGateModal({ open, onClose, onboardingPayload }: Props)
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [acceptedLegal, setAcceptedLegal] = useState(false);
   const [pendingConfirm, setPendingConfirm] = useState(false);
 
   if (!open) return null;
@@ -45,6 +47,10 @@ export function OnboardingGateModal({ open, onClose, onboardingPayload }: Props)
 
   async function handleSignup(e: React.FormEvent) {
     e.preventDefault();
+    if (!acceptedLegal) {
+      setError("יש לאשר את תנאי השימוש ומדיניות הפרטיות");
+      return;
+    }
     if (password.length < 6) {
       setError("הסיסמה חייבת להכיל לפחות 6 תווים");
       return;
@@ -212,14 +218,37 @@ export function OnboardingGateModal({ open, onClose, onboardingPayload }: Props)
               </p>
             )}
 
+            {mode === "signup" && (
+              <label className="flex items-start gap-2 px-1 text-xs" style={{ color: "#8c909f", fontFamily: "var(--font-inter)" }}>
+                <input
+                  type="checkbox"
+                  checked={acceptedLegal}
+                  onChange={(e) => setAcceptedLegal(e.target.checked)}
+                  disabled={loading}
+                  className="mt-0.5"
+                  required
+                />
+                <span>
+                  אני מסכים/ה ל
+                  <Link href="/terms" target="_blank" className="underline text-zinc-300 mx-1">
+                    תנאי השימוש
+                  </Link>
+                  ול
+                  <Link href="/privacy" target="_blank" className="underline text-zinc-300 mx-1">
+                    מדיניות הפרטיות
+                  </Link>
+                </span>
+              </label>
+            )}
+
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || (mode === "signup" && !acceptedLegal)}
               className="w-full flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-semibold transition-all duration-150 active:scale-[0.98]"
               style={{
-                background: loading ? "rgba(99,102,241,0.4)" : "linear-gradient(135deg, #6366f1, #8b5cf6)",
-                color: loading ? "rgba(255,255,255,0.5)" : "#ffffff",
-                cursor: loading ? "not-allowed" : "pointer",
+                background: loading || (mode === "signup" && !acceptedLegal) ? "rgba(99,102,241,0.4)" : "linear-gradient(135deg, #6366f1, #8b5cf6)",
+                color: loading || (mode === "signup" && !acceptedLegal) ? "rgba(255,255,255,0.5)" : "#ffffff",
+                cursor: loading || (mode === "signup" && !acceptedLegal) ? "not-allowed" : "pointer",
                 fontFamily: "var(--font-inter)",
               }}
             >
