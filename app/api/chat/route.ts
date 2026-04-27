@@ -175,20 +175,27 @@ export async function POST(req: NextRequest) {
         // Regenerate Plan
         claudeResponse = await generateProjectPlan(
           knowledgeRows || [], 
-          history.slice(0, -1).concat({ role: "user", content: "The user requested changes: " + lastUserMsg })
+          history.slice(0, -1).concat({ role: "user", content: "The user requested changes: " + lastUserMsg }),
+          { businessId, userId: user?.id ?? null }
         );
       }
     }
     // Step 5: Build plan after answering constraints
     else if (history.length > 3 && history[history.length - 4].content.includes(step2Text)) {
       isProjectPlanning = true;
-      claudeResponse = await generateProjectPlan(knowledgeRows || [], history.slice(0, -1));
+      claudeResponse = await generateProjectPlan(knowledgeRows || [], history.slice(0, -1), {
+        businessId,
+        userId: user?.id ?? null,
+      });
     }
     // Step 3: Ask constraints after answering timeline
     else if (lastAssistantMsg.includes(step2Text)) {
       isProjectPlanning = true;
       const goal = history.length >= 3 ? history[history.length - 3].content : "";
-      claudeResponse = await generateConstraintQuestion(knowledgeRows || [], goal, lastUserMsg);
+      claudeResponse = await generateConstraintQuestion(knowledgeRows || [], goal, lastUserMsg, {
+        businessId,
+        userId: user?.id ?? null,
+      });
     }
     // Step 2: Ask timeline after answering goal
     else if (lastAssistantMsg.includes(step1Text)) {
@@ -206,7 +213,8 @@ export async function POST(req: NextRequest) {
       claudeResponse = await callClaudeForChat(
         knowledgeRows || [], 
         history.slice(0, -1), 
-        message
+        message,
+        { businessId, userId: user?.id ?? null }
       );
     }
 

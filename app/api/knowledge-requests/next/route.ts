@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { verifyBusinessAccess } from "@/lib/supabase/verify-business-access";
 import Anthropic from "@anthropic-ai/sdk";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { logClaudeApiUsage } from "@/lib/ai/api-usage";
 
 export async function GET(req: NextRequest) {
   try {
@@ -73,6 +74,13 @@ Return ONLY a concise question in Hebrew (עברית) — maximum 15 words. No e
                 content: `Business knowledge:\n${JSON.stringify(knowledgeRows, null, 2)}\n\nWhat is the single most important missing piece of information? Return only the Hebrew question.`,
               },
             ],
+          });
+          await logClaudeApiUsage({
+            businessId,
+            userId: user?.id ?? null,
+            callType: "knowledge_request",
+            model: "claude-sonnet-4-6",
+            usage: response.usage,
           });
           const textBlock = response.content.find((b) => b.type === "text");
           if (textBlock?.type === "text") {

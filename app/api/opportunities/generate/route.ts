@@ -71,7 +71,10 @@ export async function POST(req: NextRequest) {
       })),
     ];
 
-    const result = await analyzeBusinessData(safeKnowledgeRows, departmentNames);
+    const result = await analyzeBusinessData(safeKnowledgeRows, departmentNames, {
+      businessId,
+      userId: user?.id ?? null,
+    });
 
     console.log("[generate] Claude returned", result.opportunities?.length ?? 0, "opportunities across", result.departments?.length ?? 0, "departments");
 

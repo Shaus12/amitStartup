@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { logClaudeApiUsage } from "@/lib/ai/api-usage";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -57,6 +58,12 @@ Rules:
       model: "claude-haiku-4-5-20251001",
       max_tokens: 800,
       messages: [{ role: "user", content: prompt }],
+    });
+    await logClaudeApiUsage({
+      userId: user.id,
+      callType: "analysis",
+      model: "claude-haiku-4-5-20251001",
+      usage: message.usage,
     });
 
     const text = (message.content[0] as { type: string; text: string }).text.trim();

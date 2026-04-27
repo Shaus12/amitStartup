@@ -17,7 +17,7 @@ const CATEGORY_STYLE: Record<string, { color: string; bg: string; label: string;
 };
 
 const EFFORT_STYLE: Record<string, { color: string; label: string }> = {
-  low: { color: "#34d399", label: "ניצחון קל" },
+  low: { color: "#34d399", label: "ניצחון מהיר" },
   medium: { color: "#fbbf24", label: "מאמץ בינוני" },
   high: { color: "#f87171", label: "פרויקט גדול" },
 };
@@ -169,7 +169,7 @@ export function OpportunityCard({ opportunity, onPin, onDismiss }: OpportunityCa
               style={{ backgroundColor: "rgba(77,142,255,0.1)", color: "#4d8eff" }}
             >
               <Clock className="w-3 h-3" />
-              {opportunity.estimatedHoursSaved}ש׳/שבוע — חיסכון
+              {opportunity.estimatedHoursSaved} שע' חיסכון לשבוע
             </span>
           )}
           {(opportunity.estimatedCostSaved ?? 0) > 0 && (
@@ -178,7 +178,7 @@ export function OpportunityCard({ opportunity, onPin, onDismiss }: OpportunityCa
               style={{ backgroundColor: "rgba(52,211,153,0.1)", color: "#34d399" }}
             >
               <DollarSign className="w-3 h-3" />
-              ₪{(opportunity.estimatedCostSaved ?? 0).toLocaleString()}/חודש
+              ₪{(opportunity.estimatedCostSaved ?? 0).toLocaleString()} לחודש
             </span>
           )}
           {opportunity.setupComplexity && (

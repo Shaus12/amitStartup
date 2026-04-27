@@ -20,19 +20,19 @@ function robotColor(impactType: string): string {
 
 function savingsLabel(opp: AiOpportunityItem): string {
   if (opp.estimatedHoursSaved && opp.estimatedCostSaved) {
-    return `⏱ ${opp.estimatedHoursSaved}h/שבוע · ₪${opp.estimatedCostSaved.toLocaleString()}/חודש`;
+    return `⏱ ${opp.estimatedHoursSaved} שע' חיסכון לשבוע · ₪${opp.estimatedCostSaved.toLocaleString()} לחודש`;
   }
-  if (opp.estimatedHoursSaved) return `⏱ חוסך ${opp.estimatedHoursSaved} שעות בשבוע`;
-  if (opp.estimatedCostSaved) return `₪${opp.estimatedCostSaved.toLocaleString()} חיסכון לחודש`;
-  return "הזדמנות AI";
+  if (opp.estimatedHoursSaved) return `⏱ ${opp.estimatedHoursSaved} שע' חיסכון לשבוע`;
+  if (opp.estimatedCostSaved) return `₪${opp.estimatedCostSaved.toLocaleString()} נחסך לחודש`;
+  return "הזדמנות";
 }
 
 function ImpactBadge({ impactType }: { impactType: string }) {
   const map: Record<string, { label: string; color: string; bg: string }> = {
-    time: { label: "⏱ זמן", color: "#60a5fa", bg: "#60a5fa18" },
-    time_savings: { label: "⏱ זמן", color: "#60a5fa", bg: "#60a5fa18" },
-    money: { label: "💰 כסף", color: "#34d399", bg: "#34d39918" },
-    cost_savings: { label: "💰 כסף", color: "#34d399", bg: "#34d39918" },
+    time: { label: "⏱ חיסכון בזמן", color: "#60a5fa", bg: "#60a5fa18" },
+    time_savings: { label: "⏱ חיסכון בזמן", color: "#60a5fa", bg: "#60a5fa18" },
+    money: { label: "💰 חיסכון בעלויות", color: "#34d399", bg: "#34d39918" },
+    cost_savings: { label: "💰 חיסכון בעלויות", color: "#34d399", bg: "#34d39918" },
     growth: { label: "📈 צמיחה", color: "#fbbf24", bg: "#fbbf2418" },
     revenue: { label: "📈 צמיחה", color: "#fbbf24", bg: "#fbbf2418" },
     quality: { label: "✨ איכות", color: "#c084fc", bg: "#c084fc18" },
@@ -328,7 +328,7 @@ function RobotCard({ opp, name, index, isSelected, onSelect, onPin, onDismiss, b
                 }}
               >
                 <Clock size={9} />
-                {opp.estimatedHoursSaved}h / שבוע
+                {opp.estimatedHoursSaved} שע' לשבוע
               </div>
             )}
             {opp.estimatedCostSaved != null && (
@@ -347,7 +347,7 @@ function RobotCard({ opp, name, index, isSelected, onSelect, onPin, onDismiss, b
                 }}
               >
                 <DollarSign size={9} />
-                ₪{opp.estimatedCostSaved.toLocaleString()} / חודש
+                ₪{opp.estimatedCostSaved.toLocaleString()} לחודש
               </div>
             )}
           </div>
@@ -493,9 +493,9 @@ export function RobotGallery({ opportunities, onPin, onDismiss, businessId }: Ro
       >
         <div style={{ fontSize: 48, marginBottom: 12 }}>🤖</div>
         <div style={{ fontSize: 14, color: "#424754", marginBottom: 6, fontFamily: "var(--font-manrope)", fontWeight: 700 }}>
-          אין סוכנים עדיין
+          אין הזדמנויות עדיין
         </div>
-        <div style={{ fontSize: 12 }}>הפעל ניתוח AI ליצירת הזדמנויות</div>
+        <div style={{ fontSize: 12 }}>הפעל ניתוח AI</div>
       </div>
     );
   }
@@ -550,7 +550,7 @@ export function RobotGallery({ opportunities, onPin, onDismiss, businessId }: Ro
                   fontFamily: "var(--font-inter)",
                 }}
               >
-                {totalHrs}h/שבוע
+                {totalHrs} שע' לשבוע
               </span>
             </div>
           )}

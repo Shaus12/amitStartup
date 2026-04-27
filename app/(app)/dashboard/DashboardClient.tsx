@@ -3,9 +3,10 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { RotateCcw, Network, FileText, LogOut } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, type CSSProperties } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { createPortal } from "react-dom";
 import { BusinessMap } from "@/components/business-map/BusinessMap";
 import { BusinessMapData } from "@/lib/types/business-map";
 import { HealthScore } from "@/components/dashboard/HealthScore";
@@ -17,6 +18,243 @@ import { AnalysisRevealModal, revealStorageKey } from "@/components/dashboard/An
 interface DashboardClientProps {
   businessId: string;
   businessName: string;
+}
+
+const DASHBOARD_TOUR_KEY_PREFIX = "dashboard_tour_completed_";
+
+type TourStepConfig = {
+  target: string;
+  message: string;
+  /** Preferred order for placing the tooltip beside the highlight (first that fits wins). */
+  placementPriority: Array<"bottom" | "top" | "left" | "right">;
+};
+
+const DASHBOARD_TOUR_STEPS: TourStepConfig[] = [
+  {
+    target: "#tour-map-canvas",
+    message:
+      "זו המפה העסקית שלך 🗺️\nכל מחלקה מקבלת ציון בריאות — לחץ עליה לפרטים והמלצות",
+    placementPriority: ["top", "bottom", "left", "right"],
+  },
+  {
+    target: "#tour-aria-button",
+    message:
+      "זה ARIA, הסוכן החכם שלך 🤖\nשאל אותו כל שאלה על העסק שלך — הוא יודע הכל עליך",
+    placementPriority: ["top", "left", "right", "bottom"],
+  },
+  {
+    target: '[data-tour=\"tasks-sidebar-item\"]',
+    message:
+      "כאן תמצא את המשימות שלך ⚡\nהתחל מה-Quick Wins — משימות קטנות עם השפעה גדולה",
+    placementPriority: ["right", "left", "bottom", "top"],
+  },
+  {
+    target: "#tour-refresh-ai",
+    message:
+      "ככל שתוסיף מידע על העסק — הניתוח משתפר 🎯\nלחץ כאן בכל עת לקבל המלצות מעודכנות",
+    placementPriority: ["bottom", "left", "right", "top"],
+  },
+];
+
+const TOOLTIP_GAP = 16;
+
+function clamp(n: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, n));
+}
+
+function rectsOverlap(
+  a: { left: number; top: number; width: number; height: number },
+  b: { left: number; top: number; width: number; height: number }
+) {
+  return (
+    a.left < b.left + b.width &&
+    a.left + a.width > b.left &&
+    a.top < b.top + b.height &&
+    a.top + a.height > b.top
+  );
+}
+
+/** Place tooltip so it does not cover the padded highlight; prefer order in `priority`. */
+function computeTooltipBesideHighlight(
+  targetRect: DOMRect,
+  tooltipWidth: number,
+  tooltipHeight: number,
+  highlightPad: number,
+  priority: TourStepConfig["placementPriority"]
+): { left: number; top: number } {
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  const blocked = {
+    left: targetRect.left - highlightPad,
+    top: targetRect.top - highlightPad,
+    width: targetRect.width + highlightPad * 2,
+    height: targetRect.height + highlightPad * 2,
+  };
+
+  const centerX = targetRect.left + targetRect.width / 2 - tooltipWidth / 2;
+  const centerY = targetRect.top + targetRect.height / 2 - tooltipHeight / 2;
+
+  const candidates: Record<
+    "bottom" | "top" | "left" | "right",
+    { left: number; top: number }
+  > = {
+    bottom: {
+      left: centerX,
+      top: targetRect.bottom + highlightPad + TOOLTIP_GAP,
+    },
+    top: {
+      left: centerX,
+      top: targetRect.top - highlightPad - TOOLTIP_GAP - tooltipHeight,
+    },
+    right: {
+      left: targetRect.right + highlightPad + TOOLTIP_GAP,
+      top: centerY,
+    },
+    left: {
+      left: targetRect.left - highlightPad - TOOLTIP_GAP - tooltipWidth,
+      top: centerY,
+    },
+  };
+
+  for (const dir of priority) {
+    const raw = candidates[dir];
+    const left = clamp(raw.left, 12, vw - tooltipWidth - 12);
+    const top = clamp(raw.top, 12, vh - tooltipHeight - 12);
+    const tooltip = { left, top, width: tooltipWidth, height: tooltipHeight };
+    if (!rectsOverlap(tooltip, blocked)) {
+      return { left, top };
+    }
+  }
+
+  for (const dir of (["bottom", "top", "right", "left"] as const)) {
+    if (priority.includes(dir)) continue;
+    const raw = candidates[dir];
+    const left = clamp(raw.left, 12, vw - tooltipWidth - 12);
+    const top = clamp(raw.top, 12, vh - tooltipHeight - 12);
+    const tooltip = { left, top, width: tooltipWidth, height: tooltipHeight };
+    if (!rectsOverlap(tooltip, blocked)) {
+      return { left, top };
+    }
+  }
+
+  return { left: 12, top: Math.max(12, vh - tooltipHeight - 12) };
+}
+
+function DashboardTourOverlay({
+  stepIndex,
+  totalSteps,
+  targetRect,
+  message,
+  placementPriority,
+  onNext,
+  onSkip,
+}: {
+  stepIndex: number;
+  totalSteps: number;
+  targetRect: DOMRect;
+  message: string;
+  placementPriority: TourStepConfig["placementPriority"];
+  onNext: () => void;
+  onSkip: () => void;
+}) {
+  const isLast = stepIndex === totalSteps - 1;
+  const pad = 8;
+  const highlightStyle = {
+    top: targetRect.top - pad,
+    left: targetRect.left - pad,
+    width: targetRect.width + pad * 2,
+    height: targetRect.height + pad * 2,
+  };
+
+  const tooltipWidthPx = Math.min(360, typeof window !== "undefined" ? window.innerWidth - 24 : 360);
+  const wrappedLines = message.split("\n").reduce((sum, line) => {
+    return sum + Math.max(1, Math.ceil(line.trim().length / 36));
+  }, 0);
+  const estimatedTooltipHeight = clamp(125 + wrappedLines * 22 + 52, 160, 310);
+
+  const { left: tooltipLeft, top: tooltipTop } = computeTooltipBesideHighlight(
+    targetRect,
+    tooltipWidthPx,
+    estimatedTooltipHeight,
+    pad,
+    placementPriority
+  );
+
+  const tooltipStyle: CSSProperties = {
+    position: "fixed",
+    zIndex: 10001,
+    left: tooltipLeft,
+    top: tooltipTop,
+    width: tooltipWidthPx,
+    maxHeight: "min(340px, calc(100vh - 24px))",
+    overflowY: "auto",
+    background: "#191b22",
+    border: "1px solid #282a30",
+    borderRadius: 14,
+    boxShadow: "0 20px 55px rgba(0,0,0,0.6)",
+    color: "#fff",
+    padding: "14px 14px 12px",
+    direction: "rtl",
+    fontFamily: "var(--font-inter)",
+    transition: "opacity 220ms ease",
+  };
+
+  return createPortal(
+    <div
+      className="fixed inset-0"
+      style={{ zIndex: 10000, animation: "bv-fade-up 0.2s ease both" }}
+    >
+      <div
+        className="absolute inset-0"
+        style={{ background: "rgba(0,0,0,0.74)" }}
+      />
+      <div
+        className="absolute rounded-xl"
+        style={{
+          ...highlightStyle,
+          border: "2px solid rgba(77,142,255,0.8)",
+          boxShadow:
+            "0 0 0 9999px rgba(0,0,0,0.65), 0 0 24px rgba(77,142,255,0.55)",
+          pointerEvents: "none",
+        }}
+      />
+      <div style={tooltipStyle}>
+        <p
+          className="text-sm leading-relaxed whitespace-pre-line mb-3"
+          style={{ fontFamily: "var(--font-manrope)" }}
+        >
+          {message}
+        </p>
+        <div className="flex items-center justify-between gap-2">
+          <button
+            type="button"
+            onClick={onSkip}
+            className="text-[11px] underline"
+            style={{ color: "#8c909f" }}
+          >
+            דלג על הסיור
+          </button>
+          <div className="flex items-center gap-3">
+            <span className="text-[11px]" style={{ color: "#8c909f" }}>
+              {stepIndex + 1} מתוך {totalSteps}
+            </span>
+            <button
+              type="button"
+              onClick={onNext}
+              className="rounded-lg px-3 py-1.5 text-xs font-bold"
+              style={{
+                background: "linear-gradient(135deg, #4d8eff, #adc6ff)",
+                color: "#111319",
+              }}
+            >
+              {isLast ? "בואו נתחיל! 🚀" : "הבא ←"}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>,
+    document.body
+  );
 }
 
 function SkeletonNode() {
@@ -56,6 +294,9 @@ export function DashboardClient({ businessId, businessName }: DashboardClientPro
   const queryClient = useQueryClient();
   const [isRegenerating, setIsRegenerating] = useState(false);
   const [revealOpen, setRevealOpen] = useState(false);
+  const [tourStep, setTourStep] = useState<number | null>(null);
+  const [tourTargetRect, setTourTargetRect] = useState<DOMRect | null>(null);
+  const [tourReady, setTourReady] = useState(false);
 
   const todayTip = DAILY_TIPS[Math.floor(Date.now() / 86400000) % DAILY_TIPS.length];
 
@@ -102,6 +343,90 @@ export function DashboardClient({ businessId, businessName }: DashboardClientPro
     if (!shown) setRevealOpen(true);
     router.replace("/dashboard", { scroll: false });
   }, [data, fromAnalysis, businessId, router]);
+
+  useEffect(() => {
+    if (!fromAnalysis || !data) return;
+    if (revealOpen) return;
+    try {
+      const done = localStorage.getItem(
+        `${DASHBOARD_TOUR_KEY_PREFIX}${businessId}`
+      );
+      if (done === "1") return;
+    } catch {
+      // ignore storage errors
+    }
+    setTourStep(0);
+    setTourReady(true);
+  }, [fromAnalysis, data, revealOpen, businessId]);
+
+  const currentTourConfig = useMemo(
+    () =>
+      tourStep == null
+        ? null
+        : DASHBOARD_TOUR_STEPS[tourStep] ?? null,
+    [tourStep]
+  );
+
+  const finishTour = useCallback(() => {
+    try {
+      localStorage.setItem(`${DASHBOARD_TOUR_KEY_PREFIX}${businessId}`, "1");
+    } catch {
+      // ignore storage errors
+    }
+    setTourStep(null);
+    setTourTargetRect(null);
+    setTourReady(false);
+  }, [businessId]);
+
+  useEffect(() => {
+    if (!tourReady || !currentTourConfig) return;
+
+    const updateRect = () => {
+      const el = document.querySelector(currentTourConfig.target);
+      if (!el) {
+        setTourTargetRect(null);
+        return;
+      }
+      setTourTargetRect(el.getBoundingClientRect());
+    };
+
+    updateRect();
+    window.addEventListener("resize", updateRect);
+    window.addEventListener("scroll", updateRect, true);
+    const id = window.setInterval(updateRect, 250);
+    return () => {
+      window.removeEventListener("resize", updateRect);
+      window.removeEventListener("scroll", updateRect, true);
+      window.clearInterval(id);
+    };
+  }, [tourReady, currentTourConfig]);
+
+  useEffect(() => {
+    if (!tourReady || !currentTourConfig) return;
+    if (tourTargetRect) return;
+    const id = window.setTimeout(() => {
+      setTourStep((prev) => {
+        if (prev == null) return null;
+        if (prev >= DASHBOARD_TOUR_STEPS.length - 1) {
+          finishTour();
+          return null;
+        }
+        return prev + 1;
+      });
+    }, 700);
+    return () => window.clearTimeout(id);
+  }, [tourReady, currentTourConfig, tourTargetRect, finishTour]);
+
+  const nextTourStep = useCallback(() => {
+    setTourStep((prev) => {
+      if (prev == null) return null;
+      if (prev >= DASHBOARD_TOUR_STEPS.length - 1) {
+        finishTour();
+        return null;
+      }
+      return prev + 1;
+    });
+  }, [finishTour]);
 
   const openAnalysisReveal = useCallback(() => {
     setRevealOpen(true);
@@ -220,6 +545,7 @@ export function DashboardClient({ businessId, businessName }: DashboardClientPro
               ייצוא PDF
             </Link>
             <button
+              id="tour-refresh-ai"
               onClick={handleRegenerateAnalysis}
               disabled={isRegenerating}
               className="inline-flex items-center gap-2 rounded px-3 py-1.5 text-xs font-medium transition-all duration-150 active:scale-[0.98]"
@@ -328,7 +654,9 @@ export function DashboardClient({ businessId, businessName }: DashboardClientPro
         )}
 
         {data && !isLoading && !isError && (
-          <BusinessMap data={data} onOpenAnalysisReveal={openAnalysisReveal} />
+          <div id="tour-map-canvas" className="h-full">
+            <BusinessMap data={data} onOpenAnalysisReveal={openAnalysisReveal} />
+          </div>
         )}
         <KnowledgeRequestPopup businessId={businessId} />
 
@@ -354,6 +682,17 @@ export function DashboardClient({ businessId, businessName }: DashboardClientPro
           </div>
         )}
       </div>
+      {currentTourConfig && tourTargetRect && (
+        <DashboardTourOverlay
+          stepIndex={tourStep ?? 0}
+          totalSteps={DASHBOARD_TOUR_STEPS.length}
+          targetRect={tourTargetRect}
+          message={currentTourConfig.message}
+          placementPriority={currentTourConfig.placementPriority}
+          onNext={nextTourStep}
+          onSkip={finishTour}
+        />
+      )}
     </div>
   );
 }

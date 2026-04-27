@@ -75,6 +75,7 @@ export function Sidebar() {
             <Link
               key={href}
               href={href}
+              data-tour={href === "/tasks" ? "tasks-sidebar-item" : undefined}
               className="group flex items-center gap-3 px-3 py-2.5 rounded transition-all duration-150"
               style={{ backgroundColor: active ? "#282a30" : "transparent", color: active ? "#e2e2eb" : "#8c909f" }}
               onMouseEnter={e => {

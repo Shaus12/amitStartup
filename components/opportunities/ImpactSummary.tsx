@@ -27,14 +27,14 @@ const STATS = [
     icon: Clock,
     color: "#34d399",
     bg: "rgba(52,211,153,0.1)",
-    label: "שעות/שבוע",
+    label: "שע' בשבוע",
   },
   {
     key: "cost" as const,
     icon: DollarSign,
     color: "#fb923c",
     bg: "rgba(251,146,60,0.1)",
-    label: "הערכת חיסכון",
+    label: "חיסכון משוער",
   },
 ];
 

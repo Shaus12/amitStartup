@@ -962,6 +962,7 @@ export function FloatingAgent({ businessId }: { businessId: string }) {
 
       {/* Toggle button */}
       <button
+        id="tour-aria-button"
         onClick={() => { if (didDrag.current) return; setIsOpen((o) => !o); }}
         onPointerDown={handleBtnPointerDown}
         onPointerMove={handleBtnPointerMove}

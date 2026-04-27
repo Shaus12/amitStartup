@@ -22,9 +22,9 @@ interface Opportunity {
 interface Props { businessId: string; businessName: string }
 
 const COLUMNS: { key: RoadmapStatus; label: string; desc: string; accent: string }[] = [
-  { key: "backlog",     label: "Backlog",     desc: "Not started yet",      accent: "#424754" },
-  { key: "in_progress", label: "In Progress", desc: "Actively deploying",   accent: "#4d8eff" },
-  { key: "done",        label: "Done",        desc: "Deployed & running",   accent: "#34d399" },
+  { key: "backlog",     label: "ממתין",     desc: "טרם התחיל",      accent: "#424754" },
+  { key: "in_progress", label: "בביצוע", desc: "בתהליך יישום",   accent: "#4d8eff" },
+  { key: "done",        label: "הושלם",        desc: "הוטמע ופועל",   accent: "#34d399" },
 ];
 
 const C = {
@@ -38,17 +38,25 @@ const IF: React.CSSProperties = { fontFamily: "var(--font-inter)" };
 function normalizeComplexity(c: string | null): string | null {
   if (!c) return null;
   const lower = c.toLowerCase().replace(/[_\s-]/g, "");
-  if (lower === "low" || lower === "plugandplay") return "Low";
-  if (lower === "high" || lower === "custombuild") return "High";
-  if (lower === "medium" || lower === "somesetup") return "Medium";
+  if (lower === "low" || lower === "plugandplay") return "low";
+  if (lower === "high" || lower === "custombuild") return "high";
+  if (lower === "medium" || lower === "somesetup") return "medium";
   return c; // fallback: show as-is
 }
 
 function complexityColor(c: string | null) {
   const n = normalizeComplexity(c);
-  if (n === "Low")    return C.green;
-  if (n === "High")   return C.amber;
+  if (n === "low")    return C.green;
+  if (n === "high")   return C.amber;
   return C.blue;
+}
+
+function complexityLabel(c: string | null): string {
+  const n = normalizeComplexity(c);
+  if (n === "low") return "נמוכה";
+  if (n === "medium") return "בינונית";
+  if (n === "high") return "גבוהה";
+  return c ?? "";
 }
 
 export function RoadmapClient({ businessId, businessName }: Props) {
@@ -58,7 +66,7 @@ export function RoadmapClient({ businessId, businessName }: Props) {
     queryKey: ["roadmap", businessId],
     queryFn: async () => {
       const r = await fetch(`/api/opportunities/roadmap?businessId=${businessId}`);
-      if (!r.ok) throw new Error("Failed to load");
+      if (!r.ok) throw new Error("נכשל בטעינת מפת הדרכים");
       const data = await r.json();
       return data;
     },
@@ -73,7 +81,7 @@ export function RoadmapClient({ businessId, businessName }: Props) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id, status }),
       });
-      if (!r.ok) throw new Error("Failed to update");
+      if (!r.ok) throw new Error("נכשל בעדכון");
       return r.json();
     },
     onMutate: async ({ id, status }) => {
@@ -86,7 +94,7 @@ export function RoadmapClient({ businessId, businessName }: Props) {
     },
     onError: (_e, _v, ctx) => {
       qc.setQueryData(["roadmap", businessId], ctx?.prev);
-      toast.error("Failed to update status");
+      toast.error("נכשל בעדכון סטטוס");
     },
   });
 
@@ -115,7 +123,7 @@ export function RoadmapClient({ businessId, businessName }: Props) {
             </div>
             <div className="min-w-0">
               <h1 className="text-sm font-semibold truncate" style={{ ...MF, color: C.text }}>
-                Implementation Roadmap
+                מפת דרכים ליישום
               </h1>
               <p className="text-[10px]" style={{ ...IF, color: C.outline }}>{businessName}</p>
             </div>
@@ -123,10 +131,10 @@ export function RoadmapClient({ businessId, businessName }: Props) {
           {/* Stats row */}
           <div className="hidden md:flex items-center gap-5">
             {[
-              { label: "Total potential", val: `${Math.round(potentialHrs)}h/wk`, color: C.muted },
-              { label: "In progress", val: activeOpps.length.toString(), color: C.blue },
-              { label: "Hrs unlocked", val: `${Math.round(totalHrs)}h`, color: C.green },
-              { label: "Monthly savings", val: totalSavings > 0 ? `$${Math.round(totalSavings).toLocaleString()}` : "–", color: C.green },
+              { label: "פוטנציאל כולל", val: `${Math.round(potentialHrs)} שע' לשבוע`, color: C.muted },
+              { label: "בביצוע", val: activeOpps.length.toString(), color: C.blue },
+              { label: "שעות שנחסכו", val: `${Math.round(totalHrs)} שע'`, color: C.green },
+              { label: "חיסכון חודשי", val: totalSavings > 0 ? `₪${Math.round(totalSavings).toLocaleString()}` : "–", color: C.green },
             ].map(({ label, val, color }) => (
               <div key={label} className="text-right">
                 <p className="text-sm font-bold tabular-nums" style={{ ...MF, color }}>{val}</p>
@@ -145,8 +153,8 @@ export function RoadmapClient({ businessId, businessName }: Props) {
         >
           <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: C.blue }} />
           <p className="text-xs" style={{ ...IF, color: C.sub }}>
-            <span className="font-semibold" style={{ color: C.blue }}>{activeOpps.length} {activeOpps.length === 1 ? "agent" : "agents"} in progress</span>
-            {" "}— continue where you left off
+            <span className="font-semibold" style={{ color: C.blue }}>{activeOpps.length} {activeOpps.length === 1 ? "הזדמנות" : "הזדמנויות"} בביצוע</span>
+            {" "}— המשך מהנקודה שבה עצרת
           </p>
         </div>
       )}
@@ -156,7 +164,7 @@ export function RoadmapClient({ businessId, businessName }: Props) {
         {isLoading ? (
           <div className="flex items-center justify-center h-full gap-2" style={{ color: C.muted }}>
             <Loader2 className="w-4 h-4 animate-spin" />
-            <span className="text-sm" style={IF}>Loading roadmap…</span>
+            <span className="text-sm" style={IF}>טוען מפת דרכים...</span>
           </div>
         ) : (
           <div className="flex gap-0 h-full min-w-[760px]">
@@ -190,8 +198,8 @@ export function RoadmapClient({ businessId, businessName }: Props) {
                       </div>
                     </div>
                     <div className="flex items-center gap-3 text-[9px]" style={{ color: C.outline, ...IF }}>
-                      {colHrs > 0 && <span><span style={{ color: col.accent }}>{Math.round(colHrs)}h</span> saved/wk</span>}
-                      {colSav > 0 && <span><span style={{ color: col.accent }}>${Math.round(colSav).toLocaleString()}</span>/mo</span>}
+                      {colHrs > 0 && <span><span style={{ color: col.accent }}>{Math.round(colHrs)} שע'</span> נחסך לשבוע</span>}
+                      {colSav > 0 && <span><span style={{ color: col.accent }}>₪{Math.round(colSav).toLocaleString()}</span> לחודש</span>}
                     </div>
                   </div>
 
@@ -204,7 +212,7 @@ export function RoadmapClient({ businessId, businessName }: Props) {
                             ? <CheckCircle2 className="w-4 h-4" style={{ color: C.s4 }} strokeWidth={1.5} />
                             : <Circle className="w-4 h-4" style={{ color: C.s4 }} strokeWidth={1.5} />}
                         </div>
-                        <p className="text-xs" style={{ ...IF, color: C.s4 }}>No agents here yet</p>
+                        <p className="text-xs" style={{ ...IF, color: C.s4 }}>אין משימות עדיין</p>
                       </div>
                     )}
                     {cards.map((opp) => (
@@ -262,7 +270,7 @@ function KanbanCard({
             <span
               className="text-[9px] font-semibold px-2 py-0.5 rounded-full shrink-0"
               style={{ ...IF, backgroundColor: `${complexityColor(opp.setupComplexity)}12`, color: complexityColor(opp.setupComplexity) }}
-            >{normalizeComplexity(opp.setupComplexity)}</span>
+            >{complexityLabel(opp.setupComplexity)}</span>
           )}
         </div>
 
@@ -281,15 +289,15 @@ function KanbanCard({
           {opp.estimatedHoursSaved != null && (
             <div className="flex items-center gap-1 text-[10px]" style={{ color: C_local.outline }}>
               <Clock className="w-2.5 h-2.5" strokeWidth={2} />
-              <span className="font-semibold tabular-nums" style={{ color: C_local.sub }}>{opp.estimatedHoursSaved}h</span>
-              <span style={IF}>/wk saved</span>
+              <span className="font-semibold tabular-nums" style={{ color: C_local.sub }}>{opp.estimatedHoursSaved} שע'</span>
+              <span style={IF}>נחסך לשבוע</span>
             </div>
           )}
           {opp.estimatedCostSaved != null && (
             <div className="flex items-center gap-1 text-[10px]" style={{ color: C_local.outline }}>
               <DollarSign className="w-2.5 h-2.5" strokeWidth={2} />
-              <span className="font-semibold tabular-nums" style={{ color: C_local.green }}>${Math.round(opp.estimatedCostSaved).toLocaleString()}</span>
-              <span style={IF}>/mo</span>
+              <span className="font-semibold tabular-nums" style={{ color: C_local.green }}>₪{Math.round(opp.estimatedCostSaved).toLocaleString()}</span>
+              <span style={IF}>לחודש</span>
             </div>
           )}
         </div>
@@ -304,7 +312,7 @@ function KanbanCard({
               style={{ ...IF, color: C_local.muted, backgroundColor: C_local.s3 }}
             >
               <ChevronLeft className="w-3 h-3" strokeWidth={2} />
-              Back
+              חזרה
             </button>
           )}
           <div className="flex-1" />
@@ -323,7 +331,7 @@ function KanbanCard({
                   : C_local.s4,
               }}
             >
-              {col.key === "backlog" ? "Start" : "Complete"}
+              {col.key === "backlog" ? "התחל" : "השלם"}
               <ArrowRight className="w-3 h-3" strokeWidth={2.5} />
             </button>
           )}

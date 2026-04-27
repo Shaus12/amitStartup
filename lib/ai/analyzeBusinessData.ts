@@ -1,5 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { buildAnalysisPrompt, buildChatPrompt, buildConstraintQuestionPrompt, buildProjectPlanPrompt } from "./prompts";
+import { logClaudeApiUsage } from "./api-usage";
 
 // ── Output types ──────────────────────────────────────────────────────────────
 
@@ -104,7 +105,8 @@ STUB_RESULT.opportunities = STUB_RESULT.departments.flatMap((d) =>
 
 export async function analyzeBusinessData(
   knowledgeRows: Array<{ category: string; content: string; metadata?: any }>,
-  departmentNames: string[] = []
+  departmentNames: string[] = [],
+  usageContext?: { businessId?: string | null; userId?: string | null }
 ): Promise<AnalysisResult> {
   const apiKey = process.env.ANTHROPIC_API_KEY;
 
@@ -121,6 +123,13 @@ export async function analyzeBusinessData(
       model: "claude-sonnet-4-6",
       max_tokens: 6000,
       messages: [{ role: "user", content: prompt }],
+    });
+    await logClaudeApiUsage({
+      businessId: usageContext?.businessId,
+      userId: usageContext?.userId,
+      callType: "analysis",
+      model: "claude-sonnet-4-6",
+      usage: message.usage,
     });
 
     const textBlock = message.content.find((b) => b.type === "text");
@@ -203,7 +212,8 @@ export async function analyzeBusinessData(
 export async function callClaudeForChat(
   knowledgeRows: Array<{ category: string; content: string }>,
   conversationHistory: Array<{ role: string; content: string }>,
-  userMessage: string
+  userMessage: string,
+  usageContext?: { businessId?: string | null; userId?: string | null }
 ): Promise<string> {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return "AI is currently disabled. Please set the Anthropic API key.";
@@ -218,6 +228,13 @@ export async function callClaudeForChat(
       system: systemPrompt,
       messages: messages as any,
     });
+    await logClaudeApiUsage({
+      businessId: usageContext?.businessId,
+      userId: usageContext?.userId,
+      callType: "chat",
+      model: "claude-sonnet-4-6",
+      usage: response.usage,
+    });
 
     const textBlock = response.content.find((b) => b.type === "text");
     return textBlock?.type === "text" ? textBlock.text : "No response generated";
@@ -230,7 +247,8 @@ export async function callClaudeForChat(
 // ── Daily Tip function ────────────────────────────────────────────────────────
 
 export async function generateDailyTip(
-  knowledgeRows: Array<{ category: string; content: string }>
+  knowledgeRows: Array<{ category: string; content: string }>,
+  usageContext?: { businessId?: string | null; userId?: string | null }
 ): Promise<string> {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return "התמקד בתיעוד תהליכים ידניים כיום כדי לחסוך זמן מחר.";
@@ -253,6 +271,13 @@ Return ONLY the Hebrew string. No quotes, no intro, no emojis.`;
       system: systemPrompt,
       messages: [{ role: "user", content: userPrompt }],
     });
+    await logClaudeApiUsage({
+      businessId: usageContext?.businessId,
+      userId: usageContext?.userId,
+      callType: "daily_tip",
+      model: "claude-sonnet-4-6",
+      usage: response.usage,
+    });
 
     const textBlock = response.content.find((b) => b.type === "text");
     return textBlock?.type === "text" ? textBlock.text.trim().replace(/^["']|["']$/g, '') : "בדוק את רשימת המשימות שלך וסגור משימות ישנות.";
@@ -267,7 +292,8 @@ Return ONLY the Hebrew string. No quotes, no intro, no emojis.`;
 export async function generateConstraintQuestion(
   knowledgeRows: Array<{ category: string; content: string }>,
   goal: string,
-  timeline: string
+  timeline: string,
+  usageContext?: { businessId?: string | null; userId?: string | null }
 ): Promise<string> {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return "האם יש מגבלות תקציב או משאבים שכדאי לקחת בחשבון?";
@@ -281,6 +307,13 @@ export async function generateConstraintQuestion(
       max_tokens: 150,
       messages: [{ role: "user", content: prompt }],
     });
+    await logClaudeApiUsage({
+      businessId: usageContext?.businessId,
+      userId: usageContext?.userId,
+      callType: "project_planning",
+      model: "claude-sonnet-4-6",
+      usage: response.usage,
+    });
 
     const textBlock = response.content.find((b) => b.type === "text");
     return textBlock?.type === "text" ? textBlock.text.trim() : "האם יש מגבלות מסוימות לצוות?";
@@ -292,7 +325,8 @@ export async function generateConstraintQuestion(
 
 export async function generateProjectPlan(
   knowledgeRows: Array<{ category: string; content: string }>,
-  conversationHistory: Array<{ role: string; content: string }>
+  conversationHistory: Array<{ role: string; content: string }>,
+  usageContext?: { businessId?: string | null; userId?: string | null }
 ): Promise<string> {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return "AI is disabled. Please configure your API key to generate a project.";
@@ -305,6 +339,13 @@ export async function generateProjectPlan(
       model: "claude-sonnet-4-6",
       max_tokens: 2048,
       messages: [{ role: "user", content: prompt }],
+    });
+    await logClaudeApiUsage({
+      businessId: usageContext?.businessId,
+      userId: usageContext?.userId,
+      callType: "project_planning",
+      model: "claude-sonnet-4-6",
+      usage: response.usage,
     });
 
     const textBlock = response.content.find((b) => b.type === "text");

@@ -71,7 +71,7 @@ export function OpportunityList({ opportunities, onPin, onDismiss }: Opportunity
       />
       {opportunities.length === 0 && (
         <div className="flex flex-col items-center justify-center py-16 text-center">
-          <p className="text-zinc-400 font-medium mb-1">לא נמצאו הזדמנויות</p>
+          <p className="text-zinc-400 font-medium mb-1">אין הזדמנויות עדיין</p>
           <p className="text-sm text-zinc-600">
             נסו לשנות מסננים או להריץ מחדש את ניתוח ה-AI.
           </p>

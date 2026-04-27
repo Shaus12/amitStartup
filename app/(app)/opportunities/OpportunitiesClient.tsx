@@ -16,9 +16,9 @@ type FilterTab = "all" | "time" | "money" | "growth" | "quick_wins";
 
 const FILTER_TABS: { value: FilterTab; label: string }[] = [
   { value: "all", label: "הכל" },
-  { value: "quick_wins", label: "⚡ Quick Wins" },
-  { value: "time", label: "⏱ חסכון בזמן" },
-  { value: "money", label: "💰 חסכון בכסף" },
+  { value: "quick_wins", label: "⚡ ניצחונות מהירים" },
+  { value: "time", label: "⏱ חיסכון בזמן" },
+  { value: "money", label: "💰 חיסכון בעלויות" },
   { value: "growth", label: "📈 צמיחה" },
 ];
 

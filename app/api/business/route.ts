@@ -75,7 +75,10 @@ export async function GET() {
           .select("category, content")
           .eq("business_id", business.id);
 
-        const newTip = await generateDailyTip(knowledgeRows || []);
+        const newTip = await generateDailyTip(knowledgeRows || [], {
+          businessId: business.id,
+          userId: user.id,
+        });
         
         const { data: updatedHS } = await supabase
           .from("business_health_scores")
