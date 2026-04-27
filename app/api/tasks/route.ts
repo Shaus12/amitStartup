@@ -20,6 +20,8 @@ export async function GET(req: NextRequest) {
     .select(`
       *,
       ai_opportunities (
+        is_quick_win,
+        notification_hook,
         departments (
           name,
           color
@@ -30,23 +32,29 @@ export async function GET(req: NextRequest) {
     .order("created_at", { ascending: false });
 
   if (error) return NextResponse.json({ error: "Internal server error" }, { status: 500 });
-  
+
   const tasks = rawTasks.map((t: any) => {
     let deptName = t.department_name || null;
     let deptColor = null;
-    
-    if (t.ai_opportunities?.departments) {
-      deptName = t.ai_opportunities.departments.name || deptName;
-      deptColor = t.ai_opportunities.departments.color || null;
+    let isQuickWin = false;
+    let notificationHook: string | null = null;
+
+    if (t.ai_opportunities) {
+      deptName = t.ai_opportunities.departments?.name || deptName;
+      deptColor = t.ai_opportunities.departments?.color || null;
+      isQuickWin = t.ai_opportunities.is_quick_win ?? false;
+      notificationHook = t.ai_opportunities.notification_hook ?? null;
     }
-    
+
     // Cleanup the nested join data to keep the response clean
     delete t.ai_opportunities;
-    
+
     return {
       ...t,
       department_name: deptName,
-      department_color: deptColor
+      department_color: deptColor,
+      is_quick_win: isQuickWin,
+      notification_hook: notificationHook,
     };
   });
 

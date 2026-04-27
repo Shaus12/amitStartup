@@ -37,6 +37,8 @@ interface Task {
   parent_task_id?: string | null;
   completed_at?: string | null;
   created_at: string;
+  is_quick_win?: boolean;
+  notification_hook?: string | null;
 }
 
 interface XpAnimation {
@@ -255,19 +257,54 @@ function TaskCard({
               style={{ color: "#34d399", flexShrink: 0, marginTop: 1 }}
             />
           )}
-          <p
-            style={{
-              fontSize: 13,
-              fontWeight: 600,
-              color: isDone ? "#424754" : "#e2e2eb",
-              fontFamily: "var(--font-manrope)",
-              lineHeight: 1.4,
-              flex: 1,
-              textDecoration: isDone ? "line-through" : "none",
-            }}
-          >
-            {task.title}
-          </p>
+          <div style={{ flex: 1 }}>
+            {task.is_quick_win && !isDone && (
+              <span
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 3,
+                  fontSize: 9,
+                  fontWeight: 800,
+                  padding: "2px 7px",
+                  borderRadius: 99,
+                  backgroundColor: "rgba(251,191,36,0.12)",
+                  color: "#fbbf24",
+                  border: "1px solid rgba(251,191,36,0.3)",
+                  fontFamily: "var(--font-inter)",
+                  marginBottom: 4,
+                  letterSpacing: "0.04em",
+                }}
+              >
+                ⚡ Quick Win
+              </span>
+            )}
+            <p
+              style={{
+                fontSize: 13,
+                fontWeight: 600,
+                color: isDone ? "#424754" : "#e2e2eb",
+                fontFamily: "var(--font-manrope)",
+                lineHeight: 1.4,
+                textDecoration: isDone ? "line-through" : "none",
+              }}
+            >
+              {task.title}
+            </p>
+            {task.notification_hook && !isDone && (
+              <p
+                style={{
+                  fontSize: 11,
+                  color: "#5d6270",
+                  fontFamily: "var(--font-inter)",
+                  lineHeight: 1.4,
+                  marginTop: 3,
+                }}
+              >
+                {task.notification_hook}
+              </p>
+            )}
+          </div>
         </div>
 
         {/* Meta row */}
@@ -892,10 +929,13 @@ export function TasksClient({ businessId, initialXp, initialLevel }: TasksClient
 
   // ── Derived data ──────────────────────────────────────────────────────────
   const rootTasks = tasks.filter((t) => !t.parent_task_id);
-  const columns = COLUMNS.map((col) => ({
-    ...col,
-    tasks: rootTasks.filter((t) => t.status === col.id),
-  }));
+  const columns = COLUMNS.map((col) => {
+    const colTasks = rootTasks.filter((t) => t.status === col.id);
+    if (col.id === "todo") {
+      colTasks.sort((a, b) => Number(b.is_quick_win ?? false) - Number(a.is_quick_win ?? false));
+    }
+    return { ...col, tasks: colTasks };
+  });
 
   const { pct: xpPct, next: xpNext } = xpToNextLevel(xp);
 

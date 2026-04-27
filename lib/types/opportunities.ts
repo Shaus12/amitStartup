@@ -18,6 +18,9 @@ export interface AiOpportunityItem {
   generatedAt: string;
   source: string;
   department?: { name: string; color: string } | null;
+  isQuickWin?: boolean;
+  notificationHook?: string | null;
+  proofOfValue?: string | null;
 }
 
 export interface OpportunitySummary {

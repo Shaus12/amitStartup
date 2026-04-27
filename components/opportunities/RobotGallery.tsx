@@ -190,6 +190,26 @@ function RobotCard({ opp, name, index, isSelected, onSelect, onPin, onDismiss, b
             📌
           </div>
         )}
+        {opp.isQuickWin && (
+          <div
+            style={{
+              position: "absolute",
+              top: 8,
+              left: 8,
+              fontSize: 9,
+              fontWeight: 800,
+              padding: "2px 6px",
+              borderRadius: 99,
+              backgroundColor: "rgba(251,191,36,0.15)",
+              color: "#fbbf24",
+              border: "1px solid rgba(251,191,36,0.3)",
+              fontFamily: "var(--font-inter)",
+              letterSpacing: "0.03em",
+            }}
+          >
+            ⚡
+          </div>
+        )}
 
         <RobotSVG color={color} isSelected={isSelected} isAnimated={isSelected} />
 
@@ -331,6 +351,35 @@ function RobotCard({ opp, name, index, isSelected, onSelect, onPin, onDismiss, b
               </div>
             )}
           </div>
+
+          {/* Proof of value */}
+          {opp.proofOfValue && (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "flex-start",
+                gap: 6,
+                padding: "7px 10px",
+                borderRadius: 8,
+                backgroundColor: "rgba(52,211,153,0.06)",
+                border: "1px solid rgba(52,211,153,0.18)",
+                marginBottom: 8,
+                direction: "ltr",
+              }}
+            >
+              <span style={{ fontSize: 11, flexShrink: 0 }}>✓</span>
+              <span
+                style={{
+                  fontSize: 10,
+                  color: "#34d399",
+                  fontFamily: "var(--font-inter)",
+                  lineHeight: 1.5,
+                }}
+              >
+                {opp.proofOfValue}
+              </span>
+            </div>
+          )}
 
           {/* Add as task */}
           {businessId && (

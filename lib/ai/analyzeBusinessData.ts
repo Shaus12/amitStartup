@@ -11,6 +11,9 @@ export interface OpportunityResult {
   estimated_cost_saved: number | null;
   priority: number;             // 1–5
   department_name: string | null;
+  is_quick_win?: boolean;       // implementable <3h, no new tool, visible result same day
+  notification_hook?: string;   // max 12-word motivating copy
+  proof_of_value?: string;      // trust-building sentence tailored to their context
 }
 
 export interface DepartmentAnalysis {
@@ -61,6 +64,9 @@ const STUB_RESULT: AnalysisResult = {
           estimated_cost_saved: 1800,
           priority: 1,
           department_name: "Customer Support",
+          is_quick_win: false,
+          notification_hook: "Save 12 hours a week on customer support.",
+          proof_of_value: "Small service businesses typically cut first-response time by 80% after deploying a triage agent.",
         },
         {
           title: "Automated Follow-up Emails",
@@ -70,6 +76,9 @@ const STUB_RESULT: AnalysisResult = {
           estimated_cost_saved: 500,
           priority: 3,
           department_name: "Customer Support",
+          is_quick_win: true,
+          notification_hook: "Set up once, follow up automatically — forever.",
+          proof_of_value: "Businesses that automate follow-ups see 20% higher repeat customer rates.",
         },
       ],
     },

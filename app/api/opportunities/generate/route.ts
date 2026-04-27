@@ -156,6 +156,9 @@ export async function POST(req: NextRequest) {
           estimated_cost_saved: opp.estimated_cost_saved,
           priority: opp.priority || 3,
           status: "suggested",
+          is_quick_win: opp.is_quick_win ?? false,
+          notification_hook: opp.notification_hook ?? null,
+          proof_of_value: opp.proof_of_value ?? null,
         };
       });
 

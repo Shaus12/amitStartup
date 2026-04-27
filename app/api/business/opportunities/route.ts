@@ -37,6 +37,9 @@ export async function GET(req: NextRequest) {
       
       // Alias to new 'status' column for backwards UI compatibility
       roadmapStatus: o.status,
+      isQuickWin: o.is_quick_win ?? false,
+      notificationHook: o.notification_hook ?? null,
+      proofOfValue: o.proof_of_value ?? null,
     }));
 
     return NextResponse.json(mapped);

@@ -12,10 +12,11 @@ interface OpportunitiesClientProps {
   businessName: string;
 }
 
-type FilterTab = "all" | "time" | "money" | "growth";
+type FilterTab = "all" | "time" | "money" | "growth" | "quick_wins";
 
 const FILTER_TABS: { value: FilterTab; label: string }[] = [
   { value: "all", label: "הכל" },
+  { value: "quick_wins", label: "⚡ Quick Wins" },
   { value: "time", label: "⏱ חסכון בזמן" },
   { value: "money", label: "💰 חסכון בכסף" },
   { value: "growth", label: "📈 צמיחה" },
@@ -129,10 +130,11 @@ export function OpportunitiesClient({ businessId, businessName }: OpportunitiesC
 
   const filteredOpportunities = useMemo(() => {
     switch (activeTab) {
-      case "time":   return activeOpportunities.filter((o) => o.impactType === "time"   || o.impactType === "time_savings");
-      case "money":  return activeOpportunities.filter((o) => o.impactType === "money"  || o.impactType === "cost_savings");
-      case "growth": return activeOpportunities.filter((o) => o.impactType === "growth" || o.impactType === "revenue");
-      default:       return activeOpportunities;
+      case "quick_wins": return activeOpportunities.filter((o) => o.isQuickWin);
+      case "time":       return activeOpportunities.filter((o) => o.impactType === "time"   || o.impactType === "time_savings");
+      case "money":      return activeOpportunities.filter((o) => o.impactType === "money"  || o.impactType === "cost_savings");
+      case "growth":     return activeOpportunities.filter((o) => o.impactType === "growth" || o.impactType === "revenue");
+      default:           return activeOpportunities;
     }
   }, [activeOpportunities, activeTab]);
 
@@ -195,6 +197,8 @@ export function OpportunitiesClient({ businessId, businessName }: OpportunitiesC
                 const isActive = activeTab === tab.value;
                 const count = tab.value === "all"
                   ? activeOpportunities.length
+                  : tab.value === "quick_wins"
+                  ? activeOpportunities.filter((o) => o.isQuickWin).length
                   : activeOpportunities.filter((o) =>
                       o.impactType === tab.value ||
                       (tab.value === "time"   && o.impactType === "time_savings") ||

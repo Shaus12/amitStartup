@@ -60,7 +60,7 @@ export function buildOnboardingKnowledgeRows(
         business_id: bizId,
         department_id: null,
         category: "tool",
-        content: `${t.name} (Category: ${t.category}, Manual: ${t.isManualProcess ? "Yes" : "No"})`,
+        content: `CURRENT TOOL IN USE: ${t.name} (category: ${t.category}, Manual: ${t.isManualProcess ? "Yes" : "No"}) — do not recommend replacing this tool`,
         source: "onboarding",
         metadata: {
           name: t.name,
@@ -157,11 +157,11 @@ export function buildOnboardingKnowledgeRows(
   pushInsight(rows, bizId, "Growth trajectory", answers.growthTrajectory);
 
   pushInsight(rows, bizId, "Software spend (monthly)", answers.softwareSpend);
-  pushInsight(rows, bizId, "Lead tracking", answers.leadsTracking);
-  pushInsight(rows, bizId, "Client management", answers.clientManagement);
-  pushInsight(rows, bizId, "Finance tracking", answers.financeTracking);
-  pushInsight(rows, bizId, "Task / project tracking", answers.taskManagement);
-  pushInsight(rows, bizId, "Business data / metrics tracking", answers.dataTracking);
+  pushInsight(rows, bizId, "CURRENT TOOL FOR lead tracking (do not replace)", answers.leadsTracking);
+  pushInsight(rows, bizId, "CURRENT TOOL FOR client management (do not replace)", answers.clientManagement);
+  pushInsight(rows, bizId, "CURRENT TOOL FOR finance tracking (do not replace)", answers.financeTracking);
+  pushInsight(rows, bizId, "CURRENT TOOL FOR task/project tracking (do not replace)", answers.taskManagement);
+  pushInsight(rows, bizId, "CURRENT TOOL FOR business data/metrics tracking (do not replace)", answers.dataTracking);
 
   if (answers.timeAudit?.length) {
     for (const e of answers.timeAudit) {
