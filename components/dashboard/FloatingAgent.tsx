@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Bot, X, Send, Loader2, History, Pencil, Trash2 } from "lucide-react";
+import { Bot, X, Send, Loader2, History, Pencil, Trash2, Copy, Check } from "lucide-react";
 
 interface Message {
   id?: string;
@@ -71,6 +71,7 @@ export function FloatingAgent({ businessId }: { businessId: string }) {
   const [editingTitle, setEditingTitle] = useState("");
   const [confirmDeleteSessionId, setConfirmDeleteSessionId] = useState<string | null>(null);
   const [deletingSessionId, setDeletingSessionId] = useState<string | null>(null);
+  const [copiedMessageKey, setCopiedMessageKey] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragOffset, setDragOffset] = useState<{ x: number; y: number }>(() => {
@@ -149,6 +150,12 @@ export function FloatingAgent({ businessId }: { businessId: string }) {
       setTimeout(() => inputRef.current?.focus(), 120);
     }
   }, [isOpen, view]);
+
+  useEffect(() => {
+    if (!copiedMessageKey) return;
+    const id = window.setTimeout(() => setCopiedMessageKey(null), 1600);
+    return () => window.clearTimeout(id);
+  }, [copiedMessageKey]);
 
   async function openSession(session: ChatSession) {
     setView("chat");
@@ -318,6 +325,15 @@ export function FloatingAgent({ businessId }: { businessId: string }) {
       ]);
     } finally {
       setIsLoading(false);
+    }
+  }
+
+  async function copyMessage(content: string, key: string) {
+    try {
+      await navigator.clipboard.writeText(content);
+      setCopiedMessageKey(key);
+    } catch {
+      setCopiedMessageKey(null);
     }
   }
 
@@ -787,9 +803,41 @@ export function FloatingAgent({ businessId }: { businessId: string }) {
                       key={msg.id || `${msg.role}-${i}`}
                       style={{
                         display: "flex",
+                        alignItems: "flex-start",
+                        gap: 6,
                         justifyContent: msg.role === "user" ? "flex-start" : "flex-end",
                       }}
                     >
+                      {msg.role === "assistant" && (
+                        <button
+                          type="button"
+                          onClick={() => void copyMessage(msg.content, msg.id || `${msg.role}-${i}`)}
+                          title={copiedMessageKey === (msg.id || `${msg.role}-${i}`) ? "הועתק" : "העתק"}
+                          style={{
+                            marginTop: 3,
+                            width: 24,
+                            height: 24,
+                            borderRadius: 7,
+                            border: "1px solid #2a2f3c",
+                            backgroundColor: "#171a24",
+                            color:
+                              copiedMessageKey === (msg.id || `${msg.role}-${i}`)
+                                ? "#86efac"
+                                : "#8c909f",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            cursor: "pointer",
+                            flexShrink: 0,
+                          }}
+                        >
+                          {copiedMessageKey === (msg.id || `${msg.role}-${i}`) ? (
+                            <Check size={12} />
+                          ) : (
+                            <Copy size={12} />
+                          )}
+                        </button>
+                      )}
                       <div
                         style={{
                           maxWidth: "82%",

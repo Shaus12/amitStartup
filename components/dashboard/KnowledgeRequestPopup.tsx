@@ -11,11 +11,12 @@ interface KnowledgeRequest {
 
 interface Props {
   businessId: string;
+  enabled?: boolean;
 }
 
 type Phase = "hidden" | "visible" | "thank-you" | "done";
 
-export function KnowledgeRequestPopup({ businessId }: Props) {
+export function KnowledgeRequestPopup({ businessId, enabled = true }: Props) {
   const [request, setRequest] = useState<KnowledgeRequest | null>(null);
   const [phase, setPhase] = useState<Phase>("hidden");
   const [answer, setAnswer] = useState("");
@@ -24,6 +25,8 @@ export function KnowledgeRequestPopup({ businessId }: Props) {
   const showTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
+    if (!enabled) return;
+
     // Fetch after 3 seconds
     showTimer.current = setTimeout(async () => {
       try {
@@ -45,8 +48,7 @@ export function KnowledgeRequestPopup({ businessId }: Props) {
       if (showTimer.current) clearTimeout(showTimer.current);
       if (dismissTimer.current) clearTimeout(dismissTimer.current);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [businessId]);
+  }, [businessId, enabled]);
 
   function dismiss() {
     if (dismissTimer.current) clearTimeout(dismissTimer.current);

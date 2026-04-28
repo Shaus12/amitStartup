@@ -254,6 +254,10 @@ export function OnboardingWizard() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentStep]);
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }, [currentStep]);
+
   // Show mode selector before any step
   if (registrationMode === null) {
     return (

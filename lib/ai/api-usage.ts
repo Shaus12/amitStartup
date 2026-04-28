@@ -1,6 +1,13 @@
 import { supabaseAdmin as supabase } from "@/lib/supabase-admin";
 
-type ApiCallType = "analysis" | "daily_tip" | "chat" | "project_planning" | "knowledge_request";
+type ApiCallType =
+  | "analysis"
+  | "daily_tip"
+  | "chat"
+  | "project_planning"
+  | "knowledge_request"
+  | "gift_selection"
+  | "gift_generation";
 
 type Usage = {
   input_tokens?: number;

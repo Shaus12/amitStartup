@@ -76,6 +76,16 @@ export function LoadingAnalysis() {
               "יצירת הניתוח נכשלה"
           );
         }
+
+        // Bonus step: generate a gift silently, without blocking dashboard access.
+        void fetch("/api/gifts/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ businessId }),
+        }).catch((giftErr) => {
+          console.error("[gift] failed silently", giftErr);
+        });
+
         clearProgressInterval();
         setProgress(100);
         await new Promise((r) => setTimeout(r, 550));

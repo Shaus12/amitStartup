@@ -155,11 +155,16 @@ export function Step04_Departments({ onNext, onBack }: Props) {
                         type="number"
                         min={0}
                         value={dept.headcount ?? ""}
+                        onFocus={(e) => {
+                          if ((dept.headcount ?? 0) === 0) {
+                            e.currentTarget.select();
+                          }
+                        }}
                         onChange={(e) => {
                         const val = e.target.value;
                         updateHeadcount(
                             dept.name,
-                            val ? parseInt(val, 10) : 0
+                            val === "" ? undefined : Math.max(0, parseInt(val, 10) || 0)
                         );
                         }}
                         placeholder={t.step04.peoplePlaceholder}

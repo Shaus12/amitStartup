@@ -3,7 +3,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { RotateCcw, Network, FileText, LogOut } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState, type CSSProperties } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { createPortal } from "react-dom";
@@ -14,11 +14,19 @@ import { KnowledgeRequestPopup } from "@/components/dashboard/KnowledgeRequestPo
 import { DashboardStats } from "@/components/dashboard/DashboardStats";
 import { createClient } from "@/lib/supabase/client";
 import { AnalysisRevealModal, revealStorageKey } from "@/components/dashboard/AnalysisRevealModal";
+import { GiftModal } from "@/components/dashboard/GiftModal";
 
 interface DashboardClientProps {
   businessId: string;
   businessName: string;
 }
+
+type DashboardGift = {
+  id: string;
+  giftType: string;
+  content: string;
+  viewedAt: string | null;
+};
 
 const DASHBOARD_TOUR_KEY_PREFIX = "dashboard_tour_completed_";
 
@@ -287,16 +295,54 @@ const DAILY_TIPS = [
   "מה לוקח לך הכי הרבה זמן ביום? זה המקום הראשון להתחיל",
 ];
 
+const HEBREW_MONTHS = [
+  "ינואר",
+  "פברואר",
+  "מרץ",
+  "אפריל",
+  "מאי",
+  "יוני",
+  "יולי",
+  "אוגוסט",
+  "ספטמבר",
+  "אוקטובר",
+  "נובמבר",
+  "דצמבר",
+];
+
+function formatNextRefreshHebrew(nextRefreshAtIso: string): string {
+  const d = new Date(nextRefreshAtIso);
+  if (Number.isNaN(d.getTime())) return "";
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Asia/Jerusalem",
+    day: "numeric",
+    month: "numeric",
+  }).formatToParts(d);
+  const day = parts.find((p) => p.type === "day")?.value ?? String(d.getUTCDate());
+  const monthNum =
+    parseInt(parts.find((p) => p.type === "month")?.value ?? "1", 10) - 1;
+  const monthName = HEBREW_MONTHS[monthNum] ?? "";
+  return `הניתוח הבא זמין ב-${day} ${monthName}`;
+}
+
 export function DashboardClient({ businessId, businessName }: DashboardClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const fromAnalysis = searchParams.get("fromAnalysis") === "1";
+  const [arrivedFromAnalysis] = useState(fromAnalysis);
   const queryClient = useQueryClient();
   const [isRegenerating, setIsRegenerating] = useState(false);
   const [revealOpen, setRevealOpen] = useState(false);
+  const [giftOpen, setGiftOpen] = useState(false);
+  const [showGiftToast, setShowGiftToast] = useState(false);
   const [tourStep, setTourStep] = useState<number | null>(null);
   const [tourTargetRect, setTourTargetRect] = useState<DOMRect | null>(null);
   const [tourReady, setTourReady] = useState(false);
+  const [tourEndedAfterStart, setTourEndedAfterStart] = useState(false);
+  const prevTourStepRef = useRef<number | null>(null);
+  const [refreshConfirmOpen, setRefreshConfirmOpen] = useState(false);
+  /** While first-visit-from-analysis, poll for gift row until it exists (generation runs async after /loading). */
+  const giftPollUntilRef = useRef(0);
 
   const todayTip = DAILY_TIPS[Math.floor(Date.now() / 86400000) % DAILY_TIPS.length];
 
@@ -309,6 +355,42 @@ export function DashboardClient({ businessId, businessName }: DashboardClientPro
       return Array.isArray(body) ? body : (body.opportunities ?? []);
     },
   });
+
+  const { data: giftData } = useQuery<{ gift: DashboardGift | null }>({
+    queryKey: ["business-gift", businessId],
+    queryFn: async () => {
+      const r = await fetch(`/api/gifts?businessId=${businessId}`);
+      if (!r.ok) return { gift: null };
+      return r.json();
+    },
+    refetchInterval: (query) => {
+      if (!arrivedFromAnalysis) return false;
+      if (Date.now() > giftPollUntilRef.current) return false;
+      if (query.state.data?.gift != null) return false;
+      return 2500;
+    },
+  });
+  const gift = giftData?.gift ?? null;
+  const hasUnviewedGift = Boolean(gift && !gift.viewedAt);
+  const giftToastDismissedKey = `gift_toast_dismissed_${businessId}`;
+
+  const { data: canRefreshData } = useQuery<{
+    canRefresh: boolean;
+    nextRefreshAt?: string;
+  }>({
+    queryKey: ["business-can-refresh", businessId],
+    queryFn: async () => {
+      const r = await fetch(`/api/business/can-refresh?businessId=${encodeURIComponent(businessId)}`);
+      if (!r.ok) return { canRefresh: true };
+      return r.json();
+    },
+  });
+
+  const canRefreshAnalysis = canRefreshData?.canRefresh !== false;
+  const refreshCooldownTooltip =
+    !canRefreshAnalysis && canRefreshData?.nextRefreshAt
+      ? formatNextRefreshHebrew(canRefreshData.nextRefreshAt)
+      : "";
 
   const doneOpps = opportunitiesSummary.filter((o) => o.roadmapStatus === "done");
   const totalHrsSaved = doneOpps.reduce((s, o) => s + (o.estimatedHoursSaved ?? 0), 0);
@@ -330,7 +412,9 @@ export function DashboardClient({ businessId, businessName }: DashboardClientPro
     },
   });
 
-  useEffect(() => {
+  // Open the analysis reveal before paint so tour logic never sees revealOpen=false on the same
+  // tick as "first visit from analysis" (otherwise the dashboard tour starts under the modal).
+  useLayoutEffect(() => {
     if (!data) return;
     if (!fromAnalysis) return;
 
@@ -341,11 +425,35 @@ export function DashboardClient({ businessId, businessName }: DashboardClientPro
       /* ignore */
     }
     if (!shown) setRevealOpen(true);
+  }, [data, fromAnalysis, businessId]);
+
+  useLayoutEffect(() => {
+    if (arrivedFromAnalysis) {
+      giftPollUntilRef.current = Date.now() + 4 * 60 * 1000;
+    } else {
+      giftPollUntilRef.current = 0;
+    }
+  }, [arrivedFromAnalysis]);
+
+  // While the benchmark / reveal modal is open, force-reset the dashboard tour so it cannot
+  // render above the modal (tour overlay z-index is higher than the reveal).
+  useEffect(() => {
+    if (!revealOpen) return;
+    setTourEndedAfterStart(false);
+    setTourStep(null);
+    setTourTargetRect(null);
+    setTourReady(false);
+  }, [revealOpen]);
+
+  useEffect(() => {
+    if (!data) return;
+    if (!fromAnalysis) return;
     router.replace("/dashboard", { scroll: false });
   }, [data, fromAnalysis, businessId, router]);
 
   useEffect(() => {
-    if (!fromAnalysis || !data) return;
+    // Use arrivedFromAnalysis: URL param is stripped by router.replace once data loads.
+    if (!arrivedFromAnalysis || !data) return;
     if (revealOpen) return;
     try {
       const done = localStorage.getItem(
@@ -357,7 +465,7 @@ export function DashboardClient({ businessId, businessName }: DashboardClientPro
     }
     setTourStep(0);
     setTourReady(true);
-  }, [fromAnalysis, data, revealOpen, businessId]);
+  }, [arrivedFromAnalysis, data, revealOpen, businessId]);
 
   const currentTourConfig = useMemo(
     () =>
@@ -447,6 +555,7 @@ export function DashboardClient({ businessId, businessName }: DashboardClientPro
       
       await queryClient.invalidateQueries({ queryKey: ["business-map", businessId] });
       await queryClient.invalidateQueries({ queryKey: ["opportunities", businessId] });
+      await queryClient.invalidateQueries({ queryKey: ["business-can-refresh", businessId] });
       
       toast.success(`AI analysis updated (${result.count || 0} opportunities found)`);
     } catch (err) {
@@ -456,8 +565,86 @@ export function DashboardClient({ businessId, businessName }: DashboardClientPro
     }
   }
 
+  function onRefreshAnalysisClick() {
+    if (!canRefreshAnalysis || isRegenerating) return;
+    setRefreshConfirmOpen(true);
+  }
+
+  async function confirmRefreshAnalysis() {
+    setRefreshConfirmOpen(false);
+    await handleRegenerateAnalysis();
+  }
+
+  const handleOpenGift = useCallback(async () => {
+    if (!gift) return;
+    setShowGiftToast(false);
+    setGiftOpen(true);
+    if (!gift.viewedAt) {
+      try {
+        await fetch(`/api/gifts/${gift.id}`, { method: "PATCH" });
+      } catch (err) {
+        console.error("[gift] mark viewed failed", err);
+      }
+    }
+  }, [gift]);
+
+  const handleDismissGiftToast = useCallback(() => {
+    setShowGiftToast(false);
+    try {
+      localStorage.setItem(giftToastDismissedKey, "1");
+    } catch {
+      // ignore storage errors
+    }
+  }, [giftToastDismissedKey]);
+
+  useEffect(() => {
+    if (!showGiftToast) return;
+    const id = window.setTimeout(() => setShowGiftToast(false), 10_000);
+    return () => window.clearTimeout(id);
+  }, [showGiftToast]);
+
+  useEffect(() => {
+    if (prevTourStepRef.current !== null && tourStep === null && !revealOpen) {
+      setTourEndedAfterStart(true);
+    }
+    prevTourStepRef.current = tourStep;
+  }, [tourStep, revealOpen]);
+
+  useEffect(() => {
+    // First-visit flow only: after tour ends, show toast after 3 seconds.
+    if (!arrivedFromAnalysis) return;
+    if (!hasUnviewedGift) return;
+    if (revealOpen || giftOpen) return;
+    if (!tourEndedAfterStart) return;
+
+    let dismissed = false;
+    try {
+      dismissed = localStorage.getItem(giftToastDismissedKey) === "1";
+    } catch {
+      dismissed = false;
+    }
+    if (dismissed) return;
+
+    const id = window.setTimeout(() => {
+      setShowGiftToast(true);
+    }, 3_000);
+    return () => window.clearTimeout(id);
+  }, [
+    arrivedFromAnalysis,
+    hasUnviewedGift,
+    revealOpen,
+    giftOpen,
+    giftToastDismissedKey,
+    tourEndedAfterStart,
+  ]);
+
   const deptCount = data?.departments?.length ?? 0;
   const processCount = data?.departments?.reduce((sum, d) => sum + (d.processes?.length ?? 0), 0) ?? 0;
+  const knowledgePopupEnabled =
+    !revealOpen &&
+    !giftOpen &&
+    !showGiftToast &&
+    tourStep === null;
 
   return (
     <div className="flex flex-col h-full" style={{ backgroundColor: "#111319" }}>
@@ -504,6 +691,22 @@ export function DashboardClient({ businessId, businessName }: DashboardClientPro
           <div className="flex items-center gap-3">
             {!isLoading && data && <HealthScore businessId={businessId} />}
             <div className="w-px h-6 shrink-0" style={{ backgroundColor: "#282a30" }} />
+            {!arrivedFromAnalysis && gift && (
+              <button
+                type="button"
+                onClick={handleOpenGift}
+                title="המתנה שלך"
+                className="inline-flex items-center justify-center rounded-lg px-2.5 py-1.5 text-xs font-semibold border transition-colors"
+                style={{
+                  fontFamily: "var(--font-inter)",
+                  borderColor: "#b48a35",
+                  color: "#ffe3a6",
+                  backgroundColor: "rgba(180,138,53,0.14)",
+                }}
+              >
+                <span aria-hidden="true">🎁</span>
+              </button>
+            )}
             <button
               id="sign-out-btn"
               onClick={handleSignOut}
@@ -544,29 +747,39 @@ export function DashboardClient({ businessId, businessName }: DashboardClientPro
               <FileText className="w-3 h-3" strokeWidth={2} />
               ייצוא PDF
             </Link>
-            <button
-              id="tour-refresh-ai"
-              onClick={handleRegenerateAnalysis}
-              disabled={isRegenerating}
-              className="inline-flex items-center gap-2 rounded px-3 py-1.5 text-xs font-medium transition-all duration-150 active:scale-[0.98]"
-              style={{
-                fontFamily: "var(--font-inter)",
-                backgroundColor: "#1e1f26",
-                border: "1px solid #282a30",
-                color: isRegenerating ? "#424754" : "#c2c6d6",
-                cursor: isRegenerating ? "not-allowed" : "pointer",
-                opacity: isRegenerating ? 0.5 : 1,
-              }}
-              onMouseEnter={e => {
-                if (!isRegenerating) e.currentTarget.style.borderColor = "#424754";
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.borderColor = "#282a30";
-              }}
+            <span
+              className="inline-flex"
+              title={!canRefreshAnalysis ? refreshCooldownTooltip : undefined}
             >
-              <RotateCcw className={`w-3 h-3 ${isRegenerating ? "animate-spin" : ""}`} strokeWidth={2} />
-              <span className="hidden sm:inline">{isRegenerating ? "מנתח..." : "רענן ניתוח"}</span>
-            </button>
+              <button
+                id="tour-refresh-ai"
+                type="button"
+                onClick={onRefreshAnalysisClick}
+                disabled={isRegenerating || !canRefreshAnalysis}
+                className="inline-flex items-center gap-2 rounded px-3 py-1.5 text-xs font-medium transition-all duration-150 active:scale-[0.98]"
+                style={{
+                  fontFamily: "var(--font-inter)",
+                  backgroundColor: "#1e1f26",
+                  border: "1px solid #282a30",
+                  color:
+                    isRegenerating || !canRefreshAnalysis ? "#424754" : "#c2c6d6",
+                  cursor:
+                    isRegenerating || !canRefreshAnalysis ? "not-allowed" : "pointer",
+                  opacity: isRegenerating || !canRefreshAnalysis ? 0.5 : 1,
+                }}
+                onMouseEnter={(e) => {
+                  if (!isRegenerating && canRefreshAnalysis) {
+                    e.currentTarget.style.borderColor = "#424754";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = "#282a30";
+                }}
+              >
+                <RotateCcw className={`w-3 h-3 ${isRegenerating ? "animate-spin" : ""}`} strokeWidth={2} />
+                <span className="hidden sm:inline">{isRegenerating ? "מנתח..." : "רענן ניתוח"}</span>
+              </button>
+            </span>
           </div>
         </div>
 
@@ -658,7 +871,7 @@ export function DashboardClient({ businessId, businessName }: DashboardClientPro
             <BusinessMap data={data} onOpenAnalysisReveal={openAnalysisReveal} />
           </div>
         )}
-        <KnowledgeRequestPopup businessId={businessId} />
+        <KnowledgeRequestPopup businessId={businessId} enabled={knowledgePopupEnabled} />
 
         {data && (
           <AnalysisRevealModal
@@ -682,7 +895,7 @@ export function DashboardClient({ businessId, businessName }: DashboardClientPro
           </div>
         )}
       </div>
-      {currentTourConfig && tourTargetRect && (
+      {!revealOpen && currentTourConfig && tourTargetRect && (
         <DashboardTourOverlay
           stepIndex={tourStep ?? 0}
           totalSteps={DASHBOARD_TOUR_STEPS.length}
@@ -692,6 +905,124 @@ export function DashboardClient({ businessId, businessName }: DashboardClientPro
           onNext={nextTourStep}
           onSkip={finishTour}
         />
+      )}
+      <GiftModal
+        open={giftOpen}
+        gift={gift}
+        businessName={businessName}
+        onClose={() => setGiftOpen(false)}
+      />
+      {refreshConfirmOpen &&
+        createPortal(
+          <div
+            className="fixed inset-0 z-[10050] flex items-center justify-center p-4"
+            style={{ backgroundColor: "rgba(0,0,0,0.72)" }}
+            dir="rtl"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="refresh-analysis-dialog-title"
+          >
+            <div
+              className="w-full max-w-md rounded-2xl border p-6 shadow-2xl"
+              style={{
+                backgroundColor: "#191b22",
+                borderColor: "#282a30",
+                fontFamily: "var(--font-inter)",
+              }}
+            >
+              <h2
+                id="refresh-analysis-dialog-title"
+                className="text-base font-bold mb-3"
+                style={{ fontFamily: "var(--font-manrope)", color: "#e2e2eb" }}
+              >
+                רענון ניתוח AI
+              </h2>
+              <p className="text-sm leading-relaxed mb-2" style={{ color: "#8c909f" }}>
+                ניתן להריץ רענון ניתוח מלא{" "}
+                <span style={{ color: "#c2c6d6", fontWeight: 700 }}>פעם בשבוע בלבד</span>.
+                הרענון מחליף את הזדמנויות ה-AI והנתונים המחושבים לפי המידע העדכני בעסק שלך.
+              </p>
+              <p className="text-sm leading-relaxed mb-6" style={{ color: "#8c909f" }}>
+                לאחר הרענון, הניתוח הבא יהיה זמין שוב רק לאחר שבוע מלא. האם להמשיך?
+              </p>
+              <div className="flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setRefreshConfirmOpen(false)}
+                  className="rounded-lg px-4 py-2 text-xs font-semibold border"
+                  style={{
+                    borderColor: "#282a30",
+                    color: "#8c909f",
+                    backgroundColor: "transparent",
+                  }}
+                >
+                  ביטול
+                </button>
+                <button
+                  type="button"
+                  onClick={() => void confirmRefreshAnalysis()}
+                  className="rounded-lg px-4 py-2 text-xs font-bold"
+                  style={{
+                    background: "linear-gradient(135deg, #4d8eff, #adc6ff)",
+                    color: "#111319",
+                  }}
+                >
+                  המשך לרענון
+                </button>
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
+      {showGiftToast && gift && (
+        <div
+          className="fixed z-[9000] bottom-6 left-1/2 -translate-x-1/2 w-[min(92vw,640px)] animate-[bv-fade-up_0.3s_ease_both]"
+          dir="rtl"
+        >
+          <div
+            className="rounded-2xl border px-4 py-3 shadow-2xl flex items-center gap-4"
+            style={{
+              borderColor: "rgba(217,164,65,0.6)",
+              background: "linear-gradient(180deg, #1e2029 0%, #151720 100%)",
+              boxShadow: "0 20px 50px rgba(0,0,0,0.45)",
+            }}
+          >
+            <div className="text-3xl leading-none" aria-hidden="true">
+              🎁
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-black" style={{ color: "#f6f2e6", fontFamily: "var(--font-manrope)" }}>
+                המתנה שלך מוכנה
+              </p>
+              <p className="text-xs truncate" style={{ color: "#ceb98d", fontFamily: "var(--font-inter)" }}>
+                הכנו לך {gift.giftType} מותאם אישית לעסק שלך
+              </p>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                type="button"
+                onClick={handleOpenGift}
+                className="rounded-lg px-3 py-1.5 text-xs font-bold"
+                style={{
+                  background: "linear-gradient(135deg, #d9a441, #f2c56e)",
+                  color: "#2a1b00",
+                  fontFamily: "var(--font-inter)",
+                }}
+              >
+                פתח את המתנה
+              </button>
+              <button
+                type="button"
+                onClick={handleDismissGiftToast}
+                aria-label="סגור התראה"
+                className="rounded-md w-7 h-7 text-sm font-bold"
+                style={{ color: "#b79f6f", backgroundColor: "#222530" }}
+              >
+                ×
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
