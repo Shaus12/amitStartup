@@ -255,7 +255,9 @@ export function OnboardingWizard() {
   }, [currentStep]);
 
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "auto" });
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
   }, [currentStep]);
 
   // Show mode selector before any step

@@ -9,6 +9,7 @@ export interface ProcessInput {
   departmentName: string;
   frequency?: string;
   isManual?: boolean;
+  automationLevel?: string;
 }
 
 export interface TimeAuditEntry {

@@ -219,12 +219,12 @@ export function Step06_Processes({ onNext, onBack }: Props) {
                                     <p className="text-[10px] uppercase tracking-wider text-zinc-500 font-bold mb-2">{t.step06.typeLabel}</p>
                                     <div className="grid grid-cols-1 gap-1.5">
                                         {t.step06.types.map((ty: any) => {
-                                            const isSelected = (ty.value === 'manual' && proc.isManual) || (ty.value !== 'manual' && !proc.isManual);
-                                            // Simple mapping back to isManual for now
+                                            const currentLevel = proc.automationLevel ?? (proc.isManual ? 'manual' : 'semi');
+                                            const isSelected = currentLevel === ty.value;
                                             return (
                                                 <button
                                                     key={ty.value}
-                                                    onClick={() => updateProcess(proc.name, activeDept, { isManual: ty.value === 'manual' })}
+                                                    onClick={() => updateProcess(proc.name, activeDept, { isManual: ty.value === 'manual', automationLevel: ty.value })}
                                                     className={cn(
                                                         "px-2 py-1.5 rounded-lg border text-[11px] font-bold transition-all text-center",
                                                         isSelected

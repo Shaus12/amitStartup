@@ -47,7 +47,7 @@ export function Step00_Welcome({ onNext, onBack }: Props) {
       onNext={onNext}
       onBack={onBack}
       nextDisabled={!answers.businessName.trim() || !answers.ownerName.trim() || !answers.tagline.trim()}
-      nextLabel="בוא נצא לדרך ←"
+      nextLabel="בוא נצא לדרך"
     >
       <style jsx global>{`
         @keyframes pulse-glow {
