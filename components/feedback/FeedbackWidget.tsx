@@ -6,6 +6,7 @@ import { Lightbulb, Send, X } from "lucide-react";
 interface FeedbackWidgetProps {
   businessId: string;
 }
+//fgdg
 
 export function FeedbackWidget({ businessId }: FeedbackWidgetProps) {
   const [open, setOpen] = useState(false);
