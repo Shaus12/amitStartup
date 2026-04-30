@@ -52,17 +52,21 @@ export async function POST(req: NextRequest) {
 
     const answers: OnboardingAnswers = await req.json();
 
-    // Fire user details to Make.com webhook immediately (before any guards)
-    fetch("https://hook.eu2.make.com/j3o4pi8wr4vbga6lufprk92qrjraqi9k", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        fullName: answers.ownerName,
-        phone: answers.phone ?? "",
-        email: user.email ?? "",
-        businessName: answers.businessName,
-      }),
-    }).catch((err) => console.error("[onboarding] Make.com webhook failed:", err));
+    // Send user details to Make.com — must be awaited so Vercel doesn't kill it early
+    try {
+      await fetch("https://hook.eu2.make.com/j3o4pi8wr4vbga6lufprk92qrjraqi9k", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fullName: answers.ownerName,
+          phone: answers.phone ?? "",
+          email: user.email ?? "",
+          businessName: answers.businessName,
+        }),
+      });
+    } catch (err) {
+      console.error("[onboarding] Make.com webhook failed:", err);
+    }
 
     // ── 0. Ensure public.users row exists (FK: businesses.user_id → users.id) ──
     const { error: userRowError } = await supabase.from("users").upsert({
