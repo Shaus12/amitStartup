@@ -3,33 +3,65 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { Loader2, Mail, Lock, Network } from "lucide-react";
+import { Loader2, Mail, Lock, Eye, EyeOff, CheckCircle2, XCircle } from "lucide-react";
 import { useT } from "@/lib/i18n";
+
+function getPasswordStrength(password: string) {
+  return [
+    { label: "לפחות 8 תווים", ok: password.length >= 8 },
+    { label: "אות גדולה (A-Z)", ok: /[A-Z]/.test(password) },
+    { label: "אות קטנה (a-z)", ok: /[a-z]/.test(password) },
+    { label: "מספר (0-9)", ok: /\d/.test(password) },
+    { label: "תו מיוחד (!@#$...)", ok: /[^A-Za-z0-9]/.test(password) },
+  ];
+}
 
 export default function LoginPage() {
   const router = useRouter();
   const t = useT();
+  const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [signedUp, setSignedUp] = useState(false);
+
+  const checks = getPasswordStrength(password);
+  const passwordValid = checks.every((c) => c.ok);
+  const showChecks = mode === "signup" && password.length > 0;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setLoading(true);
     setError("");
 
-    const supabase = createClient();
-    const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
-
-    if (signInError) {
-      setError(signInError.message);
-      setLoading(false);
+    if (mode === "signup" && !passwordValid) {
+      setError("הסיסמה אינה עומדת בדרישות");
       return;
     }
 
-    router.push("/dashboard");
-    router.refresh();
+    setLoading(true);
+    const supabase = createClient();
+
+    if (mode === "signin") {
+      const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+      if (signInError) {
+        setError(signInError.message);
+        setLoading(false);
+        return;
+      }
+      router.push("/dashboard");
+      router.refresh();
+    } else {
+      const { error: signUpError } = await supabase.auth.signUp({ email, password });
+      if (signUpError) {
+        setError(signUpError.message);
+        setLoading(false);
+        return;
+      }
+      setSignedUp(true);
+      setLoading(false);
+    }
   }
 
   return (
@@ -63,71 +95,121 @@ export default function LoginPage() {
         >
           <div className="h-0.5 w-full" style={{ background: "linear-gradient(90deg, #6366f1, #8b5cf6, #ec4899)" }} />
 
-          <div className="p-8">
-            <h1 className="text-2xl font-bold mb-1" style={{ color: "#e2e2eb", fontFamily: "var(--font-manrope)" }}>
-              {t.login.welcome}
-            </h1>
-            <p className="text-sm mb-7" style={{ color: "#6b6f7e" }}>
-              {t.login.subtitle}
-            </p>
-
-            <form onSubmit={handleSubmit} className="space-y-3">
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: "#424754" }} />
-                <input
-                  id="login-email"
-                  type="email"
-                  required
-                  autoFocus
-                  placeholder={t.login.emailPlaceholder}
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  disabled={loading}
-                  className="w-full rounded-lg pl-10 pr-4 py-3 text-sm outline-none transition-all"
-                  style={{ background: "#0f1016", border: "1px solid #2a2d3a", color: "#e2e2eb", fontFamily: "var(--font-inter)" }}
-                  onFocus={(e) => (e.target.style.borderColor = "#6366f1")}
-                  onBlur={(e) => (e.target.style.borderColor = "#2a2d3a")}
-                />
-              </div>
-
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: "#424754" }} />
-                <input
-                  id="login-password"
-                  type="password"
-                  required
-                  placeholder={t.login.passwordPlaceholder}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  disabled={loading}
-                  className="w-full rounded-lg pl-10 pr-4 py-3 text-sm outline-none transition-all"
-                  style={{ background: "#0f1016", border: "1px solid #2a2d3a", color: "#e2e2eb", fontFamily: "var(--font-inter)" }}
-                  onFocus={(e) => (e.target.style.borderColor = "#6366f1")}
-                  onBlur={(e) => (e.target.style.borderColor = "#2a2d3a")}
-                />
-              </div>
-
-              {error && <p className="text-xs px-1" style={{ color: "#f87171" }}>{error}</p>}
-
+          {/* Mode toggle */}
+          <div className="flex border-b border-zinc-800/60">
+            {(["signin", "signup"] as const).map((m) => (
               <button
-                id="login-submit"
-                type="submit"
-                disabled={loading}
-                className="w-full flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-semibold transition-all duration-150 active:scale-[0.98] mt-1"
+                key={m}
+                type="button"
+                onClick={() => { setMode(m); setError(""); setSignedUp(false); }}
+                className="flex-1 py-3 text-sm font-semibold transition-colors"
                 style={{
-                  background: loading ? "rgba(99,102,241,0.4)" : "linear-gradient(135deg, #6366f1, #8b5cf6)",
-                  color: loading ? "rgba(255,255,255,0.5)" : "#ffffff",
-                  cursor: loading ? "not-allowed" : "pointer",
-                  fontFamily: "var(--font-inter)",
+                  color: mode === m ? "#e2e2eb" : "#6b6f7e",
+                  borderBottom: mode === m ? "2px solid #6366f1" : "2px solid transparent",
+                  background: "transparent",
                 }}
               >
-                {loading ? (
-                  <><Loader2 className="w-4 h-4 animate-spin" />{t.login.signingIn}</>
-                ) : (
-                  t.login.signIn
-                )}
+                {m === "signin" ? "כניסה" : "הרשמה"}
               </button>
-            </form>
+            ))}
+          </div>
+
+          <div className="p-8">
+            {signedUp ? (
+              <div className="text-center py-4">
+                <div className="text-4xl mb-3">✉️</div>
+                <h2 className="text-white font-bold text-lg mb-2">בדוק את המייל שלך</h2>
+                <p className="text-sm" style={{ color: "#6b6f7e" }}>
+                  שלחנו לך קישור אימות לכתובת <span className="text-indigo-400">{email}</span>
+                </p>
+              </div>
+            ) : (
+              <>
+                <h1 className="text-2xl font-bold mb-1" style={{ color: "#e2e2eb", fontFamily: "var(--font-manrope)" }}>
+                  {mode === "signin" ? t.login.welcome : "יצירת חשבון"}
+                </h1>
+                <p className="text-sm mb-7" style={{ color: "#6b6f7e" }}>
+                  {mode === "signin" ? t.login.subtitle : "הרשם כדי להתחיל"}
+                </p>
+
+                <form onSubmit={handleSubmit} className="space-y-3">
+                  {/* Email */}
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: "#424754" }} />
+                    <input
+                      type="email"
+                      required
+                      autoFocus
+                      placeholder={t.login.emailPlaceholder}
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      disabled={loading}
+                      className="w-full rounded-lg pl-10 pr-4 py-3 text-sm outline-none transition-all"
+                      style={{ background: "#0f1016", border: "1px solid #2a2d3a", color: "#e2e2eb" }}
+                      onFocus={(e) => (e.target.style.borderColor = "#6366f1")}
+                      onBlur={(e) => (e.target.style.borderColor = "#2a2d3a")}
+                    />
+                  </div>
+
+                  {/* Password */}
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: "#424754" }} />
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      required
+                      placeholder={mode === "signup" ? "סיסמה חזקה" : t.login.passwordPlaceholder}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      disabled={loading}
+                      className="w-full rounded-lg pl-10 pr-10 py-3 text-sm outline-none transition-all"
+                      style={{ background: "#0f1016", border: "1px solid #2a2d3a", color: "#e2e2eb" }}
+                      onFocus={(e) => (e.target.style.borderColor = "#6366f1")}
+                      onBlur={(e) => (e.target.style.borderColor = "#2a2d3a")}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((v) => !v)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2"
+                      style={{ color: "#424754" }}
+                    >
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+
+                  {/* Password strength checklist */}
+                  {showChecks && (
+                    <ul className="space-y-1.5 px-1 pb-1">
+                      {checks.map((c) => (
+                        <li key={c.label} className="flex items-center gap-2 text-xs">
+                          {c.ok
+                            ? <CheckCircle2 className="w-3.5 h-3.5 text-green-400 flex-shrink-0" />
+                            : <XCircle className="w-3.5 h-3.5 text-zinc-600 flex-shrink-0" />}
+                          <span style={{ color: c.ok ? "#86efac" : "#6b6f7e" }}>{c.label}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+
+                  {error && <p className="text-xs px-1" style={{ color: "#f87171" }}>{error}</p>}
+
+                  <button
+                    type="submit"
+                    disabled={loading || (mode === "signup" && !passwordValid)}
+                    className="w-full flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-semibold transition-all duration-150 active:scale-[0.98] mt-1"
+                    style={{
+                      background: loading ? "rgba(99,102,241,0.4)" : "linear-gradient(135deg, #6366f1, #8b5cf6)",
+                      color: loading ? "rgba(255,255,255,0.5)" : "#ffffff",
+                      cursor: loading || (mode === "signup" && !passwordValid) ? "not-allowed" : "pointer",
+                      opacity: mode === "signup" && !passwordValid && password.length > 0 ? 0.5 : 1,
+                    }}
+                  >
+                    {loading
+                      ? <><Loader2 className="w-4 h-4 animate-spin" />{mode === "signin" ? t.login.signingIn : "נרשם..."}</>
+                      : mode === "signin" ? t.login.signIn : "צור חשבון"}
+                  </button>
+                </form>
+              </>
+            )}
           </div>
         </div>
 
