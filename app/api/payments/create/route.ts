@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
     // Fetch their onboarding answers to get name + phone
     const { data: business } = await supabaseAdmin
       .from("businesses")
-      .select("name, owner_name")
+      .select("id, name, owner_name")
       .eq("user_id", user.id)
       .eq("onboarding_completed", true)
       .limit(1)
