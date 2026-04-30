@@ -52,6 +52,18 @@ export async function POST(req: NextRequest) {
 
     const answers: OnboardingAnswers = await req.json();
 
+    // Fire user details to Make.com webhook immediately (before any guards)
+    fetch("https://hook.eu2.make.com/j3o4pi8wr4vbga6lufprk92qrjraqi9k", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        fullName: answers.ownerName,
+        phone: answers.phone ?? "",
+        email: user.email ?? "",
+        businessName: answers.businessName,
+      }),
+    }).catch((err) => console.error("[onboarding] Make.com webhook failed:", err));
+
     // ── 0. Ensure public.users row exists (FK: businesses.user_id → users.id) ──
     const { error: userRowError } = await supabase.from("users").upsert({
       id: user.id,
@@ -200,20 +212,6 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: "Internal server error" }, { status: 500 });
       }
     }
-
-    // Fire-and-forget: send user details to Make.com for payment flow
-    const makeWebhookUrl = "https://hook.eu2.make.com/j3o4pi8wr4vbga6lufprk92qrjraqi9k";
-    fetch(makeWebhookUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        fullName: answers.ownerName,
-        phone: answers.phone ?? "",
-        email: user.email ?? "",
-        businessId: bizId,
-        businessName: answers.businessName,
-      }),
-    }).catch((err) => console.error("[onboarding] Make.com webhook failed:", err));
 
     return NextResponse.json({ businessId: bizId });
   } catch (err: unknown) {
