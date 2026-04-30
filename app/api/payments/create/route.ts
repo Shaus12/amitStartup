@@ -37,15 +37,33 @@ export async function POST(req: NextRequest) {
       }),
     });
 
-    // If Make.com returns a URL, pass it back so the client can redirect
+    // Extract payment URL from Make.com response — handles JSON, plain text, or URL in any field
     let redirectUrl: string | null = null;
     try {
-      const makeData = await makeRes.json();
-      if (makeData?.url) redirectUrl = makeData.url;
-      else if (makeData?.redirectUrl) redirectUrl = makeData.redirectUrl;
-      else if (makeData?.paymentUrl) redirectUrl = makeData.paymentUrl;
+      const rawText = await makeRes.text();
+      console.log("[payments/create] Make.com raw response:", rawText);
+
+      // Try to extract a URL directly from the raw text (covers plain-text and JSON responses)
+      const urlMatch = rawText.match(/https?:\/\/[^\s"'}\]]+/);
+      if (urlMatch) {
+        redirectUrl = urlMatch[0].replace(/[.,;]+$/, ""); // strip trailing punctuation
+      } else {
+        // Try parsing JSON and checking common field names
+        try {
+          const makeData = JSON.parse(rawText);
+          redirectUrl =
+            makeData?.url ??
+            makeData?.redirectUrl ??
+            makeData?.paymentUrl ??
+            makeData?.link ??
+            makeData?.payment_link ??
+            null;
+        } catch {
+          // not JSON either — no redirect
+        }
+      }
     } catch {
-      // Make.com returned non-JSON — that's fine, just show success
+      // response read failed — continue without redirect
     }
 
     return NextResponse.json({ ok: true, redirectUrl });
