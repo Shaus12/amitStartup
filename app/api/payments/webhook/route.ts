@@ -112,7 +112,6 @@ export async function activateSubscription({
         user_id: matchedUser.id,
         business_id: business?.id ?? null,
         payer_email: payerEmail,
-        payer_name: fullName || null,
         plan_name: "basic",
         amount_ils: paymentSum ? Math.round(parseFloat(paymentSum)) : 1,
         ...update,
