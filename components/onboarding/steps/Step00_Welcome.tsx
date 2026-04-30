@@ -46,7 +46,7 @@ export function Step00_Welcome({ onNext, onBack }: Props) {
       subtitle={t.step00.subtitle}
       onNext={onNext}
       onBack={onBack}
-      nextDisabled={!answers.businessName.trim() || !answers.ownerName.trim() || !answers.tagline.trim()}
+      nextDisabled={!answers.businessName.trim() || !answers.ownerName.trim() || !answers.tagline.trim() || !answers.phone.trim()}
       nextLabel="בוא נצא לדרך"
     >
       <style jsx global>{`
@@ -122,7 +122,23 @@ export function Step00_Welcome({ onNext, onBack }: Props) {
             value={answers.ownerName}
             onChange={(e) => updateAnswers({ ownerName: e.target.value })}
             placeholder={t.step00.placeholderOwner}
+            className="bg-zinc-800/50 border-zinc-700/70 text-zinc-100 placeholder:text-zinc-500 focus:border-blue-500 focus:ring-blue-500/20 h-12 transition-all"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="phone" className="text-zinc-300 text-sm font-semibold">
+            טלפון <span className="text-blue-400">*</span>
+          </Label>
+          <Input
+            id="phone"
+            type="tel"
+            inputMode="tel"
+            value={answers.phone ?? ""}
+            onChange={(e) => updateAnswers({ phone: e.target.value })}
+            placeholder="0500000000"
             className="bg-zinc-800/50 border-zinc-700/50 text-zinc-100 placeholder:text-zinc-500 focus:border-blue-500 focus:ring-blue-500/20 h-12 transition-all"
+            dir="ltr"
           />
         </div>
       </div>

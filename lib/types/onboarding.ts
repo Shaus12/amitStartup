@@ -35,6 +35,7 @@ export interface OnboardingAnswers {
   // Step 0 - Welcome
   businessName: string;
   ownerName: string;
+  phone: string;
   tagline: string;
 
   // Step 1 (wizard screen 2) — business model + team
@@ -129,6 +130,7 @@ export interface OnboardingAnswers {
 export const RANDOM_ANSWERS: OnboardingAnswers = {
   businessName: "גלרייה פרימיום",
   ownerName: "עמית כהן",
+  phone: "0500000000",
   tagline: "חנות אונליין לבגדי יוקרה",
   businessType: "online_store",
   industry: "Fashion & Retail",
@@ -221,6 +223,7 @@ export const RANDOM_ANSWERS: OnboardingAnswers = {
 export const EMPTY_ANSWERS: OnboardingAnswers = {
   businessName: "",
   ownerName: "",
+  phone: "",
   tagline: "",
   businessType: "",
   industry: "",

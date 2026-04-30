@@ -201,6 +201,20 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // Fire-and-forget: send user details to Make.com for payment flow
+    const makeWebhookUrl = "https://hook.eu2.make.com/j3o4pi8wr4vbga6lufprk92qrjraqi9k";
+    fetch(makeWebhookUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        fullName: answers.ownerName,
+        phone: answers.phone ?? "",
+        email: user.email ?? "",
+        businessId: bizId,
+        businessName: answers.businessName,
+      }),
+    }).catch((err) => console.error("[onboarding] Make.com webhook failed:", err));
+
     return NextResponse.json({ businessId: bizId });
   } catch (err: unknown) {
     console.error("Onboarding error:", err);

@@ -4,7 +4,7 @@ import { supabaseAdmin } from "@/lib/supabase-admin";
 import { createPaymentProcess } from "@/lib/payments/grow";
 import { checkRateLimit } from "@/lib/rate-limit";
 
-const PLAN_AMOUNT_ILS = 29;
+const PLAN_AMOUNT_ILS = 1;
 
 export async function POST(req: NextRequest) {
   try {

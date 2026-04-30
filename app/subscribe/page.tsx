@@ -62,7 +62,7 @@ export default function SubscribePage() {
         <div className="rounded-2xl border border-zinc-800 bg-zinc-900/50 p-8 shadow-2xl">
           {/* Price */}
           <div className="flex items-end gap-1 mb-2">
-            <span className="text-5xl font-extrabold text-white">29</span>
+            <span className="text-5xl font-extrabold text-white">1</span>
             <span className="text-xl font-bold text-white mb-1">₪</span>
             <span className="text-zinc-500 mb-2 mr-1">/ לחודש</span>
           </div>
