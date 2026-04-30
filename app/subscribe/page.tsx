@@ -137,7 +137,7 @@ export default function SubscribePage() {
                         : "border-zinc-800 bg-zinc-900/40 hover:border-zinc-700"
                     }`}
                   >
-                    {p.popular && (
+                    {"popular" in p && p.popular && (
                       <span className="absolute top-3 left-3 text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30">
                         פופולרי
                       </span>
