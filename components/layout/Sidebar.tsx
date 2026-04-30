@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, CheckSquare, GitBranch, Sparkles, MapPin, FileText } from "lucide-react";
+import { LayoutDashboard, CheckSquare, GitBranch, Sparkles, MapPin, FileText, CreditCard } from "lucide-react";
 import { useT } from "@/lib/i18n";
 
-const NAV_ICONS = [LayoutDashboard, CheckSquare, GitBranch, Sparkles, MapPin, FileText];
+const NAV_ICONS = [LayoutDashboard, CheckSquare, GitBranch, Sparkles, MapPin, FileText, CreditCard];
 
 export function MobileNav() {
   const pathname = usePathname();
