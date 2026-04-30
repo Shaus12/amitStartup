@@ -18,6 +18,7 @@ const ICONS = [BarChart2, Zap, Shield, MessageSquare];
 export default function SubscribePage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function handleSubscribe() {
@@ -26,13 +27,11 @@ export default function SubscribePage() {
     try {
       const res = await fetch("/api/payments/create", { method: "POST" });
       const data = await res.json();
-      if (!res.ok || !data.paymentUrl) {
-        throw new Error(data.error ?? "שגיאה ביצירת תשלום");
-      }
-      // Redirect to Grow payment page
-      window.location.href = data.paymentUrl;
+      if (!res.ok) throw new Error(data.error ?? "שגיאה");
+      setDone(true);
     } catch (err: any) {
       setError(err.message ?? "משהו השתבש, נסה שוב");
+    } finally {
       setLoading(false);
     }
   }
@@ -83,29 +82,34 @@ export default function SubscribePage() {
           </ul>
 
           {/* CTA */}
-          {error && (
-            <p className="text-red-400 text-sm text-center mb-4 bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-2">
-              {error}
-            </p>
+          {done ? (
+            <div className="text-center py-4">
+              <p className="text-green-400 font-bold text-base mb-1">הפרטים נשלחו!</p>
+              <p className="text-zinc-400 text-sm">ניצור איתך קשר בקרוב עם פרטי התשלום.</p>
+            </div>
+          ) : (
+            <>
+              {error && (
+                <p className="text-red-400 text-sm text-center mb-4 bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-2">
+                  {error}
+                </p>
+              )}
+              <button
+                onClick={handleSubscribe}
+                disabled={loading}
+                className="w-full py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold text-base transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    שולח פרטים...
+                  </>
+                ) : (
+                  "התחל מנוי ←"
+                )}
+              </button>
+            </>
           )}
-          <button
-            onClick={handleSubscribe}
-            disabled={loading}
-            className="w-full py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold text-base transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20"
-          >
-            {loading ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                מעביר לדף תשלום...
-              </>
-            ) : (
-              "התחל מנוי ← "
-            )}
-          </button>
-
-          <p className="text-center text-zinc-600 text-xs mt-4">
-            מאובטח על ידי Grow · תשלום מוצפן SSL
-          </p>
         </div>
 
         {/* Back link */}
