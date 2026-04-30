@@ -27,23 +27,6 @@ export default async function DashboardPage() {
     redirect("/onboarding");
   }
 
-  // Subscription gate — redirect to /subscribe if no active subscription
-  const { data: sub } = await supabaseAdmin
-    .from("subscriptions")
-    .select("status, current_period_end")
-    .eq("user_id", user.id)
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
-  const isSubscribed =
-    sub?.status === "active" &&
-    (!sub.current_period_end || new Date(sub.current_period_end) > new Date());
-
-  if (!isSubscribed) {
-    redirect("/subscribe");
-  }
-
   return (
     <Suspense
       fallback={
