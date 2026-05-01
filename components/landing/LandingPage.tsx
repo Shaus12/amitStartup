@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { CosmicParallaxBg } from "@/components/ui/parallax-cosmic-background";
 import { useLanguage } from "@/lib/i18n";
+import { PrismaHero } from "@/components/ui/prisma-hero";
 
 /* ─── Framer Motion variants ────────────────────────────────────────── */
 const fadeUp = {
@@ -1842,7 +1843,7 @@ export function LandingPage() {
     <LangCtx.Provider value={{ t: t as Content, lang: landingLang, setLang }}>
       <div dir={t.dir} style={{ backgroundColor: C.bg }}>
         <Nav />
-        <Hero />
+        <PrismaHero />
         <LogoMarquee />
         <PainSection />
         <TestimonialsSection />
