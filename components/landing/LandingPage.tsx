@@ -205,6 +205,20 @@ const CONTENT = {
       ],
       privacy: "פרטיות", terms: "תנאים",
     },
+    calc: {
+      tag: "מחשבון הפסדים",
+      h2: "כמה כסף אתה מפסיד כל חודש?",
+      sub: "הזז את המחוונים וגלה את העלות האמיתית של העבודה הידנית בעסק שלך",
+      lossLabel: "אתה מפסיד בחודש",
+      saveLabel: "ביזמאפ יכולה לחסוך לך",
+      yearLabel: "חיסכון שנתי",
+      hrsLabel: "שעות שנחסכות שבועית",
+      s1Label: "שעות ידניות בשבוע",
+      s2Label: "שכר ממוצע לשעה",
+      s3Label: "מספר עובדים",
+      cta: "הראה לי איך לחסוך",
+      disclaimer: "מבוסס על ממוצע חיסכון של 70% מהעבודה הידנית אחרי פריסת AI",
+    },
   },
   en: {
     dir: "ltr" as const,
@@ -311,6 +325,20 @@ const CONTENT = {
         { h: "Legal",     links: ["Privacy", "Terms", "Security", "Cookies"] },
       ],
       privacy: "Privacy", terms: "Terms",
+    },
+    calc: {
+      tag: "Loss Calculator",
+      h2: "How much are you losing every month?",
+      sub: "Move the sliders to discover the real cost of manual work in your business",
+      lossLabel: "You're losing per month",
+      saveLabel: "BizMap can save you",
+      yearLabel: "Annual savings",
+      hrsLabel: "Hours saved weekly",
+      s1Label: "Manual hours per week",
+      s2Label: "Average hourly rate",
+      s3Label: "Number of employees",
+      cta: "Show me how to save this",
+      disclaimer: "Based on average 70% reduction in manual work after AI deployment",
     },
   },
 } as const;
@@ -1671,6 +1699,140 @@ function StickyMobileCTA() {
 }
 
 /* ─── Root ──────────────────────────────────────────────────────────── */
+
+/* ─── ROI Calculator Section ────────────────────────────────────────── */
+function ROICalculator() {
+  const { t, lang } = useLang();
+  const c = t.calc;
+  const isHe = lang === "he";
+
+  const [hours, setHours] = useState(20);   // manual hours/week
+  const [rate,  setRate]  = useState(80);   // hourly rate ₪ (or $)
+  const [staff, setStaff] = useState(3);    // employees
+
+  const monthlyWastedHours = hours * 4.3 * staff;
+  const monthlyLoss        = Math.round(monthlyWastedHours * rate);
+  const monthlySaving      = Math.round(monthlyLoss * 0.7);
+  const annualSaving       = monthlySaving * 12;
+  const weeklyHrsSaved     = Math.round(hours * staff * 0.7);
+
+  const fmt = (n: number) =>
+    n >= 10000
+      ? isHe ? `₪${(n / 1000).toFixed(0)}K` : `₪${(n / 1000).toFixed(0)}K`
+      : `₪${n.toLocaleString()}`;
+
+  const sliders = [
+    { label: c.s1Label, value: hours,  setter: setHours, min: 5,  max: 50,  step: 1,  unit: isHe ? "ש׳" : "h" },
+    { label: c.s2Label, value: rate,   setter: setRate,  min: 30, max: 500, step: 10, unit: "₪" },
+    { label: c.s3Label, value: staff,  setter: setStaff, min: 1,  max: 20,  step: 1,  unit: "" },
+  ];
+
+  return (
+    <section className="py-28 px-6 relative overflow-hidden" style={{ backgroundColor: C.s0 }}>
+      {/* Ambient glow */}
+      <div style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
+        <div style={{ position: "absolute", top: "20%", left: "50%", transform: "translateX(-50%)", width: 700, height: 400, background: `radial-gradient(ellipse, ${C.red}0a 0%, transparent 70%)` }} />
+      </div>
+
+      <div className="relative max-w-4xl mx-auto">
+        {/* Header */}
+        <motion.div initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.3 }} variants={stagger} className="text-center mb-14">
+          <motion.p variants={fadeUp} className="text-xs font-bold tracking-widest uppercase mb-4" style={{ color: C.red }}>
+            {c.tag}
+          </motion.p>
+          <motion.h2 variants={fadeUp} className="text-3xl md:text-5xl font-extrabold mb-4 leading-tight" style={{ ...MF, color: C.text }}>
+            {c.h2}
+          </motion.h2>
+          <motion.p variants={fadeUp} className="text-base max-w-xl mx-auto" style={{ color: C.sub }}>
+            {c.sub}
+          </motion.p>
+        </motion.div>
+
+        <motion.div
+          initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.2 }} variants={stagger}
+          className="rounded-3xl p-8 md:p-12 grid md:grid-cols-2 gap-10"
+          style={{ ...glassCard }}
+        >
+          {/* Sliders */}
+          <motion.div variants={fadeUp} className="space-y-8">
+            {sliders.map(({ label, value, setter, min, max, step, unit }) => (
+              <div key={label}>
+                <div className="flex justify-between items-baseline mb-3">
+                  <span className="text-sm font-semibold" style={{ color: C.sub }}>{label}</span>
+                  <span className="text-xl font-extrabold" style={{ color: C.text, ...MF }}>
+                    {unit === "₪" ? `₪${value}` : unit ? `${value} ${unit}` : value}
+                  </span>
+                </div>
+                <div className="relative">
+                  <input
+                    type="range"
+                    min={min} max={max} step={step} value={value}
+                    onChange={e => setter(Number(e.target.value))}
+                    className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
+                    style={{
+                      background: `linear-gradient(to ${lang === "he" ? "left" : "right"}, ${C.blue} 0%, ${C.blue} ${((value - min) / (max - min)) * 100}%, rgba(255,255,255,0.08) ${((value - min) / (max - min)) * 100}%, rgba(255,255,255,0.08) 100%)`,
+                      accentColor: C.blue,
+                    }}
+                  />
+                  <style>{`input[type=range]::-webkit-slider-thumb { width:20px; height:20px; border-radius:50%; background:${C.blue}; cursor:pointer; border:2px solid white; box-shadow:0 0 10px ${C.blue}66; -webkit-appearance:none; }`}</style>
+                </div>
+                <div className="flex justify-between mt-1">
+                  <span className="text-[10px]" style={{ color: C.muted }}>{unit === "₪" ? `₪${min}` : min}</span>
+                  <span className="text-[10px]" style={{ color: C.muted }}>{unit === "₪" ? `₪${max}` : max}{unit && unit !== "₪" ? ` ${unit}` : ""}</span>
+                </div>
+              </div>
+            ))}
+          </motion.div>
+
+          {/* Results */}
+          <motion.div variants={fadeUp} className="flex flex-col gap-5 justify-center">
+            {/* Main loss */}
+            <div className="rounded-2xl p-6 text-center" style={{ background: `${C.red}12`, border: `1px solid ${C.red}30` }}>
+              <p className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: C.red }}>{c.lossLabel}</p>
+              <p className="text-4xl md:text-5xl font-extrabold" style={{ color: C.red, ...MF }}>
+                {fmt(monthlyLoss)}
+              </p>
+            </div>
+
+            {/* Savings */}
+            <div className="rounded-2xl p-5 text-center" style={{ background: `${C.green}12`, border: `1px solid ${C.green}30` }}>
+              <p className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: C.green }}>{c.saveLabel}</p>
+              <p className="text-3xl font-extrabold" style={{ color: C.green, ...MF }}>
+                {fmt(monthlySaving)} / {isHe ? "חודש" : "mo"}
+              </p>
+            </div>
+
+            {/* Stats row */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="rounded-xl p-4 text-center" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}>
+                <p className="text-xs font-semibold mb-1" style={{ color: C.muted }}>{c.yearLabel}</p>
+                <p className="text-xl font-extrabold" style={{ color: C.blue, ...MF }}>{fmt(annualSaving)}</p>
+              </div>
+              <div className="rounded-xl p-4 text-center" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}>
+                <p className="text-xs font-semibold mb-1" style={{ color: C.muted }}>{c.hrsLabel}</p>
+                <p className="text-xl font-extrabold" style={{ color: C.purple, ...MF }}>{weeklyHrsSaved}{isHe ? " ש׳" : "h"}</p>
+              </div>
+            </div>
+
+            <Link href="/login">
+              <motion.button
+                whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+                className="w-full py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-2"
+                style={{ background: `linear-gradient(135deg, ${C.blue}, ${C.purple})`, color: "#fff", ...MF }}
+              >
+                {c.cta}
+                <ArrowRight className="w-4 h-4" />
+              </motion.button>
+            </Link>
+
+            <p className="text-center text-[11px]" style={{ color: C.muted }}>{c.disclaimer}</p>
+          </motion.div>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
 export function LandingPage() {
   const { lang, setLang } = useLanguage();
   const landingLang = (lang === "en" ? "en" : "he") as Lang;
@@ -1689,6 +1851,7 @@ export function LandingPage() {
         <InsightSection />
         <FeatureHowItWorks />
         <Stats />
+        <ROICalculator />
         <PriceAnchorSection />
         <FAQSection />
         <FinalCTA />
