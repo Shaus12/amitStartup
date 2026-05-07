@@ -215,6 +215,13 @@ const CONTENT = {
       cta: "הראה לי איך לחסוך את זה",
       disclaimer: "מבוסס על חיסכון ממוצע של 70% בעבודה ידנית לאחר יישום AI",
     },
+    marquee: "נבנה עבור בעלי עסקים ב:",
+    companies: [
+      "מסעדות וקייטרינג", "קליניקות ושירותים", "קמעונאות ואי-קומרס",
+      "משרדי עורכי דין", "חשבונאות ופיננסים", "סוכנויות דיגיטל",
+      "לוגיסטיקה ושילוח", "נדל״ן", "בנייה וקבלנות",
+      "חינוך והדרכה", "מרפאות ובריאות", "ניהול נכסים",
+    ],
   },
   en: {
     dir: "ltr" as const,
@@ -290,6 +297,13 @@ const CONTENT = {
       ],
       privacy: "Privacy", terms: "Terms",
     },
+    marquee: "Built for business owners in:",
+    companies: [
+      "Restaurants & Catering", "Service Clinics", "Retail & E-commerce",
+      "Law Firms", "Accounting & Finance", "Digital Agencies",
+      "Logistics & Delivery", "Real Estate", "Construction & Contracting",
+      "Education & Training", "Healthcare Practices", "Property Management",
+    ],
   },
 } as const;
 
