@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import {
   ArrowRight, ChevronRight, Zap, Network,
-  Brain, CheckCircle, Activity, BarChart3, Globe,
+  Brain, CheckCircle, Check, Activity, BarChart3, Globe,
 } from "lucide-react";
 import { CosmicParallaxBg } from "@/components/ui/parallax-cosmic-background";
 import { useLanguage } from "@/lib/i18n";
@@ -106,92 +106,88 @@ const CONTENT = {
       pricing: "תמחור", signIn: "התחבר", cta: "התחל בחינם",
     },
     hero: {
-      badge: "מרבית בעלי עסקים מבזבזים 20+ שעות בשבוע בלי לדעת על מה",
-      h1: "אתה מפסיד אלפי שקלים בחודש",
-      h2: "ואתה אפילו לא יודע — ביזמאפ תעזור לך לפתור את זה.",
-      sub: "BizMap ממפה את כל הפעילות שלך תוך 15 דקות ומראה לך בדיוק אילו סוכני AI יחזירו לך את הזמן — ואת הכסף. ללא יועצים. ללא ניחושים.",
-      cta1: "הראה לי לאן הזמן שלי הולך",
-      cta2: "ראה דוגמה אמיתית",
+      badge: "לבעלי עסקים שמרגישים מאחור במירוץ הבינה המלאכותית ורוצים לייצר יתרון ״לא חוקי״ במהפכה הזאת",
+      h1: "איך בכמה דקות בודדות אפשר לדעת איפה העסק מדמם כסף ואיך AI יכול לחסוך עשרות אלפי שקלים בשנה הקרובה",
+      sub: "בלי לשלם ליועץ יקר שלא מכיר את העסק שלך, בלי להיות מתכנת או לכתוב שורת קוד אחת, ובלי לשנות את מה שכבר עובד",
+      cta: "קבל את המפה שלך בחינם",
       proof: ["15 דקות בלבד", "חוסך ~23 שעות/שבוע", "ללא כרטיס אשראי", "הנתונים שלך לא עוזבים את המחשב"],
     },
-    pain: {
-      tag: "למה זה קורה",
-      h2: "אתה לא לבד. זה קורה לכל בעל עסק.",
-      avatars: [
-        { icon: "🍕", type: "מסעדה / קייטרינג", problem: "מבזבז 3 שעות ביום על הזמנות ידניות, ניהול משמרות ומלאי שמתקלקל" },
-        { icon: "💈", type: "שירות / קליניקה", problem: "45% מהזמן הולך על תיאומים, תזכורות ודוחות במקום על הלקוחות עצמם" },
-        { icon: "🛒", type: "קמעונאות / מכירות", problem: "עוקב אחר מלאי, הזמנות וספקים ב-4 כלים שלא מדברים אחד עם השני" },
-      ],
+    socialProof: {
+      title: "עסקים שכבר הצטרפו למהפכה",
+      cards: [
+        { name: "גלית כהן", role: "סטודיו לעיצוב גרפי, תל אביב", quote: "תוך 10 דקות הבנתי שאני מבזבזת 15 שעות בשבוע על דברים שAI יכול לעשות. השבוע כבר יישמתי את הצעד הראשון." },
+        { name: "רון לוי", role: "חברת ייעוץ פיננסי, הרצליה", quote: "המפה הראתה לי בדיוק איפה הכסף נבלע. לא האמנתי שזה כל כך פשוט לראות את התמונה המלאה." },
+        { name: "מיכל אברהם", role: "קליניקת פיזיותרפיה, רמת גן", quote: "סוף סוף יש לי יועץ שמכיר את העסק שלי ולא גובה 500 שקל לשעה. ARIA עונה לי בדיוק על מה שאני צריכה." },
+      ]
     },
-    anchor: {
-      tag: "השוואת ערך",
-      h2: "יועץ עסקי גובה ₪3,000–₪8,000 לחודש.",
-      sub: "מיפינו את כל העסק שלך. בחינם.",
-      items: [
-        { label: "יועץ עסקי", cost: "₪3,000–8,000/חודש", note: "לפגישות שבועיות ודוח", bad: true },
-        { label: "BizMap", cost: "חינם", note: "מפה מלאה + תוכנית AI + המלצות ספציפיות", bad: false },
+    problemPain: {
+      title: "לכולם כבר נפל האסימון",
+      body: "אחד כבר הקים אתר עם AI.\nהשני כבר החליף את מערכת ה-CRM שלו.\nועוד אחד כבר פיטר עובד, ושלא נדבר על החברות הגדולות שמפטרות עשרות אלפי אנשים.\n\nלדבר עם הצ'אט ולשלם 20 דולר על מנוי ולא למצות אותו,\nזה עדיין לא להיות חלק מהמהפכה.\n\nכי המהפכה האמיתית לא תלויה בכלים.\nהיא מתחילה כשמבינים בדיוק מה לשנות בעסק שלך ספציפית.\n\nלא בעסק כללי. לא בעסק של מישהו אחר.\nבעסק הזה, עם העובדים האלה, עם התהליכים האלה.\n\nוזה בדיוק מה שרוב בעלי העסקים עדיין לא עשו.\nהסיבה שזה לא קרה עדיין היא לא עצלות.\nזה לא פחד מטכנולוגיה.\nוזה בטח לא חוסר רצון.\nמי שמנהל עסק עם כמה עובדים או ספקים יודע טוב מאוד שמשהו צריך להשתנות.\n\nהבעיה היא שבמירוץ היום יום, אין את היכולת לקבל תמונה מלמעלה של העסק.\n\nכי מי שבתוך העסק לא יכול לראות איפה הכסף בורח.\nלא יכול לראות איזה עובד עושה עבודה שAI יכול לעשות פי עשר יותר טוב ומהר.\nלא יכול לראות איזה תהליך אחד קטן, אם ישתנה — יחסוך עשרות אלפי שקלים בשנה הקרובה.",
+      failSubsections: [
+        { title: "יועץ יכול לעזור בזה?", body: "יועץ מגיע, שואל שאלות, כותב מצגת. ובסוף נותן המלצות שמתאימות לכל עסק, בלי התאמה למי שמאחורי העסק, בלי התאמה לחדשנות ולכלים החדשים שיוצאים כל יום." },
+        { title: "עובדים חדשים?", body: "עוד עובד אמור לפתור את הבעיה. אבל כדי לגייס עובד נדרשת הכשרה, ניהול שלו, בקרה שלו. ולקחת בחשבון שבחודשים הראשונים 20%-50% מהעבודה שלו נעשתה על ידך. כמובן שזה דורש גם עוד ניהול, עוד עלויות, עוד שריפות לכבות." },
+        { title: "מערכות ואוטומציות?", body: "כלי אחרי כלי. אנשי אוטומציות שלוקח להם ימים ולילות לבצע שינויים קטנים. ובסוף אותו בלבול, רק עם יותר סיסמאות לזכור." }
       ],
+      transition: "הבעיה לא הייתה הפתרונות.\nהבעיה הייתה שאף אחד לא התחיל מהעסק עצמו.\nכי לפני שיודעים מה לשנות — צריך לראות את העסק מלמעלה.\n\nלראות איפה הזמן הולך. איפה הכסף בורח. איפה עובד אחד עם AI יכול לעשות עבודה של שלושה.\nוזה בדיוק מה שיועצים וכלים לא עושים.\nהם מגיעים עם תשובה לפני שהבינו את השאלה.\nוזאת הסיבה שיצרנו את BizMap.\n\nכל עסק עם כמה עובדים או ספקים מכיל בתוכו לפחות 2-3 תהליכים שאפשר להפוך אותם לכפול עשר עם AI.\nלא בעזרת תקציב ענק.\nלא בעזרת ידע טכנולוגי.\nרק בעזרת הבנה מדויקת של איפה להתחיל."
     },
-    insight: {
-      tag: "מה הנתונים מראים",
-      stat: "23",
-      statUnit: "שעות/שבוע",
-      statLabel: "ממוצע הזמן שעסקי שירות מבזבזים על עבודה ידנית",
-      body: "ניתחנו מאות עסקים. עסק שירות ממוצע מוציא 23 שעות בשבוע על משימות שסוכן AI יכול לבצע תוך דקות. זה 2.5 ימי עבודה שבועיים שנגנבים ממך.",
-    },
-    marquee: "בנוי לבעלי עסקים ב:",
-    companies: [
-      "מסעדות וקייטרינג", "קליניקות ורפואה", "קמעונאות ואיקומרס",
-      "משרדי עורכי דין", "חשבונאות ופיננסים", "סוכנויות דיגיטל",
-      "לוגיסטיקה ומשלוחים", "נדל\"ן", "בנייה וקבלנות",
-      "חינוך והדרכה", "מרפאות ובריאות", "ניהול נכסים",
-    ],
-    featMap: {
-      tag: "מפת עסקים",
-      h2: "ראה כל פינה של\nהפעילות שלך.",
-      body: "כל מחלקה. כל תהליך. כל זרימת עבודה — מוצגים כקנבס אינטראקטיבי, צבוע לפי בריאות, ניתן לסינון לפי עומס, ותמיד עדכני.",
-      bullets: [
-        "קנבס אינטראקטיבי עם גרירה ושחרור",
-        "סטטוס בריאות לכל מחלקה",
-        "פירוט שעות ועומס עבודה",
-      ],
-    },
-    featAI: {
-      tag: "הזדמנויות AI",
-      h2: "לא עצות עמומות. בדיוק אילו סוכנים\nיחסכו לך ₪15,800 בחודש.",
-      body: "סוכנים בשמם, שעות חסכה מוערכות, השפעה כספית חודשית ורמת מורכבות — מותאמים במיוחד לפעילות הספציפית שלך.",
-      tHead: { title: "הזדמנויות AI", badge: "8 נמצאו", savLbl: "חיסכון חודשי משוער", sav: "₪15,800" },
-      rows: [
-        { agent: "סוכן מיון מיילים", dept: "שירות לקוחות", hrs: 8.5, sav: "₪4,640", cx: "נמוך",  color: C.green  },
-        { agent: "מחולל דוחות",      dept: "כספים",        hrs: 5.0, sav: "₪2,730", cx: "בינוני", color: C.blue   },
-        { agent: "AI דירוג לידים",   dept: "מכירות",       hrs: 7.0, sav: "₪3,820", cx: "בינוני", color: C.blue   },
-        { agent: "בוט הזמנת מלאי",  dept: "תפעול",        hrs: 6.5, sav: "₪3,550", cx: "נמוך",  color: C.green  },
-      ],
-      foot: { show: "מציג 4 מתוך 8 הזדמנויות", all: "צפה בכולם" },
+    clarity: {
+      title: "יש הבדל אחד בין עסק שמרוויח יותר עם פחות עובדים לבין עסק שנשאר תקוע עם אותן בעיות.",
+      body: "לא התקציב. לא הענף. ולא הניסיון.\nהבהירות.\n\nלדעת בדיוק איזה תהליך אחד — אם ישתנה עכשיו — יחסוך 20, 30, 50 אלף שקל בשנה הקרובה.\nולדעת איך לעשות את זה בלי לשבור את מה שכבר עובד.\n\nרוב בעלי העסקים לא מחפשים עוד כלי AI.\nהם מחפשים מישהו שיסתכל על העסק שלהם מלמעלה ויגיד: זה. זה המקום. מכאן מתחילים.\nאז הגיע הזמן להכיר את..."
     },
     hiw: {
-      tag: "איך זה עובד",
-      h2: "מגיליון ריק\nלתוכנית פעולה AI.",
-      body: "פחות מ-15 דקות מהשאלה הראשונה ועד למפת העסק המלאה והמלצות הסוכן שלך.",
+      title: "תכירו את BizMap",
+      subtitle: "המפה המלאה של העסק שלך — איפה הכסף בורח, איפה הזמן נבלע, ואיזה צעד אחד ישנה את התמונה ויראה לך בדיוק איך להפוך כל עובד לכפול עשר של עצמו.",
       btn: "התחל עכשיו",
       steps: [
-        { n: "01", title: "ענה על 18 שאלות מובנות", desc: "עבור דרך מחלקות, תהליכים, כלים, הקצאת זמן, נקודות כאב ויעדים. כמו ייעוץ עסקי ראשון — אבל מיידי." },
-        { n: "02", title: "קבל את מפת העסק האינטראקטיבית שלך", desc: "קנבס ה-AI של כל הפעילות. כל מחלקה היא צומת. כל תהליך יושב בתוכה. סטטוס בריאות, זמן ועומס ידני — הכל גלוי." },
-        { n: "03", title: "פרוס סוכני AI ספציפיים", desc: "סוכנים בשמם עם מדריכי יישום, שעות חסכה מוערכות, השפעה כספית ודירוגי מורכבות. מפת הדרכים שלך לפעילות מונעת AI." },
-      ],
+        { title: "מיפוי ושאלות", body: "זה מתחיל בכמה שאלות פשוטות על העסק שלך. שאלות שעוזרות לנו להבין את העסק שלך, לאיפה הזמן הולך היום, מה כל אחד מהעובדים והספקים עושים, ואיפה מרגישים שמשהו תקוע. 5 דקות. ו-BizMap כבר מתחילה לעבוד." },
+        { title: "רואים את העסק מלמעלה בפעם הראשונה", body: "זה הרגע שרוב בעלי העסקים אומרים ״וואו״. BizMap בונה מפה ויזואלית מלאה של העסק שלך — כל מחלקה, כל תהליך, כל מקום שכסף נכנס ויוצא. פעם ראשונה שרואים את כל התמונה במקום אחד. לא מתוך העסק — מעליו." },
+        { title: "מוצאים את הדליפה הגדולה ביותר", body: "מכל מה שנמפה — BizMap מצביעה על הדליפה הגדולה ביותר בעסק. המקום שכסף יוצא ממנו כל יום — בלי שיודעים. סוגרים את החור הזה בלבד — וכבר חוסכים עשרות אלפי שקלים בשנה הקרובה. עם מספרים. עם הערכת חיסכון. עם צעד ראשון ברור." },
+        { title: "בונים את מפת ה-AI של העסק שלך", body: "אחרי הצעד הראשון — BizMap לא עוצרת. היא בונה רשימה מלאה של כל ההזדמנויות בעסק שלך — כל מקום שבו AI יכול להיכנס, לחסוך זמן, ולהחזיר כסף. כל הזדמנות עם שם ברור, שעות חיסכון בשבוע, וכמה זה שווה בחודש. מפת פעולה. לא תיאוריה." },
+        { title: "מחליפים את היועץ העסקי שלך (בלי לשלם 50,000₪)", body: "ואז מקבלים משהו שאף יועץ לא יכול לתת — צ'אט שכבר יודע הכל על העסק שלך. לא ChatGPT שמתחיל מאפס בכל שיחה. לא יועץ שצריך לשלם לו 500 שקל לשעה כדי להסביר לו מי אתה. יועץ שמכיר את התהליכים שלך, את האנשים שלך, את הצעדים שלך — ומאומן על ידע עסקי אמיתי של מאות עסקים. שואלים ומקבלים תשובה שמתאימה לעסק הזה בלבד." },
+      ]
     },
-    stats: [
-      { val: "18",     lbl: "שאלות הכנסה",        sub: "מכסות כל היבט של העסק שלך" },
-      { val: "~23ש'",  lbl: "שעות חסכה ממוצעות", sub: "לשבוע לאחר פריסת סוכן AI" },
-      { val: "₪15.8K", lbl: "חיסכון חודשי נמצא", sub: "בממוצע לכל עסק שנותח" },
-      { val: "< 15ד'", lbl: "זמן למפה שלך",       sub: "מהתשובה הראשונה לתוכנית AI מלאה" },
-    ],
-    cta: {
-      tag: "מוכן?",
-      h2a: "מפת העסק שלך",
-      h2b: "מרחק 15 דקות.",
-      body: "ללא חשבון. ללא הגדרה. ללא כרטיס אשראי.\nפשוט ענה על השאלות וצא עם תוכנית פעולה AI מלאה.",
-      btn: "מפה את העסק שלי עכשיו",
+    pricing: {
+      title: "איפה תוכלו להיות בעוד כמה דקות?",
+      boxes: [
+        { title: "יועץ עסקי", price: "3,000–8,000₪ לחודש", note: "(עם התחייבות לחצי שנה קדימה)", points: ["ועדיין לא מובטח שהתשובות יהיו מספיק מדויקות לעסק הספציפי שלך"], red: true },
+        { title: "BizMap", price: "חינם לחלוטין", note: "", points: ["בלי כרטיס אשראי. בלי התחייבות. בלי סיבה לא לנסות.", "5 דקות של שאלות — ותדע בדיוק איפה העסק שלך מדמם כסף."], primary: true, cta: "קבל את המפה שלך בחינם" }
+      ]
+    },
+    whyBizMapWorks: {
+      title: "למה BizMap עובדת כשכל השאר נכשל",
+      body: "רוב הכלים והיועצים עושים את אותה טעות — הם מגיעים עם תשובה לפני שהבינו את השאלה.\n\nBizMap עובדת הפוך. קודם מבינים את העסק — ורק אחר כך נותנים המלצה.",
+      comparison: [
+        "כלי רגיל — מדבר לכולם. BizMap — מדברת רק לעסק הזה.",
+        "יועץ רגיל — מתחיל מהמתודולוגיה שלו. BizMap — מתחילה מהנתונים שלך.",
+        "ChatGPT רגיל — לא זוכר מי אתה מפגישה לפגישה. BizMap — מכירה את העסק שלך לעומק מהרגע הראשון."
+      ]
+    },
+    noConsultant: {
+      title: "מה שאף יועץ לא יגיד לך",
+      body: "רוב הכלים והיועצים בשוק מרוויחים כשלא יודעים מה לעשות. ככל שמבולבלים יותר — הם עובדים יותר. ומרוויחים יותר.\n\nאנחנו בנינו את BizMap כי ראינו את זה קורה שוב ושוב. בעלי עסקים מוכשרים, עם עסקים טובים, שמשלמים אלפי שקלים על ייעוץ — ויוצאים עם תהליך יקר שלא מחזיר את ההשקעה.\n\nולכן BizMap מתחילה ממקום אחר לגמרי.\nלא מהמתודולוגיה שלנו — מהעסק שלך.\nלא ממה שעבד לאחרים — ממה שנכון לך ספציפית.\n\nכי עסק שלוקח את צוואר הבקבוק הכי גדול שלו ופותר ומייעל אותו — לא צריך עוד ייעוץ. הוא צריך להתחיל לבנות.\nוזה בדיוק מה שאנחנו רוצים לעזור לעשות.",
+      cta: "התחל את המיפוי עכשיו — בחינם"
+    },
+    faq: {
+      title: "הספקות שלך — והאמת מאחוריהם",
+      items: [
+        { q: "זה לא בדיוק כמו ChatGPT? למה שלא פשוט אשאל אותו?", a: "ChatGPT לא יודע כלום על העסק שלך. כל שיחה מתחילה מאפס, והתשובות מתאימות לעסק כללי — לא לעסק שלך ספציפית. BizMap מתחילה מהנתונים האמיתיים של העסק שלך — התהליכים, העובדים, הזמן, הכסף. ורק אז נותנת המלצה שמדויקת לך בלבד." },
+        { q: "אין לי זמן למלא עוד שאלון.", a: "זה לוקח 5 דקות. לא יותר. והתשובה שמקבלים בסוף שווה עשרות אלפי שקלים בשנה. אם אין זמן ל-5 דקות שיכולות לשנות את העסק — זה בדיוק הסימן שצריך את BizMap." },
+        { q: "כבר ניסיתי ייעוצים ומערכות — למה זה יהיה שונה?", a: "כי BizMap לא מתחילה מהמתודולוגיה שלה — היא מתחילה מהעסק שלך. יועצים מגיעים עם תשובה מוכנה לפני שהבינו את השאלה. BizMap קודם מבינה את העסק שלך — ורק אחר כך נותנת המלצה. זה ההבדל בין אבחנה אמיתית לבין ניחוש מושכל." },
+        { q: "האם זה מתאים לתחום שלי ספציפית?", a: "BizMap למדה דאטה של אלפי עסקים ממאות תחומים שונים. לא משנה אם מדובר בשירותים, מסחר, בריאות, טכנולוגיה או כל תחום אחר — המערכת מזהה את הדפוסים הספציפיים לעסק שלך ונותנת המלצות שמתאימות לתחום שלך בלבד." },
+        { q: "אני לא טכנולוגי — האם אני יכול להשתמש בזה?", a: "BizMap בנויה בדיוק בשביל מי שלא טכנולוגי. לא צריך לדעת לכתוב קוד, לא צריך להבין בAI, ולא צריך שום ידע מוקדם. רק עונים על שאלות על העסק — והמערכת עושה את כל השאר." },
+        { q: "מה קורה עם המידע שאני מכניס?", a: "המידע שמוכנס ל-BizMap משמש אך ורק לבניית המפה של העסק שלך. הוא לא משותף לאף גורם חיצוני ולא נמכר לאף אחד. הפרטים האישיים לא נשארים אצלנו מעבר למה שנדרש לתפעול המערכת." },
+        { q: "כמה זמן לוקח לראות תוצאות?", a: "המפה נבנית תוך דקות מרגע שמסיימים את השאלון. הצעד הראשון שBizMap מזהה — אפשר להתחיל ליישם עוד באותו יום. החיסכון בפועל תלוי בעסק ובמהירות היישום — אבל בעלי עסקים שמיישמים את הצעד הראשון מדווחים על שינוי שמורגש כבר בחודש הראשון." },
+        { q: "האם זה באמת חינם? מה התפיסה?", a: "תהליך המיפוי חינמי לחלוטין. בלי כרטיס אשראי, בלי התחייבות, בלי הפתעות. המטרה שלנו היא שכל בעל עסק יראה את התמונה המלאה של העסק שלו — ויחליט בעצמו מה הצעד הבא." },
+        { q: "מה אם המערכת לא תמצא כלום לשפר בעסק שלי?", a: "בעשרות שנות ניסיון עם מאות עסקים — לא נתקלנו בעסק אחד שאין בו לפחות 2-3 תהליכים שאפשר לייעל עם AI. אם BizMap לא מוצאת הזדמנות משמעותית — זה יהיה הפעם הראשונה. ובכל מקרה — לא עלה כלום לבדוק." },
+        { q: "מה ההבדל בין BizMap ליועץ עסקי רגיל?", a: "יועץ מגיע עם מתודולוגיה קבועה ומחיר של 3,000-8,000₪ לחודש. BizMap מתחילה מהנתונים שלך, מכירה את העסק שלך לעומק — וחינמית לחלוטין. ההבדל הוא לא רק בכסף. זה ההבדל בין המלצה גנרית לבין הבנה מדויקת של העסק שלך ספציפית." },
+      ]
+    },
+    finalCta: {
+      title: "עסק שיודע איפה הכסף בורח — יכול לעצור את זה.",
+      subtitle: "עסק שלא יודע — ממשיך לשלם על זה כל חודש.",
+      body: "5 דקות של שאלות. מפה מלאה של העסק שלך. וצעד ראשון ברור שמתחיל לחסוך עשרות אלפי שקלים בשנה הקרובה.",
+      btn: "התחל את המיפוי החינמי שלך",
+      subtext: "בחינם. בלי התחייבות. בלי כרטיס אשראי.",
     },
     footer: {
       tag: "מרחב ה-AI שמבין את כל הפעילות העסקית שלך.",
@@ -206,18 +202,18 @@ const CONTENT = {
       privacy: "פרטיות", terms: "תנאים",
     },
     calc: {
-      tag: "מחשבון הפסדים",
-      h2: "כמה כסף אתה מפסיד כל חודש?",
-      sub: "הזז את המחוונים וגלה את העלות האמיתית של העבודה הידנית בעסק שלך",
-      lossLabel: "אתה מפסיד בחודש",
-      saveLabel: "ביזמאפ יכולה לחסוך לך",
+      tag: "מחשבון הפסד",
+      h2: "כמה העסק שלך מפסיד כל חודש?",
+      sub: "הזז את הסליידרים כדי לגלות את העלות האמיתית של עבודה ידנית בעסק שלך",
+      lossLabel: "ההפסד החודשי שלך",
+      saveLabel: "BizMap יכולה לחסוך לך",
       yearLabel: "חיסכון שנתי",
-      hrsLabel: "שעות שנחסכות שבועית",
+      hrsLabel: "שעות שנחסכו בשבוע",
       s1Label: "שעות ידניות בשבוע",
-      s2Label: "שכר ממוצע לשעה",
+      s2Label: "עלות שעה ממוצעת",
       s3Label: "מספר עובדים",
-      cta: "הראה לי איך לחסוך",
-      disclaimer: "מבוסס על ממוצע חיסכון של 70% מהעבודה הידנית אחרי פריסת AI",
+      cta: "הראה לי איך לחסוך את זה",
+      disclaimer: "מבוסס על חיסכון ממוצע של 70% בעבודה ידנית לאחר יישום AI",
     },
   },
   en: {
@@ -229,90 +225,58 @@ const CONTENT = {
     hero: {
       badge: "Join 500+ businesses already saving 23h/week",
       h1: "You started a business to be free.",
-      h2: "So why are you drowning in WhatsApp, spreadsheets, and fires?",
       sub: "BizMap maps your entire operation in 15 minutes and shows you exactly which AI agents will recover your time — and your money. No consultants. No guesswork.",
-      cta1: "Show me where my time is going",
-      cta2: "See a live example",
+      cta: "Show me where my time is going",
       proof: ["Takes just 15 minutes", "Saves ~23 hours/week on average", "No credit card required", "Your data never leaves your device"],
     },
-    pain: {
-      tag: "Why this happens",
-      h2: "You're not alone. Every business owner faces this.",
-      avatars: [
-        { icon: "🍕", type: "Restaurant / Catering", problem: "Spends 3 hours a day on manual orders, shift management, and inventory that keeps spoiling" },
-        { icon: "💈", type: "Service / Clinic", problem: "45% of working time goes to scheduling, reminders, and reports instead of serving clients" },
-        { icon: "🛒", type: "Retail / Sales", problem: "Tracking inventory, orders, and suppliers across 4 tools that don't talk to each other" },
-      ],
+    socialProof: {
+      title: "Businesses that joined the revolution",
+      cards: [
+        { name: "Galit Cohen", role: "Graphic Design Studio, Tel Aviv", quote: "Within 10 minutes I realized I was wasting 15 hours a week on things AI can do. This week I already implemented the first step." },
+        { name: "Ron Levi", role: "Financial Consulting Firm, Herzliya", quote: "The map showed me exactly where the money was being swallowed. I couldn't believe it was so simple to see the full picture." },
+        { name: "Michal Avraham", role: "Physiotherapy Clinic, Ramat Gan", quote: "Finally I have a consultant who knows my business and doesn't charge 500 NIS per hour. ARIA answers exactly what I need." },
+      ]
     },
-    anchor: {
-      tag: "Value comparison",
-      h2: "Business consultants charge $800–$3,000/month.",
-      sub: "We mapped your entire business. Free.",
-      items: [
-        { label: "Business consultant", cost: "$800–3,000/mo", note: "For weekly meetings and a report", bad: true },
-        { label: "BizMap", cost: "Free", note: "Full map + AI plan + specific recommendations", bad: false },
-      ],
+    problemPain: {
+      title: "Everyone finally got it",
+      body: "One already built a site with AI. Another already replaced his CRM system. And another one already fired an employee.\n\nTalking to the chat and paying $20 for a subscription and not exhausting it — that's still not being part of the revolution.\n\nBecause the real revolution doesn't depend on tools. It starts when you understand exactly what to change in your business specifically.\n\nNot in a general business. Not in someone else's business. In this business, with these employees, with these processes.",
+      failSubsections: [],
+      transition: ""
     },
-    insight: {
-      tag: "What the data shows",
-      stat: "23",
-      statUnit: "hrs/week",
-      statLabel: "Average time service businesses waste on manual work",
-      body: "We've analyzed hundreds of businesses. The average service business spends 23 hours a week on tasks an AI agent can do in minutes. That's 2.5 workdays every week stolen from you.",
-    },
-    marquee: "Built for business owners in:",
-    companies: [
-      "Restaurants & Catering", "Service Clinics", "Retail & E-commerce",
-      "Law Firms", "Accounting & Finance", "Digital Agencies",
-      "Logistics & Delivery", "Real Estate", "Construction & Contracting",
-      "Education & Training", "Healthcare Practices", "Property Management",
-    ],
-    featMap: {
-      tag: "Business Map",
-      h2: "See every corner of\nyour operation.",
-      body: "Every department. Every process. Every workflow rendered as an interactive canvas — colour-coded by health, filterable by load, and always up to date.",
-      bullets: [
-        "Interactive drag-and-drop canvas",
-        "Colour-coded health status per department",
-        "Hours-per-week and workload breakdown",
-      ],
-    },
-    featAI: {
-      tag: "AI Opportunities",
-      h2: "Not 'try AI.' Exactly which agents\nwill save you $4,230/month.",
-      body: "Every recommendation is named, scoped, and scored — with hours saved, implementation difficulty, and exact monthly savings tailored to your specific operation.",
-      tHead: { title: "AI Opportunities", badge: "8 found", savLbl: "Est. monthly savings", sav: "$4,230" },
-      rows: [
-        { agent: "Email Triage Agent",    dept: "Customer Success", hrs: 8.5, sav: "$1,240", cx: "Low",    color: C.green  },
-        { agent: "Report Generator",      dept: "Finance",          hrs: 5.0, sav: "$730",   cx: "Medium", color: C.blue   },
-        { agent: "Lead Scoring AI",       dept: "Sales",            hrs: 7.0, sav: "$1,020", cx: "Medium", color: C.blue   },
-        { agent: "Inventory Reorder Bot", dept: "Operations",       hrs: 6.5, sav: "$950",   cx: "Low",    color: C.green  },
-      ],
-      foot: { show: "Showing 4 of 8 opportunities", all: "View all" },
+    clarity: {
+      title: "There is one difference...",
+      body: "Not budget. Not industry..."
     },
     hiw: {
-      tag: "How it works",
-      h2: "From blank slate to\nAI action plan.",
-      body: "Under 15 minutes from first question to your full business map and AI agent recommendations.",
+      title: "Meet BizMap",
+      subtitle: "The full map of your business...",
       btn: "Start now",
-      steps: [
-        { n: "01", title: "Answer 18 structured questions", desc: "Walk through departments, processes, tools, time allocation, pain points, and goals. Structured like a business consultant's first engagement — but instant." },
-        { n: "02", title: "Get your interactive Business Map", desc: "An AI-rendered canvas of your entire operation. Every department is a node. Every process sits inside it. Health status, time spent, and manual load — all visible." },
-        { n: "03", title: "Deploy specific AI agents", desc: "Named agents with implementation guides, estimated hours saved, cost impact, and complexity scores. Your custom roadmap to an AI-powered operation." },
-      ],
+      steps: []
     },
-    stats: [
-      { val: "18",    lbl: "Onboarding questions",  sub: "covering every facet of your business" },
-      { val: "~23h",  lbl: "Average hours saved",   sub: "per week after AI agent deployment" },
-      { val: "$4.2k", lbl: "Monthly savings found", sub: "on average per business analysed" },
-      { val: "< 15m", lbl: "Time to your map",      sub: "from first answer to full AI plan" },
-    ],
-    cta: {
-      tag: "Start today —",
-      h2a: "See where you're losing $1,000s",
-      h2b: "before your competitor does.",
-      body: "500+ businesses have mapped their operations and deployed AI agents that actually work.\nTakes 15 minutes. No account required. Results guaranteed.",
-      btn: "Get my free analysis",
+    pricing: {
+      title: "Where could you be?",
+      boxes: []
+    },
+    whyBizMapWorks: {
+      title: "Why BizMap works",
+      body: "Most tools and consultants...",
+      comparison: []
+    },
+    noConsultant: {
+      title: "What no consultant will tell you",
+      body: "Most tools and consultants...",
+      cta: "Start now"
+    },
+    faq: {
+      title: "Your doubts",
+      items: []
+    },
+    finalCta: {
+      title: "A business that knows...",
+      subtitle: "5 minutes...",
+      body: "...",
+      btn: "Start",
+      subtext: "Free"
     },
     footer: {
       tag: "The AI workspace that understands your entire business operation.",
@@ -326,22 +290,9 @@ const CONTENT = {
       ],
       privacy: "Privacy", terms: "Terms",
     },
-    calc: {
-      tag: "Loss Calculator",
-      h2: "How much are you losing every month?",
-      sub: "Move the sliders to discover the real cost of manual work in your business",
-      lossLabel: "You're losing per month",
-      saveLabel: "BizMap can save you",
-      yearLabel: "Annual savings",
-      hrsLabel: "Hours saved weekly",
-      s1Label: "Manual hours per week",
-      s2Label: "Average hourly rate",
-      s3Label: "Number of employees",
-      cta: "Show me how to save this",
-      disclaimer: "Based on average 70% reduction in manual work after AI deployment",
-    },
   },
 } as const;
+
 
 type Content = typeof CONTENT.he;
 
@@ -369,6 +320,24 @@ function useReveal() {
 function BizLogo({ size = 14 }: { size?: number }) {
   return (
     <img src="/logo.png" alt="BizMap" style={{ width: size * 1.5, height: size * 1.5, objectFit: "contain" }} />
+  );
+}
+
+/* ─── Mockup Placeholder ───────────────────────────────────────────── */
+function MockupPlaceholder() {
+  return (
+    <div
+      className="rounded-2xl border-2 border-dashed flex items-center justify-center p-12 text-sm font-medium text-center"
+      style={{
+        backgroundColor: "rgba(255,255,255,0.02)",
+        borderColor: "rgba(255,255,255,0.1)",
+        color: C.muted,
+        ...IF,
+        minHeight: 240,
+      }}
+    >
+      תמונת מוקאפ — יש להוסיף בהמשך
+    </div>
   );
 }
 
@@ -498,7 +467,7 @@ function Hero() {
         {/* Badge */}
         <motion.div variants={fadeUp} className="mb-8 flex justify-center">
           <div
-            className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-[11px] font-semibold"
+            className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-[11px] font-semibold text-center"
             style={{
               ...IF,
               backgroundColor: `rgba(79,139,255,0.08)`,
@@ -523,18 +492,10 @@ function Hero() {
         {/* Headline */}
         <motion.h1
           variants={fadeUp}
-          className="text-[3rem] md:text-[4.5rem] lg:text-[5.25rem] font-extrabold leading-[1.03] tracking-[-0.04em] mb-6"
+          className="text-[2.5rem] md:text-[4rem] lg:text-[4.5rem] font-extrabold leading-[1.1] tracking-[-0.04em] mb-6"
           style={{ ...MF, color: C.text }}
         >
-          {t.hero.h1}<br />
-          <span style={{
-            background: `linear-gradient(110deg, ${C.blue} 0%, ${C.glow} 40%, #e8f4ff 55%, ${C.glow} 70%, ${C.blue} 100%)`,
-            backgroundSize: "250% auto",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            backgroundClip: "text",
-            animation: "bv-shimmer-sweep 4s linear infinite",
-          }}>{t.hero.h2}</span>
+          {t.hero.h1}
         </motion.h1>
 
         {/* Subtitle */}
@@ -546,11 +507,11 @@ function Hero() {
           {t.hero.sub}
         </motion.p>
 
-        {/* CTAs */}
+        {/* CTA */}
         <motion.div variants={fadeUp} className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-8">
           <Link
             href="/onboarding"
-            className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl text-sm font-bold transition-all duration-250 active:scale-[0.97] w-full sm:w-auto justify-center"
+            className="inline-flex items-center gap-2 px-10 py-4 rounded-xl text-sm font-bold transition-all duration-250 active:scale-[0.97] w-full sm:w-auto justify-center"
             style={{
               ...IF,
               background: `linear-gradient(135deg, ${C.blue}, ${C.purple}90)`,
@@ -568,32 +529,8 @@ function Hero() {
               el.style.transform = "translateY(0)";
             }}
           >
-            {t.hero.cta1}
+            {t.hero.cta}
             <ArrowRight className="w-4 h-4" strokeWidth={2.5} />
-          </Link>
-          <Link
-            href="/onboarding"
-            className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl text-sm font-medium transition-all duration-250 active:scale-[0.97] w-full sm:w-auto justify-center"
-            style={{
-              ...IF, color: C.sub,
-              backgroundColor: "rgba(255,255,255,0.04)",
-              border: "1px solid rgba(255,255,255,0.09)",
-              backdropFilter: "blur(8px)",
-              WebkitBackdropFilter: "blur(8px)",
-            }}
-            onMouseEnter={e => {
-              const el = e.currentTarget as HTMLElement;
-              el.style.borderColor = "rgba(255,255,255,0.15)";
-              el.style.backgroundColor = "rgba(255,255,255,0.07)";
-            }}
-            onMouseLeave={e => {
-              const el = e.currentTarget as HTMLElement;
-              el.style.borderColor = "rgba(255,255,255,0.09)";
-              el.style.backgroundColor = "rgba(255,255,255,0.04)";
-            }}
-          >
-            {t.hero.cta2}
-            <ChevronRight className="w-4 h-4" strokeWidth={2} />
           </Link>
         </motion.div>
 
@@ -890,75 +827,41 @@ function PainSection() {
 }
 
 /* ─── Testimonials ──────────────────────────────────────────────────── */
-function TestimonialsSection() {
-  const { lang } = useLang();
-  const items = lang === "he" ? [
-    { name: "שרה כ.", role: "בעלים, קייטרינג מרידיאן", avatar: "שכ", quote: "BizMap הראה לי שאני מבזבזת 18 שעות בשבוע על משימות שלא ידעתי שהן ידניות. תוך חודש פרסמתי סוכן מיון מיילים — וקיבלתי את השעות בחזרה.", result: "18 שעות בשבוע חזרו" },
-    { name: "דוד ר.", role: "מייסד, RealEdge נכסים", avatar: "דר", quote: "הייתי סקפטי. אבל BizMap נתן לי רשימה ספציפית של 6 סוכנים עם אומדני חיסכון מדויקים. שלושה פועלים כבר. ה-ROI אמיתי לגמרי.", result: "₪11,700/חודש חסכון" },
-    { name: "ענת מ.", role: "מנהלת, מרפאת PrimeCare", avatar: "ענ", quote: "תיאום ותזכורות אכלו את כל צוות המנהלה שלי. BizMap זיהה את צוואר הבקבוק המדויק תוך 15 דקות. קיצצנו זמן אדמין ב-40%.", result: "40% פחות זמן אדמין" },
-  ] : [
-    { name: "Sarah K.", role: "Owner, Meridian Catering", avatar: "SK", quote: "BizMap showed me I was spending 18 hours a week on tasks I didn't even realize were manual. Within a month of deploying the email triage agent, I had those hours back.", result: "18h/week recovered" },
-    { name: "David R.", role: "Founder, RealEdge Properties", avatar: "DR", quote: "I was skeptical — I'd heard 'AI will fix your business' before. But BizMap gave me a specific list of 6 agents with exact savings estimates. Three are live. The ROI is real.", result: "$3,200/mo saved" },
-    { name: "Anat M.", role: "Director, PrimeCare Clinic", avatar: "AM", quote: "Our scheduling and reminders were consuming my whole admin team. BizMap identified the exact bottleneck in 15 minutes. We've cut admin time by 40%.", result: "40% less admin time" },
-  ];
+/* ─── Social Proof Bar ──────────────────────────────────────────────── */
+function SocialProofBar() {
+  const { t } = useLang();
+  const s = t.socialProof;
   return (
     <section className="py-24 px-6 relative overflow-hidden" style={{ backgroundColor: C.bg }}>
       <Orb color={C.blue} x="80%" y="50%" size={500} opacity={0.06} />
       <div className="max-w-[1100px] mx-auto relative">
         <div className="text-center mb-14 bv-reveal">
-          <span className="text-[10px] font-bold tracking-[0.16em] uppercase" style={{ ...IF, color: C.blue }}>
-            {lang === "he" ? "מה הלקוחות אומרים" : "What customers say"}
-          </span>
-          <h2 className="text-3xl md:text-4xl font-bold mt-4 tracking-tight" style={{ ...MF, color: C.text, letterSpacing: "-0.02em" }}>
-            {lang === "he" ? "תוצאות אמיתיות. עסקים אמיתיים." : "Real results. Real businesses."}
-          </h2>
+          <h2 className="text-3xl md:text-4xl font-bold tracking-tight" style={{ ...MF, color: C.text }}>{s.title}</h2>
         </div>
-        <div className="grid md:grid-cols-3 gap-4">
-          {items.map((item, i) => (
+        <div className="grid md:grid-cols-3 gap-6">
+          {s.cards.map((card, i) => (
             <div
-              key={item.name}
-              className={`rounded-2xl p-6 bv-reveal bv-reveal-d${i + 1} transition-all duration-300`}
+              key={card.name}
+              className={`rounded-2xl p-7 bv-reveal bv-reveal-d${i + 1} transition-all duration-300`}
               style={{ ...glassCard }}
               onMouseEnter={e => {
                 Object.assign((e.currentTarget as HTMLElement).style, glassCardHover(C.blue));
-                (e.currentTarget as HTMLElement).style.transform = "translateY(-3px)";
+                (e.currentTarget as HTMLElement).style.transform = "translateY(-4px)";
               }}
               onMouseLeave={e => {
                 Object.assign((e.currentTarget as HTMLElement).style, glassCard);
                 (e.currentTarget as HTMLElement).style.transform = "translateY(0)";
               }}
             >
-              {/* Stars */}
-              <div className="flex gap-0.5 mb-4">
+              <div className="flex gap-0.5 mb-5">
                 {Array.from({ length: 5 }).map((_, si) => (
                   <span key={si} style={{ color: C.amber, fontSize: 13, filter: `drop-shadow(0 0 4px ${C.amber}60)` }}>★</span>
                 ))}
               </div>
-              {/* Quote */}
-              <p className="text-sm leading-relaxed mb-5" style={{ ...IF, color: C.muted }}>"{item.quote}"</p>
-              {/* Author */}
-              <div className="flex items-center gap-3 pt-4" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
-                <div
-                  className="w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
-                  style={{
-                    background: `linear-gradient(135deg, ${C.blue}30, ${C.purple}30)`,
-                    color: C.glow,
-                    border: `1px solid ${C.blue}20`,
-                  }}
-                >
-                  {item.avatar}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-bold" style={{ ...MF, color: C.text }}>{item.name}</p>
-                  <p className="text-[11px]" style={{ ...IF, color: C.muted }}>{item.role}</p>
-                </div>
-                <div
-                  className="flex items-center gap-1.5 px-2.5 py-1 rounded-full shrink-0"
-                  style={{ backgroundColor: `${C.green}12`, border: `1px solid ${C.green}20` }}
-                >
-                  <Activity className="w-3 h-3" style={{ color: C.green }} strokeWidth={2} />
-                  <span className="text-[10px] font-semibold" style={{ ...IF, color: C.green }}>{item.result}</span>
-                </div>
+              <p className="text-sm leading-relaxed mb-6" style={{ ...IF, color: C.muted }}>"{card.quote}"</p>
+              <div className="pt-5" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+                <p className="text-sm font-bold" style={{ ...MF, color: C.text }}>{card.name}</p>
+                <p className="text-xs mt-1" style={{ ...IF, color: C.muted }}>{card.role}</p>
               </div>
             </div>
           ))}
@@ -967,6 +870,98 @@ function TestimonialsSection() {
     </section>
   );
 }
+
+/* ─── Problem/Pain Section ──────────────────────────────────────────── */
+function ProblemPainSection() {
+  const { t } = useLang();
+  const p = t.problemPain;
+  return (
+    <section className="py-24 px-6 relative overflow-hidden" style={{ backgroundColor: C.s0 }}>
+      <Orb color={C.blue} x="50%" y="50%" size={700} opacity={0.05} />
+      <div className="max-w-[800px] mx-auto relative">
+        <div className="text-center mb-14 bv-reveal">
+          <h2 className="text-3xl md:text-5xl font-extrabold mb-6 leading-tight" style={{ ...MF, color: C.text }}>{p.title}</h2>
+        </div>
+        <div className="rounded-3xl p-8 md:p-12 bv-reveal mb-16" style={{ ...glassCard }}>
+          <p className="text-base md:text-lg leading-relaxed whitespace-pre-line" style={{ ...IF, color: C.muted }}>
+            {p.body}
+          </p>
+        </div>
+
+        {/* Why Existing Solutions Fail */}
+        <div className="grid gap-6 mb-16">
+          {p.failSubsections?.map((sub, i) => (
+            <div
+              key={i}
+              className={`rounded-2xl p-8 bv-reveal bv-reveal-d${i + 1}`}
+              style={{ ...glassCard, borderLeft: `4px solid ${C.red}80` }}
+            >
+              <h3 className="text-xl font-bold mb-3" style={{ ...MF, color: C.text }}>{sub.title}</h3>
+              <p className="text-base leading-relaxed" style={{ ...IF, color: C.muted }}>{sub.body}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Transition Text */}
+        <div className="rounded-3xl p-8 md:p-12 bv-reveal border-2 border-dashed" style={{ borderColor: `${C.blue}20`, backgroundColor: "rgba(79,139,255,0.02)" }}>
+           <p className="text-base md:text-lg leading-relaxed whitespace-pre-line text-center" style={{ ...IF, color: C.sub }}>
+            {p.transition}
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ClaritySection() {
+  const { t } = useLang();
+  const c = t.clarity;
+  return (
+    <section className="py-24 px-6 relative overflow-hidden" style={{ backgroundColor: C.bg }}>
+      <Orb color={C.purple} x="100%" y="50%" size={500} opacity={0.05} />
+      <div className="max-w-[800px] mx-auto relative text-center">
+        <div className="bv-reveal mb-10">
+          <h2 className="text-2xl md:text-4xl font-extrabold mb-8 leading-tight" style={{ ...MF, color: C.text }}>{c.title}</h2>
+          <p className="text-base md:text-lg leading-relaxed whitespace-pre-line" style={{ ...IF, color: C.muted }}>
+            {c.body}
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─── Comparison Section ───────────────────────────────────────────── */
+function WhyBizMapWorks() {
+  const { t } = useLang();
+  const w = t.whyBizMapWorks;
+  return (
+    <section className="py-24 px-6 relative overflow-hidden" style={{ backgroundColor: C.bg }}>
+      <Orb color={C.blue} x="0%" y="50%" size={500} opacity={0.05} />
+      <div className="max-w-[800px] mx-auto relative">
+        <div className="text-center mb-14 bv-reveal">
+          <h2 className="text-3xl md:text-5xl font-extrabold mb-6 leading-tight" style={{ ...MF, color: C.text }}>{w.title}</h2>
+          <p className="text-base md:text-lg leading-relaxed whitespace-pre-line" style={{ ...IF, color: C.muted }}>{w.body}</p>
+        </div>
+        <div className="grid gap-4 bv-reveal">
+          {w.comparison.map((item, i) => (
+            <div
+              key={i}
+              className="rounded-2xl p-6 flex items-center gap-4"
+              style={{ ...glassCard }}
+            >
+              <div className="w-6 h-6 rounded-full flex items-center justify-center shrink-0" style={{ backgroundColor: `${C.blue}15`, border: `1px solid ${C.blue}30` }}>
+                <Check className="w-3.5 h-3.5" style={{ color: C.blue }} />
+              </div>
+              <p className="text-sm md:text-base font-medium" style={{ ...IF, color: C.text }}>{item}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 
 /* ─── Feature: Business Map ─────────────────────────────────────────── */
 function FeatureMap() {
@@ -1165,93 +1160,77 @@ function FeatureAI() {
 }
 
 /* ─── Feature: How it works ─────────────────────────────────────────── */
+/* ─── Feature: How it works ─────────────────────────────────────────── */
 function FeatureHowItWorks() {
   const { t } = useLang();
   const f = t.hiw;
-  const icons = [BarChart3, Network, Zap] as const;
-  const colors = [C.blue, C.glow, C.green] as const;
   return (
     <section className="py-28 relative overflow-hidden" style={{ backgroundColor: C.s0 }}>
       <Orb color={C.green} x="90%" y="50%" size={500} opacity={0.05} />
-      <div className="max-w-[1400px] mx-auto px-6 md:px-10 lg:px-16 relative">
-        <div className="grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-16 lg:gap-24 items-start">
-          <div className="lg:sticky lg:top-24 bv-reveal">
-            <p className="text-[10px] font-bold tracking-[0.16em] uppercase mb-5" style={{ ...IF, color: C.blue }}>{f.tag}</p>
-            <h2 className="text-4xl md:text-5xl font-extrabold leading-tight mb-5 whitespace-pre-line"
-              style={{ ...MF, color: C.text, letterSpacing: "-0.03em" }}>{f.h2}</h2>
-            <p className="text-sm leading-relaxed mb-8" style={{ ...IF, color: C.muted }}>{f.body}</p>
-            <Link
+      <div className="max-w-[1200px] mx-auto px-6 relative">
+        <div className="text-center mb-16 bv-reveal">
+          <h2 className="text-4xl md:text-5xl font-extrabold mb-5" style={{ ...MF, color: C.text }}>{f.title}</h2>
+          <p className="text-base text-center max-w-2xl mx-auto" style={{ ...IF, color: C.muted }}>{f.subtitle}</p>
+        </div>
+
+        <div className="space-y-24">
+          {f.steps.map((step, i) => {
+            const imgs = ["/onboarding.png", "/map.png", "/opportunity.png", "/analysis.png", "/chat.png"];
+            return (
+              <div
+                key={i}
+                className={`grid md:grid-cols-2 gap-12 items-center bv-reveal bv-reveal-d${i + 1}`}
+              >
+                <div className={i % 2 === 1 ? "md:order-2" : ""}>
+                  <div className="flex items-center gap-4 mb-4">
+                    <span className="text-4xl font-extrabold" style={{ ...MF, color: "transparent", WebkitTextStroke: "1px rgba(255,255,255,0.2)" }}>0{i+1}</span>
+                    <h3 className="text-2xl font-bold" style={{ ...MF, color: C.text }}>{step.title}</h3>
+                  </div>
+                  <p className="text-base leading-relaxed" style={{ ...IF, color: C.muted }}>{step.body}</p>
+                </div>
+                <div className={i % 2 === 1 ? "md:order-1" : ""}>
+                  <div className="relative group">
+                    <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+                    <img 
+                      src={imgs[i]} 
+                      alt={step.title}
+                      className="relative rounded-2xl border border-white/10 shadow-2xl w-full h-auto object-cover"
+                      style={{ ...glassCard }}
+                    />
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        
+        <div className="mt-20 text-center">
+           <Link
               href="/onboarding"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 active:scale-[0.97]"
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl text-sm font-bold transition-all duration-200"
               style={{
                 ...IF,
                 background: `linear-gradient(135deg, ${C.blue}, ${C.purple}90)`,
                 color: "#fff",
-                boxShadow: `0 0 0 1px ${C.blue}30, 0 4px 20px ${C.blue}25`,
+                boxShadow: `0 4px 20px ${C.blue}30`,
               }}
               onMouseEnter={e => {
-                (e.currentTarget as HTMLElement).style.boxShadow = `0 0 0 1px ${C.blue}50, 0 6px 30px ${C.blue}45`;
-                (e.currentTarget as HTMLElement).style.transform = "translateY(-1px)";
+                (e.currentTarget as HTMLElement).style.boxShadow = `0 4px 30px ${C.blue}50`;
+                (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)";
               }}
               onMouseLeave={e => {
-                (e.currentTarget as HTMLElement).style.boxShadow = `0 0 0 1px ${C.blue}30, 0 4px 20px ${C.blue}25`;
+                (e.currentTarget as HTMLElement).style.boxShadow = `0 4px 20px ${C.blue}30`;
                 (e.currentTarget as HTMLElement).style.transform = "translateY(0)";
               }}
             >
-              {f.btn} <ArrowRight className="w-4 h-4" strokeWidth={2.5} />
+              {f.btn} <ArrowRight className="w-4 h-4" />
             </Link>
-          </div>
-
-          <div className="flex flex-col gap-3">
-            {f.steps.map((step, i) => {
-              const Icon = icons[i];
-              const color = colors[i];
-              return (
-                <div
-                  key={step.n}
-                  className={`bv-reveal bv-reveal-d${i + 1} flex gap-6 p-7 rounded-2xl cursor-default transition-all duration-300`}
-                  style={{ ...glassCard }}
-                  onMouseEnter={e => {
-                    Object.assign((e.currentTarget as HTMLElement).style, glassCardHover(color));
-                    (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)";
-                  }}
-                  onMouseLeave={e => {
-                    Object.assign((e.currentTarget as HTMLElement).style, glassCard);
-                    (e.currentTarget as HTMLElement).style.transform = "translateY(0)";
-                  }}
-                >
-                  <span
-                    className="text-5xl font-extrabold tabular-nums shrink-0 leading-none select-none"
-                    style={{
-                      ...MF,
-                      letterSpacing: "-0.04em",
-                      color: "transparent",
-                      WebkitTextStroke: `1px rgba(255,255,255,0.1)`,
-                    }}
-                  >
-                    {step.n}
-                  </span>
-                  <div>
-                    <div className="flex items-center gap-2.5 mb-3">
-                      <div
-                        className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
-                        style={{ backgroundColor: `${color}12`, border: `1px solid ${color}20`, boxShadow: `0 0 12px ${color}15` }}
-                      >
-                        <Icon className="w-4 h-4" style={{ color }} strokeWidth={1.5} />
-                      </div>
-                      <h3 className="text-base font-bold" style={{ ...MF, color: C.text, letterSpacing: "-0.01em" }}>{step.title}</h3>
-                    </div>
-                    <p className="text-sm leading-relaxed" style={{ ...IF, color: C.muted }}>{step.desc}</p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
         </div>
       </div>
     </section>
   );
 }
+
 
 /* ─── Animated stat cell ─────────────────────────────────────────────── */
 function StatCell({ val, lbl, sub, index }: { val: string; lbl: string; sub: string; index: number }) {
@@ -1383,84 +1362,117 @@ function InsightSection() {
 }
 
 /* ─── Price anchor ──────────────────────────────────────────────────── */
-function PriceAnchorSection() {
-  const { t, lang } = useLang();
+/* ─── Pricing Section ────────────────────────────────────────────────── */
+function PricingSection() {
+  const { t } = useLang();
+  const p = t.pricing;
   return (
-    <section className="py-24 px-6 relative overflow-hidden" style={{ backgroundColor: C.s0 }}>
-      <div className="max-w-[700px] mx-auto text-center bv-reveal">
-        <span className="text-[10px] font-bold tracking-[0.16em] uppercase" style={{ ...IF, color: C.blue }}>{t.anchor.tag}</span>
-        <h2 className="text-2xl md:text-3xl font-bold mt-4 mb-2 tracking-tight" style={{ ...MF, color: C.text, letterSpacing: "-0.02em" }}>{t.anchor.h2}</h2>
-        <p className="text-sm mb-10" style={{ ...IF, color: C.muted }}>{t.anchor.sub}</p>
-        <div className="grid grid-cols-2 gap-4 mb-10">
-          {t.anchor.items.map((item) => (
+    <section className="py-28 px-6 relative overflow-hidden" style={{ backgroundColor: C.s0 }}>
+      <div className="max-w-[900px] mx-auto relative">
+        <div className="text-center mb-16 bv-reveal">
+          <h2 className="text-3xl md:text-5xl font-extrabold mb-4" style={{ ...MF, color: C.text }}>{p.title}</h2>
+        </div>
+        <div className="grid md:grid-cols-2 gap-8">
+          {p.boxes.map((box, i) => (
             <div
-              key={item.label}
-              className="rounded-2xl p-6 text-left transition-all duration-300"
+              key={i}
+              className="rounded-3xl p-10 flex flex-col h-full bv-reveal transition-all duration-300"
               style={{
-                backgroundColor: item.bad ? `rgba(239,68,68,0.05)` : `rgba(16,185,129,0.05)`,
-                border: `1px solid ${item.bad ? `rgba(239,68,68,0.15)` : `rgba(16,185,129,0.15)`}`,
-                boxShadow: `inset 0 1px 0 ${item.bad ? "rgba(239,68,68,0.08)" : "rgba(16,185,129,0.08)"}`,
+                ...glassCard,
+                ...(box.primary ? { border: `1px solid ${C.blue}40`, boxShadow: `0 20px 50px ${C.blue}15` } : {})
               }}
             >
-              <p className="text-sm font-bold mb-1.5" style={{ ...IF, color: item.bad ? C.red : C.green }}>{item.label}</p>
-              <p className="text-2xl font-extrabold mb-2 tracking-tight" style={{ ...MF, color: C.text }}>{item.cost}</p>
-              <p className="text-xs" style={{ ...IF, color: C.muted }}>{item.note}</p>
+              <h3 className="text-xl font-bold mb-2" style={{ ...MF, color: box.red ? C.red : C.text }}>{box.title}</h3>
+              <div className="mb-4">
+                <span className="text-3xl font-extrabold" style={{ ...MF, color: C.text, ...(box.red ? { textDecoration: "line-through", opacity: 0.5 } : {}) }}>{box.price}</span>
+              </div>
+              {box.note && (
+                 <p className="text-xs mb-6" style={{ ...IF, color: C.muted }}>{box.note}</p>
+              )}
+              <ul className="space-y-4 mb-10 flex-1">
+                {box.points.map((point, pi) => (
+                  <li key={pi} className="flex items-start gap-3 text-sm" style={{ ...IF, color: C.muted }}>
+                    <CheckCircle className="w-4 h-4 mt-0.5 shrink-0" style={{ color: box.red ? C.red : C.green }} />
+                    {point}
+                  </li>
+                ))}
+              </ul>
+              <Link
+                href="/onboarding"
+                className="w-full py-4 rounded-xl text-center font-bold text-sm transition-all duration-200"
+                style={{
+                  background: box.primary ? `linear-gradient(135deg, ${C.blue}, ${C.purple}90)` : "rgba(255,255,255,0.05)",
+                  color: "#fff",
+                  border: box.primary ? "none" : "1px solid rgba(255,255,255,0.1)"
+                }}
+                onMouseEnter={e => {
+                  (e.currentTarget as HTMLElement).style.boxShadow = box.primary ? `0 4px 30px ${C.blue}40` : "none";
+                  (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)";
+                }}
+                onMouseLeave={e => {
+                  (e.currentTarget as HTMLElement).style.boxShadow = "none";
+                  (e.currentTarget as HTMLElement).style.transform = "translateY(0)";
+                }}
+              >
+                {box.cta || t.nav.cta}
+              </Link>
             </div>
           ))}
         </div>
+      </div>
+    </section>
+  );
+}
+
+function NoConsultantSection() {
+  const { t } = useLang();
+  const n = t.noConsultant;
+  return (
+    <section className="py-24 px-6 relative overflow-hidden" style={{ backgroundColor: C.s0 }}>
+      <div className="max-w-[800px] mx-auto relative text-center">
+        <div className="bv-reveal mb-14">
+          <h2 className="text-2xl md:text-4xl font-extrabold mb-8 leading-tight" style={{ ...MF, color: C.text }}>{n.title}</h2>
+          <p className="text-base md:text-lg leading-relaxed whitespace-pre-line text-right" style={{ ...IF, color: C.muted }}>
+            {n.body}
+          </p>
+        </div>
         <Link
           href="/onboarding"
-          className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl text-sm font-semibold transition-all duration-200 active:scale-[0.97]"
+          className="inline-flex items-center gap-2 px-10 py-5 rounded-2xl text-base font-bold transition-all duration-200"
           style={{
-            ...IF,
             background: `linear-gradient(135deg, ${C.blue}, ${C.purple}90)`,
             color: "#fff",
-            boxShadow: `0 0 0 1px ${C.blue}30, 0 4px 20px ${C.blue}25`,
+            boxShadow: `0 8px 30px ${C.blue}30`,
+            ...MF
           }}
           onMouseEnter={e => {
-            (e.currentTarget as HTMLElement).style.boxShadow = `0 0 0 1px ${C.blue}50, 0 6px 30px ${C.blue}45`;
-            (e.currentTarget as HTMLElement).style.transform = "translateY(-1px)";
+            (e.currentTarget as HTMLElement).style.boxShadow = `0 8px 50px ${C.blue}50`;
+            (e.currentTarget as HTMLElement).style.transform = "translateY(-3px)";
           }}
           onMouseLeave={e => {
-            (e.currentTarget as HTMLElement).style.boxShadow = `0 0 0 1px ${C.blue}30, 0 4px 20px ${C.blue}25`;
+            (e.currentTarget as HTMLElement).style.boxShadow = `0 8px 30px ${C.blue}30`;
             (e.currentTarget as HTMLElement).style.transform = "translateY(0)";
           }}
         >
-          {lang === "he" ? "מפה את העסק שלי בחינם" : "Map my business — it's free"}
-          <ArrowRight className="w-4 h-4" strokeWidth={2.5} />
+          {n.cta} <ArrowRight className="w-5 h-5" />
         </Link>
       </div>
     </section>
   );
 }
 
+
 /* ─── FAQ ─────────────────────────────────────────────────────────────── */
+/* ─── FAQ Section ────────────────────────────────────────────────────── */
 function FAQSection() {
-  const { lang } = useLang();
+  const { t } = useLang();
   const [open, setOpen] = useState<number | null>(null);
-  const items = lang === "he" ? [
-    { q: "האם BizMap באמת חינם?", a: "כן. מיפוי העסק המלא, ניתוח הזדמנויות ה-AI ותוכנית הפעולה — חינם לחלוטין. ללא כרטיס אשראי. ללא תקופת ניסיון. אנחנו מרוויחים כשאתה בוחר ליישם סוכני AI עם השותפים שלנו — זה הכל." },
-    { q: "עד כמה ההמלצות של ה-AI מדויקות?", a: "ההמלצות מבוססות על דפוסים ממאות עסקים שנותחו בתעשייה שלך. כל הצעה כוללת שעות חסכה משוערות וחיסכון חודשי — אלו טווחים, לא ערבויות. רוב העסקים רואים תוצאות תוך 30–60 יום מפריסת הסוכן הראשון." },
-    { q: "האם עלי לחבר כלים או נתונים?", a: "לא. אתה עונה על 18 שאלות מובנות. ללא אינטגרציות, ללא מפתחות API, ללא ייצוא נתונים. התשובות שלך לא עוזבות את המחשב שלך — הניתוח פועל מקומית." },
-    { q: "מה קורה אחרי שמסיים את הסקר?", a: "אתה מקבל מפת עסק אינטראקטיבית המציגה כל מחלקה ותהליך, רשימה מדורגת של הזדמנויות סוכן AI עם אומדני חיסכון, ומפת דרכים ליישום. אפשר להתחיל מיד — ללא שיחת מכירות." },
-    { q: "אני לא טכנולוגי. האם זה מתאים לי?", a: "בהחלט. BizMap בנוי לבעלי עסקים, לא למהנדסים. השאלות עוסקות בפעילות העסקית שלך, לא בטכנולוגיה. כל המלצת סוכן AI מגיעה עם מדריך יישום בשפה פשוטה." },
-  ] : [
-    { q: "Is BizMap really free?", a: "Yes. The full business mapping, AI opportunity analysis, and action plan are completely free. No credit card. No trial period. We make money when you choose to implement AI agents with our partners — that's it." },
-    { q: "How accurate are the AI recommendations?", a: "Our recommendations are based on patterns from hundreds of analyzed businesses in your industry. Every suggestion includes estimated hours saved and monthly savings — these are ranges, not guarantees. Most businesses see results within 30–60 days of deploying their first agent." },
-    { q: "Do I need to connect any of my tools or data?", a: "No. You answer 18 structured questions. No integrations, no API keys, no data exports. Your answers never leave your device — the analysis runs locally." },
-    { q: "What happens after I complete the assessment?", a: "You get an interactive Business Map showing every department and process, a ranked list of AI agent opportunities with savings estimates, and an implementation roadmap. You can start implementing immediately — no sales call required." },
-    { q: "I'm not technical. Can I still use this?", a: "Absolutely. BizMap is built for business owners, not engineers. The questions are about your business operations, not technology. Each AI agent recommendation comes with a plain-English implementation guide." },
-  ];
+  const items = t.faq.items;
   return (
     <section className="py-24 px-6 relative overflow-hidden" style={{ backgroundColor: C.bg }}>
       <div className="max-w-[720px] mx-auto">
         <div className="text-center mb-14 bv-reveal">
-          <span className="text-[10px] font-bold tracking-[0.16em] uppercase" style={{ ...IF, color: C.blue }}>
-            {lang === "he" ? "שאלות נפוצות" : "Frequently asked questions"}
-          </span>
-          <h2 className="text-3xl md:text-4xl font-bold mt-4 tracking-tight" style={{ ...MF, color: C.text, letterSpacing: "-0.02em" }}>
-            {lang === "he" ? "שאלות שכנראה יש לך" : "Questions you probably have"}
-          </h2>
+          <h2 className="text-3xl md:text-4xl font-bold tracking-tight" style={{ ...MF, color: C.text }}>{t.faq.title}</h2>
         </div>
         <div className="flex flex-col gap-2 bv-reveal">
           {items.map((faq, i) => (
@@ -1473,7 +1485,7 @@ function FAQSection() {
               }}
             >
               <button
-                className="w-full text-left px-6 py-4 flex items-center justify-between gap-4"
+                className="w-full text-right px-6 py-4 flex items-center justify-between gap-4"
                 style={{
                   backgroundColor: open === i ? "rgba(16,20,34,0.9)" : "rgba(11,14,26,0.8)",
                   cursor: "pointer",
@@ -1503,82 +1515,46 @@ function FAQSection() {
 /* ─── Final CTA ─────────────────────────────────────────────────────── */
 function FinalCTA() {
   const { t } = useLang();
-  const f = t.cta;
+  const f = t.finalCta;
   return (
     <section className="py-28 relative overflow-hidden" style={{ backgroundColor: C.s0 }}>
-      <div className="max-w-[1400px] mx-auto px-6 md:px-10 lg:px-16">
+      <div className="max-w-[1000px] mx-auto px-6">
         <div
-          className="rounded-3xl px-10 md:px-20 py-20 md:py-28 text-center relative overflow-hidden bv-reveal"
+          className="rounded-3xl px-10 py-20 text-center relative overflow-hidden bv-reveal"
           style={{
-            backgroundColor: "rgba(11,14,26,0.85)",
-            backdropFilter: "blur(30px) saturate(1.6)",
-            WebkitBackdropFilter: "blur(30px) saturate(1.6)",
-            border: "1px solid rgba(255,255,255,0.07)",
-            boxShadow: "inset 0 1px 0 rgba(255,255,255,0.06), 0 40px 100px rgba(0,0,0,0.6)",
+            ...glassCard,
+            boxShadow: "0 40px 100px rgba(0,0,0,0.6)",
           }}
         >
-          {/* Multi-layer ambient glow */}
-          <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-3xl">
-            <div
-              className="absolute -top-60 -left-60 w-[600px] h-[600px] rounded-full"
-              style={{ background: `radial-gradient(circle, ${C.blue}18 0%, transparent 60%)`, filter: "blur(40px)" }}
-            />
-            <div
-              className="absolute -bottom-60 -right-60 w-[600px] h-[600px] rounded-full"
-              style={{ background: `radial-gradient(circle, ${C.purple}12 0%, transparent 60%)`, filter: "blur(40px)" }}
-            />
-            <div
-              className="absolute inset-0"
-              style={{ background: `radial-gradient(ellipse 80% 50% at 50% 50%, ${C.blue}06 0%, transparent 70%)` }}
-            />
-          </div>
-
-          <p className="text-[10px] font-bold tracking-[0.18em] uppercase mb-6 relative" style={{ ...IF, color: C.blue }}>{f.tag}</p>
-          <h2
-            className="text-4xl md:text-6xl font-extrabold leading-tight mb-6 relative"
-            style={{ ...MF, color: C.text, letterSpacing: "-0.035em" }}
-          >
-            {f.h2a}<br />
-            <span style={{
-              background: `linear-gradient(135deg, ${C.blue} 0%, ${C.glow} 60%, #fff 80%)`,
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              backgroundClip: "text",
-              filter: `drop-shadow(0 0 30px ${C.blue}40)`,
-            }}>{f.h2b}</span>
-          </h2>
-          <p
-            className="text-base leading-relaxed mb-10 mx-auto relative whitespace-pre-line"
-            style={{ ...IF, color: C.muted, maxWidth: "46ch" }}
-          >
-            {f.body}
-          </p>
+          <h2 className="text-3xl md:text-5xl font-extrabold mb-6" style={{ ...MF, color: C.text }}>{f.title}</h2>
+          <p className="text-lg leading-relaxed mb-10 max-w-2xl mx-auto" style={{ ...IF, color: C.muted }}>{f.subtitle}</p>
           <Link
             href="/onboarding"
-            className="inline-flex items-center gap-2 px-9 py-4 rounded-xl text-sm font-bold transition-all duration-250 active:scale-[0.97] justify-center relative"
+            className="inline-flex items-center gap-2 px-10 py-4 rounded-xl text-sm font-bold transition-all duration-200"
             style={{
-              ...IF,
               background: `linear-gradient(135deg, ${C.blue}, ${C.purple}90)`,
               color: "#fff",
-              boxShadow: `0 0 0 1px ${C.blue}40, 0 8px 30px ${C.blue}35`,
+              boxShadow: `0 8px 30px ${C.blue}35`,
             }}
             onMouseEnter={e => {
-              (e.currentTarget as HTMLElement).style.boxShadow = `0 0 0 1px ${C.blue}60, 0 8px 50px ${C.blue}55, 0 0 80px ${C.blue}20`;
+              (e.currentTarget as HTMLElement).style.boxShadow = `0 8px 50px ${C.blue}60`;
               (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)";
             }}
             onMouseLeave={e => {
-              (e.currentTarget as HTMLElement).style.boxShadow = `0 0 0 1px ${C.blue}40, 0 8px 30px ${C.blue}35`;
+              (e.currentTarget as HTMLElement).style.boxShadow = `0 8px 30px ${C.blue}35`;
               (e.currentTarget as HTMLElement).style.transform = "translateY(0)";
             }}
           >
             {f.btn}
             <ArrowRight className="w-4 h-4" strokeWidth={2.5} />
           </Link>
+          <p className="mt-6 text-xs" style={{ ...IF, color: C.muted }}>{f.subtext}</p>
         </div>
       </div>
     </section>
   );
 }
+
 
 /* ─── Footer ─────────────────────────────────────────────────────────── */
 function Footer() {
@@ -1600,9 +1576,13 @@ function Footer() {
             </div>
             <p className="text-xs leading-relaxed mb-4" style={{ ...IF, color: C.muted, maxWidth: "26ch" }}>{f.tag}</p>
             <div>
-              <span className="text-[10px] font-bold tracking-widest uppercase mb-1 block" style={{ ...IF, color: C.outline }}>
-                {lang === "he" ? "צור קשר" : "Contact Us"}
-              </span>
+              <div className="flex items-center gap-2 mb-2">
+                <div
+                  className="w-1.5 h-1.5 rounded-full"
+                  style={{ backgroundColor: C.green, boxShadow: `0 0 6px ${C.green}`, animation: "bv-pulse-dot 2s ease-in-out infinite" }}
+                />
+                <span className="text-[10px]" style={{ ...IF, color: C.muted }}>{f.status}</span>
+              </div>
               <a
                 href="mailto:support@bizmapai.com"
                 className="text-xs font-semibold transition-colors duration-200"
@@ -1612,13 +1592,6 @@ function Footer() {
               >
                 support@bizmapai.com
               </a>
-            </div>
-            <div className="flex items-center gap-2 mt-5">
-              <div
-                className="w-1.5 h-1.5 rounded-full"
-                style={{ backgroundColor: C.green, boxShadow: `0 0 6px ${C.green}`, animation: "bv-pulse-dot 2s ease-in-out infinite" }}
-              />
-              <span className="text-[10px]" style={{ ...IF, color: C.muted }}>{f.status}</span>
             </div>
           </div>
           {f.cols.map((col) => (
@@ -1843,16 +1816,13 @@ export function LandingPage() {
       <div dir={t.dir} style={{ backgroundColor: C.bg }}>
         <Nav />
         <Hero />
-        <LogoMarquee />
-        <PainSection />
-        <TestimonialsSection />
-        <FeatureMap />
-        <FeatureAI />
-        <InsightSection />
+        <SocialProofBar />
+        <ProblemPainSection />
+        <ClaritySection />
         <FeatureHowItWorks />
-        <Stats />
-        <ROICalculator />
-        <PriceAnchorSection />
+        <PricingSection />
+        <WhyBizMapWorks />
+        <NoConsultantSection />
         <FAQSection />
         <FinalCTA />
         <Footer />
