@@ -149,8 +149,8 @@ const CONTENT = {
     pricing: {
       title: "איפה תוכלו להיות בעוד כמה דקות?",
       boxes: [
-        { title: "יועץ עסקי", price: "3,000–8,000₪ לחודש", note: "(עם התחייבות לחצי שנה קדימה)", points: ["ועדיין לא מובטח שהתשובות יהיו מספיק מדויקות לעסק הספציפי שלך"], red: true },
-        { title: "BizMap", price: "חינם לחלוטין", note: "", points: ["בלי כרטיס אשראי. בלי התחייבות. בלי סיבה לא לנסות.", "5 דקות של שאלות — ותדע בדיוק איפה העסק שלך מדמם כסף."], primary: true, cta: "קבל את המפה שלך בחינם" }
+        { title: "יועץ עסקי", price: "3,000–8,000₪ לחודש", note: "(עם התחייבות לחצי שנה קדימה)", points: ["ועדיין לא מובטח שהתשובות יהיו מספיק מדויקות לעסק הספציפי שלך"], red: true, primary: false, cta: "" },
+        { title: "BizMap", price: "חינם לחלוטין", note: "", points: ["בלי כרטיס אשראי. בלי התחייבות. בלי סיבה לא לנסות.", "5 דקות של שאלות — ותדע בדיוק איפה העסק שלך מדמם כסף."], red: false, primary: true, cta: "קבל את המפה שלך בחינם" }
       ]
     },
     whyBizMapWorks: {
@@ -261,8 +261,11 @@ const CONTENT = {
       steps: []
     },
     pricing: {
-      title: "Where could you be?",
-      boxes: []
+      title: "Where could you be in a few minutes?",
+      boxes: [
+        { title: "Business Consultant", price: "$800–3,000/mo", note: "(With a 6-month commitment)", points: ["Still no guarantee the answers will be precise enough for your specific business"], red: true, primary: false, cta: "" },
+        { title: "BizMap", price: "Completely Free", note: "", points: ["No credit card. No commitment. No reason not to try.", "5 minutes of questions — and you'll know exactly where your business is bleeding money."], red: false, primary: true, cta: "Get your free map" }
+      ]
     },
     whyBizMapWorks: {
       title: "Why BizMap works",
