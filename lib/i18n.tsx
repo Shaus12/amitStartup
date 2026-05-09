@@ -12,12 +12,11 @@ interface LangContextValue {
 const LangContext = createContext<LangContextValue>({ lang: "he", setLang: () => {} });
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [lang, setLangState] = useState<Lang>("he");
-
-  useEffect(() => {
+  const [lang, setLangState] = useState<Lang>(() => {
+    if (typeof window === "undefined") return "he";
     const saved = localStorage.getItem("bv-lang") as Lang | null;
-    if (saved === "en" || saved === "he") setLangState(saved);
-  }, []);
+    return saved === "en" || saved === "he" ? saved : "he";
+  });
 
   useEffect(() => {
     document.documentElement.lang = lang === "he" ? "he" : "en";
@@ -454,7 +453,7 @@ const TRANSLATIONS = {
         { href: "/opportunities", label: "הזדמנויות AI", description: "חיסכון וסוכנים" },
         { href: "/roadmap", label: "מפת דרכים", description: "תוכנית מימוש" },
         { href: "/report", label: "ייצוא דוח", description: "סיכום PDF" },
-        { href: "/billing", label: "מנוי ושימוש", description: "חיוב ותוכנית" },
+        { href: "/billing", label: "תוכניות", description: "מסלולים ושדרוג" },
       ],
       footer: "BizMap v1.0",
     },
@@ -913,7 +912,7 @@ const TRANSLATIONS = {
         { href: "/opportunities", label: "AI Opportunities", description: "Savings & agents" },
         { href: "/roadmap", label: "Roadmap", description: "Implementation plan" },
         { href: "/report", label: "Export Report", description: "PDF summary" },
-        { href: "/billing", label: "Billing", description: "Plan & usage" },
+        { href: "/billing", label: "Plans", description: "Plans & upgrades" },
       ],
       footer: "BizMap v1.0",
     },

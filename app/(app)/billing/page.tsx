@@ -3,6 +3,13 @@ import { supabaseAdmin } from "@/lib/supabase-admin";
 import { redirect } from "next/navigation";
 import { BillingClient } from "./BillingClient";
 
+type Plan = "free" | "pro" | "business";
+
+function normalizePlan(plan: unknown): Plan {
+  if (plan === "pro" || plan === "business") return plan;
+  return "free";
+}
+
 export default async function BillingPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -18,30 +25,15 @@ export default async function BillingPage() {
 
   if (!business) redirect("/onboarding");
 
-  // Subscription
-  const { data: sub } = await supabaseAdmin
-    .from("subscriptions")
-    .select("status, plan_name, amount_ils, current_period_start, current_period_end, created_at")
-    .eq("user_id", user.id)
-    .order("created_at", { ascending: false })
-    .limit(1)
+  const { data: userProfile } = await supabaseAdmin
+    .from("users")
+    .select("subscription_plan")
+    .eq("id", user.id)
     .maybeSingle();
-
-  // Usage: total tokens + cost per call_type (last 30 days)
-  const since = new Date();
-  since.setDate(since.getDate() - 30);
-
-  const { data: usageRows } = await supabaseAdmin
-    .from("api_usage_logs")
-    .select("call_type, input_tokens, output_tokens, estimated_cost_usd, created_at")
-    .eq("business_id", business.id)
-    .gte("created_at", since.toISOString())
-    .order("created_at", { ascending: false });
 
   return (
     <BillingClient
-      sub={sub}
-      usageRows={usageRows ?? []}
+      currentPlan={normalizePlan(userProfile?.subscription_plan)}
       userEmail={user.email ?? ""}
     />
   );
