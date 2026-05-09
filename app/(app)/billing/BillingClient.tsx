@@ -1,12 +1,15 @@
 "use client";
 
-import { CheckCircle2, Crown, Lock, Sparkles } from "lucide-react";
+import { useState } from "react";
+import { CheckCircle2, Crown, Loader2, Lock, Sparkles, X } from "lucide-react";
 import { UpgradeButton } from "@/components/subscription/UpgradeButton";
 
 type Plan = "free" | "pro" | "business";
 
 type BillingClientProps = {
   currentPlan: Plan;
+  subscriptionUpdatedAt: string | null;
+  subscriptionEndsAt: string | null;
   userEmail: string;
 };
 
@@ -77,6 +80,22 @@ function visiblePlans(plan: Plan): Plan[] {
   if (plan === "business") return ["business"];
   if (plan === "pro") return ["pro", "business"];
   return ["free", "pro", "business"];
+}
+
+function calculateEndDate(subscriptionUpdatedAt: string | null) {
+  const startedAt = subscriptionUpdatedAt ? new Date(subscriptionUpdatedAt) : new Date();
+  const endsAt = Number.isNaN(startedAt.getTime()) ? new Date() : startedAt;
+  endsAt.setDate(endsAt.getDate() + 30);
+  return endsAt.toISOString();
+}
+
+function formatDate(date: string | null) {
+  if (!date) return "";
+  return new Date(date).toLocaleDateString("he-IL", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
 }
 
 function PlanAction({ plan, currentPlan }: { plan: Plan; currentPlan: Plan }) {
@@ -171,8 +190,41 @@ function PricingCard({ plan, currentPlan }: { plan: PlanCard; currentPlan: Plan 
   );
 }
 
-export function BillingClient({ currentPlan, userEmail }: BillingClientProps) {
+export function BillingClient({
+  currentPlan,
+  subscriptionUpdatedAt,
+  subscriptionEndsAt,
+  userEmail,
+}: BillingClientProps) {
   const plans = visiblePlans(currentPlan).map((plan) => PLAN_CARDS[plan]);
+  const [cancelModalOpen, setCancelModalOpen] = useState(false);
+  const [cancelLoading, setCancelLoading] = useState(false);
+  const [cancelError, setCancelError] = useState<string | null>(null);
+  const [localEndsAt, setLocalEndsAt] = useState<string | null>(subscriptionEndsAt);
+  const isCancellationPending = currentPlan !== "free" && Boolean(localEndsAt);
+  const calculatedEndDate = localEndsAt ?? calculateEndDate(subscriptionUpdatedAt);
+
+  async function handleCancelSubscription() {
+    setCancelLoading(true);
+    setCancelError(null);
+
+    try {
+      const res = await fetch("/api/subscription/cancel", { method: "POST" });
+      const data = (await res.json()) as { subscription_ends_at?: unknown; error?: string };
+
+      if (!res.ok || typeof data.subscription_ends_at !== "string") {
+        throw new Error(data.error ?? "Cancellation failed");
+      }
+
+      setLocalEndsAt(data.subscription_ends_at);
+      setCancelModalOpen(false);
+    } catch (err) {
+      console.error("[BillingClient] cancellation error:", err);
+      setCancelError("אירעה שגיאה בביטול המנוי. נסה שוב.");
+    } finally {
+      setCancelLoading(false);
+    }
+  }
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10" dir="rtl">
@@ -187,10 +239,35 @@ export function BillingClient({ currentPlan, userEmail }: BillingClientProps) {
           <div>
             <p className="text-sm font-bold text-zinc-500">התוכנית הנוכחית שלך</p>
             <p className="mt-1 text-2xl font-extrabold text-white">{PLAN_LABELS[currentPlan]}</p>
+            {isCancellationPending && (
+              <p className="mt-2 text-sm font-medium text-yellow-300">
+                המנוי שלך פעיל עד {formatDate(localEndsAt)}
+              </p>
+            )}
           </div>
-          <p className="max-w-xl text-sm font-medium text-zinc-300">{bannerText(currentPlan)}</p>
+          <div className="flex flex-col items-start gap-3 md:items-end">
+            <p className="max-w-xl text-sm font-medium text-zinc-300">{bannerText(currentPlan)}</p>
+            {currentPlan !== "free" && !isCancellationPending && (
+              <button
+                type="button"
+                onClick={() => {
+                  setCancelError(null);
+                  setCancelModalOpen(true);
+                }}
+                className="h-10 rounded-xl border border-red-500/25 bg-red-500/10 px-4 text-sm font-bold text-red-300 transition-colors hover:bg-red-500/15 hover:text-red-200"
+              >
+                בטל מנוי
+              </button>
+            )}
+          </div>
         </div>
       </section>
+
+      {isCancellationPending && (
+        <div className="mb-8 rounded-2xl border border-yellow-500/20 bg-yellow-500/10 p-5 text-center text-sm font-bold text-yellow-200">
+          המנוי בוטל. תוכל להמשיך ליהנות עד {formatDate(localEndsAt)}
+        </div>
+      )}
 
       {currentPlan === "business" && (
         <div className="mb-8 rounded-2xl border border-green-500/20 bg-green-500/10 p-5 text-center text-sm font-bold text-green-300">
@@ -203,6 +280,52 @@ export function BillingClient({ currentPlan, userEmail }: BillingClientProps) {
           <PricingCard key={plan.id} plan={plan} currentPlan={currentPlan} />
         ))}
       </div>
+
+      {cancelModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4">
+          <div className="relative w-full max-w-md rounded-2xl border border-zinc-800 bg-zinc-950 p-6 text-right shadow-2xl">
+            <button
+              type="button"
+              onClick={() => {
+                if (!cancelLoading) setCancelModalOpen(false);
+              }}
+              disabled={cancelLoading}
+              className="absolute left-3 top-3 inline-flex size-8 items-center justify-center rounded-full text-zinc-500 transition-colors hover:bg-zinc-900 hover:text-white disabled:pointer-events-none disabled:opacity-50"
+              aria-label="סגור"
+            >
+              <X className="size-4" aria-hidden="true" />
+            </button>
+
+            <h2 className="text-xl font-extrabold text-white">לבטל את המנוי?</h2>
+            <p className="mt-3 text-sm leading-6 text-zinc-400">
+              הביטול ייכנס לתוקף בסוף תקופת החיוב הנוכחית. תוכל להמשיך ליהנות מהתוכנית עד{" "}
+              <span className="font-bold text-white">{formatDate(calculatedEndDate)}</span>.
+            </p>
+
+            {cancelError && <p className="mt-4 text-sm font-medium text-red-400">{cancelError}</p>}
+
+            <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row">
+              <button
+                type="button"
+                onClick={() => setCancelModalOpen(false)}
+                disabled={cancelLoading}
+                className="h-11 flex-1 rounded-xl border border-zinc-700 bg-zinc-900 px-4 text-sm font-bold text-zinc-300 transition-colors hover:bg-zinc-800 disabled:pointer-events-none disabled:opacity-50"
+              >
+                חזור
+              </button>
+              <button
+                type="button"
+                onClick={handleCancelSubscription}
+                disabled={cancelLoading}
+                className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-red-600 px-4 text-sm font-bold text-white transition-colors hover:bg-red-500 disabled:pointer-events-none disabled:opacity-60"
+              >
+                {cancelLoading && <Loader2 className="size-4 animate-spin" aria-hidden="true" />}
+                אשר ביטול
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

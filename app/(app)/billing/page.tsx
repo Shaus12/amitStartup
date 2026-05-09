@@ -27,13 +27,15 @@ export default async function BillingPage() {
 
   const { data: userProfile } = await supabaseAdmin
     .from("users")
-    .select("subscription_plan")
+    .select("subscription_plan, subscription_updated_at, subscription_ends_at")
     .eq("id", user.id)
     .maybeSingle();
 
   return (
     <BillingClient
       currentPlan={normalizePlan(userProfile?.subscription_plan)}
+      subscriptionUpdatedAt={userProfile?.subscription_updated_at ?? null}
+      subscriptionEndsAt={userProfile?.subscription_ends_at ?? null}
       userEmail={user.email ?? ""}
     />
   );
