@@ -21,6 +21,7 @@ export interface AiOpportunityItem {
   isQuickWin?: boolean;
   notificationHook?: string | null;
   proofOfValue?: string | null;
+  isLocked?: boolean;
 }
 
 export interface OpportunitySummary {

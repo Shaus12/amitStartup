@@ -1,6 +1,7 @@
 "use client";
 
-import { Star, X, Clock, DollarSign, Bot, Zap, ArrowRight, Layers } from "lucide-react";
+import { Star, X, Clock, DollarSign, Bot, Zap, ArrowRight, Layers, Lock } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { AiOpportunityItem } from "@/lib/types/opportunities";
 
 interface OpportunityCardProps {
@@ -35,10 +36,50 @@ const IMPACT_COLOR: Record<string, string> = {
 };
 
 export function OpportunityCard({ opportunity, onPin, onDismiss }: OpportunityCardProps) {
+  const router = useRouter();
   const isPinned = opportunity.pinned;
+  const isLocked = opportunity.isLocked ?? false;
   const cat = CATEGORY_STYLE[opportunity.category ?? "automation"] ?? CATEGORY_STYLE.automation;
   const effort = opportunity.implementationEffort ? EFFORT_STYLE[opportunity.implementationEffort] : null;
   const accentColor = IMPACT_COLOR[opportunity.impactType] ?? "#4d8eff";
+
+  if (isLocked) {
+    return (
+      <div
+        className="relative rounded-xl overflow-hidden"
+        style={{
+          backgroundColor: "#191b22",
+          border: "1px solid #282a30",
+        }}
+      >
+        <div className="p-4 filter blur-[2px] select-none pointer-events-none" aria-hidden="true">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="inline-block w-16 h-4 rounded-full" style={{ backgroundColor: "#282a30" }} />
+            <span className="inline-block w-10 h-4 rounded-full" style={{ backgroundColor: "#282a30" }} />
+          </div>
+          <div className="w-3/4 h-3.5 rounded mb-1" style={{ backgroundColor: "#282a30" }} />
+          <div className="w-1/2 h-3 rounded mb-3" style={{ backgroundColor: "#1e1f26" }} />
+          <div className="flex gap-2">
+            <span className="inline-block w-20 h-6 rounded-full" style={{ backgroundColor: "#1e1f26" }} />
+            <span className="inline-block w-16 h-6 rounded-full" style={{ backgroundColor: "#1e1f26" }} />
+          </div>
+        </div>
+        <div
+          className="absolute inset-0 flex flex-col items-center justify-center gap-2"
+          style={{ backgroundColor: "rgba(19,21,29,0.7)" }}
+        >
+          <Lock className="w-4 h-4" style={{ color: "#8c909f" }} />
+          <button
+            onClick={() => router.push("/billing")}
+            className="text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors"
+            style={{ backgroundColor: "rgba(77,142,255,0.15)", color: "#4d8eff", border: "1px solid rgba(77,142,255,0.3)" }}
+          >
+            שדרג עכשיו
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const agentTools = opportunity.agentTools
     ? opportunity.agentTools.split(",").map((t) => t.trim()).filter(Boolean).slice(0, 3)

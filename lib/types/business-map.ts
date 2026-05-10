@@ -27,6 +27,7 @@ export interface DepartmentWithProcesses {
   mainPain?: string | null;
   firstAction?: string | null;
   isLocked?: boolean;
+  subscriptionLocked?: boolean;
 }
 
 /** Aggregated AI analysis figures for reveal modal + map summary node */

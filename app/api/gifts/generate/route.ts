@@ -3,6 +3,7 @@ import { supabaseAdmin as supabase } from "@/lib/supabase-admin";
 import { createClient } from "@/lib/supabase/server";
 import { verifyBusinessAccess } from "@/lib/supabase/verify-business-access";
 import { generateGiftWithClaude } from "@/lib/ai/gifts";
+import { getEffectivePlan, getPlanLimits } from "@/lib/subscription";
 
 export const dynamic = "force-dynamic";
 
@@ -20,6 +21,20 @@ export async function POST(req: NextRequest) {
 
     const owned = await verifyBusinessAccess(supabase, businessId, user);
     if (!owned) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+
+    // Enforce gift generation limit per plan
+    const plan = await getEffectivePlan(supabase, user!.id);
+    const limits = getPlanLimits(plan);
+    const { count: giftCount } = await supabase
+      .from("business_gifts")
+      .select("id", { count: "exact", head: true })
+      .eq("business_id", businessId);
+    if ((giftCount ?? 0) >= limits.gifts) {
+      return NextResponse.json(
+        { error: "הגעת למגבלת המתנות. שדרג את המנוי לקבלת עוד.", upgrade: true },
+        { status: 403 }
+      );
+    }
 
     try {
       const [{ data: templates, error: templatesError }, { data: knowledgeRows, error: knowledgeError }, { data: business }] =

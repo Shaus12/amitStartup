@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { verifyBusinessAccess } from "@/lib/supabase/verify-business-access";
 import { callClaudeForChat, generateConstraintQuestion, generateProjectPlan } from "@/lib/ai/analyzeBusinessData";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { getEffectivePlan, getPlanLimits } from "@/lib/subscription";
 
 function parseProjectFromMarkdown(markdown: string) {
   const nameMatch = markdown.match(/📋 \*\*([^*]+)\*\*/);
@@ -49,6 +50,25 @@ export async function POST(req: NextRequest) {
 
     const owned = await verifyBusinessAccess(supabase, businessId, user);
     if (!owned) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+
+    // Enforce daily message limit per plan
+    const plan = await getEffectivePlan(supabase, user!.id);
+    const limits = getPlanLimits(plan);
+    const today = new Date().toISOString().slice(0, 10);
+    const { data: countRow } = await supabase
+      .from("aria_message_counts")
+      .select("count")
+      .eq("user_id", user!.id)
+      .eq("date", today)
+      .maybeSingle();
+    const currentCount = (countRow?.count as number) ?? 0;
+    if (currentCount >= limits.dailyMessages) {
+      return NextResponse.json(
+        { error: "הגעת למגבלת ההודעות היומית. שדרג את המנוי כדי להמשיך.", upgrade: true },
+        { status: 403 }
+      );
+    }
+
     const rateLimit = checkRateLimit(req, `chat:${user?.id ?? "anon"}`, 40, 60_000);
     if (!rateLimit.allowed) {
       return NextResponse.json({ error: "Too many requests" }, { status: 429 });
@@ -217,6 +237,14 @@ export async function POST(req: NextRequest) {
         { businessId, userId: user?.id ?? null }
       );
     }
+
+    // Increment daily message count
+    await supabase
+      .from("aria_message_counts")
+      .upsert(
+        { user_id: user!.id, date: today, count: currentCount + 1 },
+        { onConflict: "user_id,date" }
+      );
 
     // 5. Save Claude response
     const { data: savedMsg, error } = await supabase

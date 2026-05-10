@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin as supabase } from "@/lib/supabase-admin";
 import { createClient } from "@/lib/supabase/server";
 import { verifyBusinessAccess } from "@/lib/supabase/verify-business-access";
-
-const COOLDOWN_MS = 7 * 24 * 60 * 60 * 1000;
+import { getEffectivePlan, getPlanLimits } from "@/lib/subscription";
 
 export async function GET(req: NextRequest) {
   const businessId = new URL(req.url).searchParams.get("businessId");
@@ -18,6 +17,10 @@ export async function GET(req: NextRequest) {
 
   const owned = await verifyBusinessAccess(supabase, businessId, user);
   if (!owned) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+
+  const plan = await getEffectivePlan(supabase, user!.id);
+  const limits = getPlanLimits(plan);
+  const COOLDOWN_MS = limits.refreshDays * 24 * 60 * 60 * 1000;
 
   const { data: latest, error } = await supabase
     .from("ai_analyses")

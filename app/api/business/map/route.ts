@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin as supabase } from "@/lib/supabase-admin";
 import { createClient } from "@/lib/supabase/server";
 import { verifyBusinessAccess } from "@/lib/supabase/verify-business-access";
+import { getEffectivePlan, getPlanLimits } from "@/lib/subscription";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -15,6 +16,9 @@ export async function GET(req: NextRequest) {
 
   const owned = await verifyBusinessAccess(supabase, businessId, user);
   if (!owned) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+
+  const plan = await getEffectivePlan(supabase, user!.id);
+  const limits = getPlanLimits(plan);
 
   try {
     // Fetch business
@@ -126,7 +130,7 @@ export async function GET(req: NextRequest) {
     };
 
     // Normalize departments to camelCase for the UI components
-    const normalizedDepts = (departments ?? []).map((dept) => {
+    const normalizedDepts = (departments ?? []).map((dept, deptIndex) => {
       // Filter processes that belong to this department
       const deptProcesses = allProcesses
         .filter((p) => p.department_id === dept.id)
@@ -149,6 +153,7 @@ export async function GET(req: NextRequest) {
 
       const activeOpps = (dept.ai_opportunities ?? []).filter((o: any) => o.archived !== true);
       const isLocked = deptProcesses.length === 0 && activeOpps.length === 0;
+      const subscriptionLocked = deptIndex >= limits.departments;
 
       return {
         id: dept.id,
@@ -157,6 +162,7 @@ export async function GET(req: NextRequest) {
         headcount: dept.headcount ?? null,
         healthScore: dept.health_score ?? null,
         isLocked,
+        subscriptionLocked,
         mainPain: mainPainRow ? mainPainRow.content.replace(/^\[main_pain\]\s*/, "").replace(/^Pain:\s*/, "") : null,
         firstAction: firstActionRow ? firstActionRow.content.replace(/^\[first_action\]\s*/, "").replace(/^Action:\s*/, "") : null,
         // camelCase aliases for React Flow / UI components

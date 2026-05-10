@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin as supabase } from "@/lib/supabase-admin";
 import { createClient } from "@/lib/supabase/server";
 import { verifyBusinessAccess } from "@/lib/supabase/verify-business-access";
+import { getEffectivePlan, getPlanLimits } from "@/lib/subscription";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -16,6 +17,9 @@ export async function GET(req: NextRequest) {
   const owned = await verifyBusinessAccess(supabase, businessId, user);
   if (!owned) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
+  const plan = await getEffectivePlan(supabase, user!.id);
+  const limits = getPlanLimits(plan);
+
   try {
     const { data: opportunities, error } = await supabase
       .from("ai_opportunities")
@@ -26,7 +30,7 @@ export async function GET(req: NextRequest) {
 
     if (error) throw error;
 
-    const mapped = (opportunities || []).map((o) => ({
+    const mapped = (opportunities || []).map((o, index) => ({
       ...o,
       businessId: o.business_id,
       departmentId: o.department_id,
@@ -34,12 +38,13 @@ export async function GET(req: NextRequest) {
       impactType: o.impact_type,
       estimatedHoursSaved: o.estimated_hours_saved,
       estimatedCostSaved: o.estimated_cost_saved,
-      
+
       // Alias to new 'status' column for backwards UI compatibility
       roadmapStatus: o.status,
       isQuickWin: o.is_quick_win ?? false,
       notificationHook: o.notification_hook ?? null,
       proofOfValue: o.proof_of_value ?? null,
+      isLocked: index >= limits.opportunities,
     }));
 
     return NextResponse.json(mapped);

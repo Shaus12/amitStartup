@@ -8,6 +8,7 @@ interface Message {
   role: "user" | "assistant";
   content: string;
   created_at?: string;
+  isUpgradePrompt?: boolean;
 }
 
 interface ChatSession {
@@ -268,7 +269,17 @@ export function FloatingAgent({ businessId }: { businessId: string }) {
         body: JSON.stringify({ businessId, message: text, session_id: session?.id }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Chat failed");
+      if (!res.ok) {
+        if (res.status === 403 && data.upgrade) {
+          setMessages((prev) => [
+            ...prev,
+            { role: "assistant", content: data.error, isUpgradePrompt: true },
+          ]);
+          setIsLoading(false);
+          return;
+        }
+        throw new Error(data.error || "Chat failed");
+      }
 
       const assistantText = data.response || "מצטערת, נתקלתי בבעיה. נסה שוב.";
       const updatedAt = new Date().toISOString();
@@ -861,6 +872,25 @@ export function FloatingAgent({ businessId }: { businessId: string }) {
                         }}
                       >
                         {msg.content}
+                        {msg.isUpgradePrompt && (
+                          <a
+                            href="/billing"
+                            style={{
+                              display: "inline-block",
+                              marginTop: 8,
+                              padding: "5px 12px",
+                              borderRadius: 8,
+                              backgroundColor: "rgba(77,142,255,0.15)",
+                              border: "1px solid rgba(77,142,255,0.3)",
+                              color: "#4d8eff",
+                              fontSize: 11,
+                              fontWeight: 700,
+                              textDecoration: "none",
+                            }}
+                          >
+                            שדרג עכשיו
+                          </a>
+                        )}
                       </div>
                     </div>
                   ))

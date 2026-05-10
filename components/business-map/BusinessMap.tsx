@@ -187,8 +187,12 @@ function BusinessMapInner({ data, onOpenAnalysisReveal }: BusinessMapProps) {
       firstAction: dept.firstAction,
       healthScore: dept.healthScore ?? undefined,
       isRoot: dept.id === hubId,
-      isLocked: dept.isLocked ?? false,
-      onUnlock: dept.isLocked ? () => setUnlockingDept({ id: dept.id, name: dept.name }) : undefined,
+      isLocked: (dept.isLocked ?? false) || (dept.subscriptionLocked ?? false),
+      onUnlock: dept.subscriptionLocked
+        ? () => { window.location.href = "/billing"; }
+        : dept.isLocked
+          ? () => setUnlockingDept({ id: dept.id, name: dept.name })
+          : undefined,
       index,
       processes: dept.processes.map((p) => ({
         id: p.id,
