@@ -146,6 +146,33 @@ export function FloatingAgent({ businessId }: { businessId: string }) {
     };
   }, [isOpen, loadSessions, startDraftChat]);
 
+  // Listen for external trigger (from tasks page "open agent" button)
+  useEffect(() => {
+    function handler(e: Event) {
+      const ce = e as CustomEvent<{ message?: string; initialMessage?: string }>;
+      setIsOpen(true);
+      
+      if (ce.detail?.initialMessage) {
+        setView("chat");
+        setInput("");
+        setActiveSession(null);
+        setEditingSessionId(null);
+        setEditingTitle("");
+        setConfirmDeleteSessionId(null);
+        setMessages([{ role: "assistant", content: ce.detail.initialMessage }]);
+      }
+
+      if (ce.detail?.message) {
+        setTimeout(() => {
+          setInput(ce.detail.message!);
+          inputRef.current?.focus();
+        }, 150);
+      }
+    }
+    window.addEventListener("bm-open-agent", handler);
+    return () => window.removeEventListener("bm-open-agent", handler);
+  }, []);
+
   useEffect(() => {
     if (isOpen && view === "chat") {
       setTimeout(() => inputRef.current?.focus(), 120);
@@ -216,21 +243,7 @@ export function FloatingAgent({ businessId }: { businessId: string }) {
     }
   }
 
-  // Listen for external trigger (from tasks page "open agent" button)
-  useEffect(() => {
-    function handler(e: Event) {
-      const ce = e as CustomEvent<{ message: string }>;
-      setIsOpen(true);
-      if (ce.detail?.message) {
-        setTimeout(() => {
-          setInput(ce.detail.message);
-          inputRef.current?.focus();
-        }, 150);
-      }
-    }
-    window.addEventListener("bm-open-agent", handler);
-    return () => window.removeEventListener("bm-open-agent", handler);
-  }, []);
+
 
   useEffect(() => {
     try { localStorage.setItem("aria-pos", JSON.stringify(dragOffset)); } catch {}
@@ -258,15 +271,23 @@ export function FloatingAgent({ businessId }: { businessId: string }) {
     let session = activeSession;
     const hadUserMessage = messages.some((m) => m.role === "user");
     const proposedTitle = !hadUserMessage ? makeSessionTitle(text) : "";
+    
+    // Inject hidden context for the first message if it's replying to a Quick Win
+    let textToSend = text;
+    if (!hadUserMessage && messages.length > 0 && messages[0].content.includes("ראיתי את הניתוח שלך")) {
+      textToSend = `[Context: I was offered a Quick Win: "${messages[0].content}". My response is: "${text}". Please continue the conversation to help me execute this. At the end of the conversation, offer to add it to my tasks by asking exactly "רוצה שאוסיף את זה למשימות שלך?"]`;
+    }
+
     setInput("");
     setMessages((prev) => [...prev, { role: "user", content: text }]);
     setIsLoading(true);
+    window.dispatchEvent(new CustomEvent("bm-aria-interacted"));
 
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ businessId, message: text, session_id: session?.id }),
+        body: JSON.stringify({ businessId, message: textToSend, session_id: session?.id }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -410,7 +431,10 @@ export function FloatingAgent({ businessId }: { businessId: string }) {
                   ARIA — השיחות שלך
                 </div>
                 <button
-                  onClick={() => setIsOpen(false)}
+                  onClick={() => {
+                    setIsOpen(false);
+                    window.dispatchEvent(new CustomEvent("bm-aria-interacted"));
+                  }}
                   style={{
                     background: "none",
                     border: "none",
@@ -778,7 +802,10 @@ export function FloatingAgent({ businessId }: { businessId: string }) {
                   </div>
                 </div>
                 <button
-                  onClick={() => setIsOpen(false)}
+                  onClick={() => {
+                    setIsOpen(false);
+                    window.dispatchEvent(new CustomEvent("bm-aria-interacted"));
+                  }}
                   style={{
                     background: "none",
                     border: "none",

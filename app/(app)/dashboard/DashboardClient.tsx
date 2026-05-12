@@ -213,16 +213,12 @@ function DashboardTourOverlay({
       style={{ zIndex: 10000, animation: "bv-fade-up 0.2s ease both" }}
     >
       <div
-        className="absolute inset-0"
-        style={{ background: "rgba(0,0,0,0.74)" }}
-      />
-      <div
-        className="absolute rounded-xl"
+        className="absolute rounded-xl transition-all duration-300"
         style={{
           ...highlightStyle,
           border: "2px solid rgba(77,142,255,0.8)",
           boxShadow:
-            "0 0 0 9999px rgba(0,0,0,0.65), 0 0 24px rgba(77,142,255,0.55)",
+            "0 0 0 9999px rgba(0,0,0,0.45), 0 0 24px rgba(77,142,255,0.55)",
           pointerEvents: "none",
         }}
       />
@@ -610,8 +606,45 @@ export function DashboardClient({ businessId, businessName }: DashboardClientPro
     prevTourStepRef.current = tourStep;
   }, [tourStep, revealOpen]);
 
+  const ariaOpenedRef = useRef(false);
+  const giftScheduledRef = useRef(false);
+
+  // 1. Auto-open ARIA with Quick Win after Tour
   useEffect(() => {
-    // First-visit flow only: after tour ends, show toast after 3 seconds.
+    if (!arrivedFromAnalysis) return;
+    if (revealOpen) return;
+    if (!tourEndedAfterStart) return;
+    if (ariaOpenedRef.current) return;
+
+    ariaOpenedRef.current = true;
+
+    const id = window.setTimeout(async () => {
+      let initialMessage = "";
+      try {
+        const res = await fetch(`/api/opportunities/quick-win?businessId=${encodeURIComponent(businessId)}`);
+        const json = await res.json();
+        const qw = json.quickWin;
+
+        if (qw) {
+          initialMessage = `היי 👋\n\nראיתי את הניתוח שלך — יש משימה אחת שאני ממליץ להתחיל איתה עכשיו.\n\n⚡ ${qw.title}\n\nהיא לוקחת פחות מ-3 שעות ולא דורשת שום כלי חדש.\n\nרוצה שנתחיל ביחד? פשוט כתוב לי ״כן״ ואני אוביל אותך צעד אחר צעד.`;
+        } else {
+          initialMessage = `היי 👋\n\nהמפה שלך מוכנה! אני ARIA, היועץ העסקי שלך.\n\nשאל אותי כל שאלה על העסק שלך — אני כבר יודע הכל עליו.\n\nאיפה תרצה להתחיל?`;
+        }
+      } catch {
+        initialMessage = `היי 👋\n\nהמפה שלך מוכנה! אני ARIA, היועץ העסקי שלך.\n\nשאל אותי כל שאלה על העסק שלך — אני כבר יודע הכל עליו.\n\nאיפה תרצה להתחיל?`;
+      }
+
+      window.dispatchEvent(
+        new CustomEvent("bm-open-agent", { detail: { initialMessage } })
+      );
+    }, 2000);
+
+    return () => window.clearTimeout(id);
+  }, [arrivedFromAnalysis, revealOpen, tourEndedAfterStart, businessId]);
+
+  // 2. Delayed Gift Toast
+  useEffect(() => {
+    // First-visit flow only
     if (!arrivedFromAnalysis) return;
     if (!hasUnviewedGift) return;
     if (revealOpen || giftOpen) return;
@@ -625,10 +658,28 @@ export function DashboardClient({ businessId, businessName }: DashboardClientPro
     }
     if (dismissed) return;
 
-    const id = window.setTimeout(() => {
+    if (giftScheduledRef.current) return;
+    giftScheduledRef.current = true;
+
+    let timeoutId: number;
+
+    const showToast = () => {
       setShowGiftToast(true);
-    }, 3_000);
-    return () => window.clearTimeout(id);
+      window.removeEventListener("bm-aria-interacted", showToast);
+      window.clearTimeout(timeoutId);
+    };
+
+    window.addEventListener("bm-aria-interacted", showToast);
+    
+    // Fallback: show after 60 seconds of no interaction
+    timeoutId = window.setTimeout(() => {
+      showToast();
+    }, 60000);
+
+    return () => {
+      window.removeEventListener("bm-aria-interacted", showToast);
+      window.clearTimeout(timeoutId);
+    };
   }, [
     arrivedFromAnalysis,
     hasUnviewedGift,

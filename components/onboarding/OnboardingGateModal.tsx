@@ -26,6 +26,14 @@ export function OnboardingGateModal({ open, onClose, onboardingPayload }: Props)
   const [acceptedLegal, setAcceptedLegal] = useState(false);
   const [pendingConfirm, setPendingConfirm] = useState(false);
 
+  const hasMinLength = password.length >= 8;
+  const hasUpperCase = /[A-Z]/.test(password);
+  const hasNumber = /[0-9]/.test(password);
+  const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{}|;:,.<>?]/.test(password);
+
+  const requirementsMet = [hasMinLength, hasUpperCase, hasNumber, hasSpecialChar].filter(Boolean).length;
+  const passwordStrength = requirementsMet === 4 ? "strong" : requirementsMet === 3 ? "medium" : "weak";
+
   if (!open) return null;
 
   async function saveOnboardingAndGo() {
@@ -51,8 +59,8 @@ export function OnboardingGateModal({ open, onClose, onboardingPayload }: Props)
       setError("יש לאשר את תנאי השימוש ומדיניות הפרטיות");
       return;
     }
-    if (password.length < 6) {
-      setError("הסיסמה חייבת להכיל לפחות 6 תווים");
+    if (requirementsMet !== 4) {
+      setError("הסיסמה אינה עומדת בדרישות");
       return;
     }
     setLoading(true);
@@ -197,11 +205,11 @@ export function OnboardingGateModal({ open, onClose, onboardingPayload }: Props)
               <input
                 type="password"
                 required
-                placeholder="סיסמה (מינימום 6 תווים)"
+                placeholder="סיסמה (מינימום 8 תווים)"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={loading}
-                minLength={mode === "signup" ? 6 : undefined}
+                minLength={mode === "signup" ? 8 : undefined}
                 className="w-full rounded-lg pr-10 pl-4 py-3 text-sm outline-none transition-all"
                 style={{
                   background: "#0f1016",
@@ -211,6 +219,22 @@ export function OnboardingGateModal({ open, onClose, onboardingPayload }: Props)
                 }}
               />
             </div>
+
+            {mode === "signup" && password.length > 0 && (
+              <div className="flex flex-col gap-2 px-1 py-1">
+                <div className="flex items-center gap-1" dir="ltr">
+                  <div className={`h-1.5 flex-1 rounded-full transition-colors ${passwordStrength === 'strong' ? 'bg-green-500' : passwordStrength === 'medium' ? 'bg-yellow-500' : 'bg-red-500'}`} />
+                  <div className={`h-1.5 flex-1 rounded-full transition-colors ${passwordStrength === 'strong' ? 'bg-green-500' : passwordStrength === 'medium' ? 'bg-yellow-500' : 'bg-[#2a2d3a]'}`} />
+                  <div className={`h-1.5 flex-1 rounded-full transition-colors ${passwordStrength === 'strong' ? 'bg-green-500' : 'bg-[#2a2d3a]'}`} />
+                </div>
+                <div className="text-[11px] space-y-0.5" style={{ color: "#f87171" }}>
+                  {!hasMinLength && <p>• הסיסמא חייבת להכיל לפחות 8 תווים</p>}
+                  {!hasUpperCase && <p>• הסיסמא חייבת להכיל לפחות אות גדולה אחת באנגלית</p>}
+                  {!hasNumber && <p>• הסיסמא חייבת להכיל לפחות ספרה אחת</p>}
+                  {!hasSpecialChar && <p>• הסיסמא חייבת להכיל לפחות תו מיוחד אחד</p>}
+                </div>
+              </div>
+            )}
 
             {error && (
               <p className="text-xs px-1" style={{ color: "#f87171" }}>
@@ -243,12 +267,12 @@ export function OnboardingGateModal({ open, onClose, onboardingPayload }: Props)
 
             <button
               type="submit"
-              disabled={loading || (mode === "signup" && !acceptedLegal)}
+              disabled={loading || (mode === "signup" && (!acceptedLegal || requirementsMet !== 4))}
               className="w-full flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-semibold transition-all duration-150 active:scale-[0.98]"
               style={{
-                background: loading || (mode === "signup" && !acceptedLegal) ? "rgba(99,102,241,0.4)" : "linear-gradient(135deg, #6366f1, #8b5cf6)",
-                color: loading || (mode === "signup" && !acceptedLegal) ? "rgba(255,255,255,0.5)" : "#ffffff",
-                cursor: loading || (mode === "signup" && !acceptedLegal) ? "not-allowed" : "pointer",
+                background: loading || (mode === "signup" && (!acceptedLegal || requirementsMet !== 4)) ? "rgba(99,102,241,0.4)" : "linear-gradient(135deg, #6366f1, #8b5cf6)",
+                color: loading || (mode === "signup" && (!acceptedLegal || requirementsMet !== 4)) ? "rgba(255,255,255,0.5)" : "#ffffff",
+                cursor: loading || (mode === "signup" && (!acceptedLegal || requirementsMet !== 4)) ? "not-allowed" : "pointer",
                 fontFamily: "var(--font-inter)",
               }}
             >

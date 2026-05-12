@@ -69,6 +69,11 @@ function RegistrationModeSelector({ onSelect }: { onSelect: (mode: "quick" | "fu
         {/* Logo */}
         <Link
           href="/"
+          onClick={(e) => {
+            e.preventDefault();
+            useOnboardingStore.getState().reset();
+            window.location.href = "/";
+          }}
           style={{
             display: "flex",
             alignItems: "center",
@@ -298,7 +303,16 @@ export function OnboardingWizard() {
         />
 
         <div className="relative">
-          <Link href="/" className="flex items-center gap-3 mb-14" style={{ textDecoration: "none" }}>
+          <Link 
+            href="/" 
+            onClick={(e) => {
+              e.preventDefault();
+              reset();
+              window.location.href = "/";
+            }}
+            className="flex items-center gap-3 mb-14" 
+            style={{ textDecoration: "none" }}
+          >
             <img src="/logo.png" alt="BizMap Logo" className="w-8 h-8 object-contain" />
             <span
               className="text-sm font-semibold tracking-tight"
@@ -405,7 +419,16 @@ export function OnboardingWizard() {
           className="flex md:hidden items-center justify-between gap-3 px-5 py-3 border-b min-w-0"
           style={{ borderColor: "#282a30" }}
         >
-          <Link href="/" className="flex items-center gap-2 shrink-0 min-w-0" style={{ textDecoration: "none" }}>
+          <Link 
+            href="/" 
+            onClick={(e) => {
+              e.preventDefault();
+              reset();
+              window.location.href = "/";
+            }}
+            className="flex items-center gap-2 shrink-0 min-w-0" 
+            style={{ textDecoration: "none" }}
+          >
             <img src="/logo.png" alt="BizMap Logo" className="w-5 h-5 shrink-0 object-contain" />
             <span className="text-xs font-semibold truncate" style={{ color: "#c2c6d6", fontFamily: "var(--font-manrope)" }}>BizMap</span>
           </Link>

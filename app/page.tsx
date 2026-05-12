@@ -12,7 +12,19 @@ export default async function Home() {
     const {
       data: { user },
     } = await supabase.auth.getUser();
-    if (user) redirect("/dashboard");
+    if (user) {
+      const { data: business } = await supabase
+        .from("businesses")
+        .select("id")
+        .eq("user_id", user.id)
+        .eq("onboarding_completed", true)
+        .limit(1)
+        .maybeSingle();
+        
+      if (business) {
+        redirect("/dashboard");
+      }
+    }
   }
 
   return <LandingPage />;
