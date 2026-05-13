@@ -18,7 +18,7 @@ export function AccessibilityWidget() {
               left: { size: 20, units: 'px' },
               type: 'fixed'
             }
-          },
+          } as any,
           labels: {
             resetTitle: 'איפוס תפריט',
             closeTitle: 'סגירה',
