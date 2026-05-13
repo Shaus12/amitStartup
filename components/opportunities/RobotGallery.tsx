@@ -353,6 +353,7 @@ function DetailPanel({
   isUpdating,
   onClose,
   onStatusChange,
+  onTaskToggle,
 }: {
   opp: AiOpportunityItem;
   isUpdating: boolean;
