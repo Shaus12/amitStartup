@@ -82,6 +82,27 @@ function MetricCard({ icon, value, label, suffix = "", decimals = 0, color = "#e
 }
 
 export function DashboardStats({ businessId }: { businessId: string }) {
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+    try {
+      const saved = localStorage.getItem('dashboard_stats_collapsed');
+      if (saved !== null) {
+        setIsCollapsed(saved === 'true');
+      }
+    } catch {}
+  }, []);
+
+  const toggleCollapse = () => {
+    const next = !isCollapsed;
+    setIsCollapsed(next);
+    try {
+      localStorage.setItem('dashboard_stats_collapsed', String(next));
+    } catch {}
+  };
+
   const { data, isLoading } = useQuery({
     queryKey: ["dashboard-stats", businessId],
     queryFn: async () => {
@@ -99,47 +120,80 @@ export function DashboardStats({ businessId }: { businessId: string }) {
     return "#ef4444"; 
   };
 
-  if (isLoading) {
-    return (
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 px-6 py-4 border-b shrink-0" style={{ backgroundColor: "#111319", borderColor: "#1e1f26" }}>
-        {[1, 2, 3, 4].map(i => (
-          <div key={i} className="h-[74px] rounded-xl border animate-pulse" style={{ backgroundColor: "#1e1f26", borderColor: "#282a30" }} />
-        ))}
-      </div>
-    );
-  }
-
-  const stats = data || { tasks_completed_this_week: 0, hours_saved: 0, health_score: 0, streak: 0 };
+  if (!isMounted) return null;
 
   return (
-    <div className="px-6 py-4 border-b shrink-0" style={{ backgroundColor: "#111319", borderColor: "#1e1f26" }}>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <MetricCard 
-          icon={<Flame className="w-5 h-5" />}
-          value={stats.streak}
-          label="ימים רצופים"
-          color="#f97316"
-        />
-        <MetricCard 
-          icon={<Check className="w-5 h-5" />}
-          value={stats.tasks_completed_this_week}
-          label="הושלמו השבוע"
-          color="#60a5fa"
-        />
-        <MetricCard 
-          icon={<Timer className="w-5 h-5" />}
-          value={stats.hours_saved}
-          label="שעות נחסכו"
-          suffix="h"
-          decimals={1}
-          color="#a78bfa"
-        />
-        <MetricCard 
-          icon={<Activity className="w-5 h-5" />}
-          value={stats.health_score}
-          label="בריאות עסק"
-          color={getHealthColor(stats.health_score)}
-        />
+    <div className="shrink-0 transition-all duration-300" style={{ backgroundColor: "#111319", borderBottom: "1px solid #1e1f26" }}>
+      <button 
+        onClick={toggleCollapse} 
+        className="w-full h-8 flex items-center justify-center gap-1.5 transition-colors"
+        style={{ 
+          backgroundColor: isCollapsed ? "transparent" : "rgba(25,27,34,0.4)",
+        }}
+      >
+        <span className="text-xs font-semibold tracking-wide" style={{ color: "#8c909f", fontFamily: "var(--font-inter)" }}>
+          סטטיסטיקות
+        </span>
+        <svg 
+          width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8c909f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+          style={{ transform: isCollapsed ? "rotate(0deg)" : "rotate(180deg)", transition: "transform 0.3s" }}
+        >
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      </button>
+
+      <div 
+        className="overflow-hidden transition-all duration-300 ease-in-out"
+        style={{ 
+          maxHeight: isCollapsed ? 0 : 500,
+          opacity: isCollapsed ? 0 : 1,
+        }}
+      >
+        <div className="px-6 py-4" style={{ borderTop: "1px solid #1e1f26" }}>
+          {isLoading ? (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {[1, 2, 3, 4].map(i => (
+                <div key={i} className="h-[74px] rounded-xl border animate-pulse" style={{ backgroundColor: "#1e1f26", borderColor: "#282a30" }} />
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {(() => {
+                const stats = data || { tasks_completed_this_week: 0, hours_saved: 0, health_score: 0, streak: 0 };
+                return (
+                  <>
+                    <MetricCard 
+                      icon={<Flame className="w-5 h-5" />}
+                      value={stats.streak}
+                      label="ימים רצופים"
+                      color="#f97316"
+                    />
+                    <MetricCard 
+                      icon={<Check className="w-5 h-5" />}
+                      value={stats.tasks_completed_this_week}
+                      label="הושלמו השבוע"
+                      color="#60a5fa"
+                    />
+                    <MetricCard 
+                      icon={<Timer className="w-5 h-5" />}
+                      value={stats.hours_saved}
+                      label="שעות נחסכו"
+                      suffix="h"
+                      decimals={1}
+                      color="#a78bfa"
+                    />
+                    <MetricCard 
+                      icon={<Activity className="w-5 h-5" />}
+                      value={stats.health_score}
+                      label="בריאות עסק"
+                      color={getHealthColor(stats.health_score)}
+                    />
+                  </>
+                );
+              })()}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

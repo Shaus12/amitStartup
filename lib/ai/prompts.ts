@@ -1,7 +1,7 @@
 // ── Analysis Prompt ───────────────────────────────────────────────────────────
 
 export function buildAnalysisPrompt(
-  knowledgeRows: Array<{ category: string; content: string; metadata?: any }>,
+  knowledgeRows: Array<{ category: string; content: string; metadata?: unknown }>,
   departmentNames: string[]
 ): string {
   const grouped: Record<string, string[]> = {};
@@ -42,6 +42,7 @@ CORE ANALYSIS RULES:
    - BAD: "Automate your email responses"
    - GOOD: "Your sales team spends ~3h/week on manual prospect outreach. An AI sequence tool like Instantly.ai could automate initial outreach, freeing those hours for closing deals."
    Always mention: A specific tool recommendation (use real product names like Zapier, Make, ChatGPT Plus, Instantly.ai, Fireflies.ai, etc.), a realistic time/cost saving estimate, and WHY it fits THIS specific business.
+   All user-facing opportunity copy MUST be written in Hebrew (עברית): title, description, notification_hook, and proof_of_value. Keep real product names in English.
 
 4. HEALTH SCORE LOGIC: 
    Scores must reflect reality, not optimism. Base the score on the ratio of manual vs automated processes, tool sophistication, and pain severity.
@@ -104,15 +105,15 @@ REQUIRED OUTPUT — return ONLY valid JSON matching this exact schema:
       "first_action": "<must be written in Hebrew (עברית) — a single concrete action mentioning a real tool>",
       "opportunities": [
         {
-          "title": "<specific, action-oriented title mentioning a real tool — in English>",
-          "description": "<detailed sentence explaining the bottleneck, the specific tool to fix it, and the customized impact — in English>",
+          "title": "<specific, action-oriented title in Hebrew (עברית), mentioning a real tool name if useful>",
+          "description": "<detailed sentence in Hebrew (עברית) explaining the bottleneck, the specific tool to fix it, and the customized impact>",
           "impact_type": "time" | "money" | "growth",
           "estimated_hours_saved": <realistic number per week based on benchmarks>,
           "estimated_cost_saved": <realistic number in ILS per month based on benchmarks>,
           "priority": <1=highest … 5=lowest>,
           "is_quick_win": <true if meets quick win criteria: <3h to implement, no new tool purchase, visible result within 24h — else false>,
-          "notification_hook": "<max 12 words, concrete benefit framed as what the owner gains — in English>",
-          "proof_of_value": "<one sentence of trust evidence referencing their industry, size, or specific pain — in English>"
+          "notification_hook": "<max 12 words in Hebrew (עברית), concrete benefit framed as what the owner gains>",
+          "proof_of_value": "<one sentence in Hebrew (עברית) of trust evidence referencing their industry, size, or specific pain>"
         }
       ]
     }

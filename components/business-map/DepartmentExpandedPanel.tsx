@@ -1,9 +1,20 @@
 "use client";
 
 import { DepartmentWithProcesses } from "@/lib/types/business-map";
-import { X, Zap, GitBranch, CheckCircle2, AlertTriangle } from "lucide-react";
+import { X, Zap, GitBranch, CheckCircle2, AlertTriangle, ChevronDown, ChevronUp, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+
+interface ProcessBreakdown {
+  subSteps: Array<{
+    name: string;
+    automatable: boolean;
+    description: string;
+    tool?: string;
+  }>;
+  automationPotential: string;
+  timeEstimate: string;
+}
 
 interface DepartmentPanelProps {
   department: DepartmentWithProcesses;
@@ -93,6 +104,60 @@ export function DepartmentExpandedPanel({ department, onClose }: DepartmentPanel
   const emoji = getDeptEmoji(department.name);
   const manualCount = department.processes.filter((p) => p.isManual).length;
   const [creatingTask, setCreatingTask] = useState<string | null>(null);
+
+  const [expandedProcesses, setExpandedProcesses] = useState<Set<string>>(new Set());
+  const [breakdownCache, setBreakdownCache] = useState<Record<string, ProcessBreakdown>>({});
+  const [loadingBreakdowns, setLoadingBreakdowns] = useState<Set<string>>(new Set());
+
+  async function toggleProcess(process: any) {
+    const isExpanded = expandedProcesses.has(process.id);
+    const newExpanded = new Set(expandedProcesses);
+    if (isExpanded) {
+      newExpanded.delete(process.id);
+      setExpandedProcesses(newExpanded);
+      return;
+    }
+    
+    newExpanded.add(process.id);
+    setExpandedProcesses(newExpanded);
+
+    if (breakdownCache[process.id] || loadingBreakdowns.has(process.id)) {
+      return;
+    }
+
+    setLoadingBreakdowns((prev) => new Set(prev).add(process.id));
+    
+    try {
+      const res = await fetch("/api/processes/breakdown", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          processName: process.name,
+          departmentName: department.name,
+          isManual: process.isManual,
+          frequency: process.frequency,
+          hoursPerWeek: process.timeSpentHrsPerWeek,
+        }),
+      });
+      if (!res.ok) throw new Error("Failed to fetch breakdown");
+      const data = await res.json();
+      
+      setBreakdownCache((prev) => ({ ...prev, [process.id]: data }));
+    } catch (err) {
+      toast.error("שגיאה בטעינת פירוט התהליך");
+      setExpandedProcesses((prev) => {
+        const next = new Set(prev);
+        next.delete(process.id);
+        return next;
+      });
+    } finally {
+      setLoadingBreakdowns((prev) => {
+        const next = new Set(prev);
+        next.delete(process.id);
+        return next;
+      });
+    }
+  }
 
   async function createTask(opp: { id: string; title: string }) {
     setCreatingTask(opp.id);
@@ -224,58 +289,125 @@ export function DepartmentExpandedPanel({ department, onClose }: DepartmentPanel
             </p>
           ) : (
             <div className="space-y-2">
-              {department.processes.map((p) => (
-                <div
-                  key={p.id}
-                  className="flex items-center justify-between gap-2"
-                  style={{
-                    backgroundColor: "#1a1c24",
-                    border: "1px solid #1e2030",
-                    borderRadius: 8,
-                    padding: "8px 12px",
-                  }}
-                >
-                  <div className="flex items-center gap-2 min-w-0">
-                    {p.isManual ? (
-                      <AlertTriangle size={11} style={{ color: "#fbbf24", flexShrink: 0 }} />
-                    ) : (
-                      <CheckCircle2 size={11} style={{ color: "#34d399", flexShrink: 0 }} />
-                    )}
-                    <span
-                      style={{
-                        fontSize: 12, color: "#c2c6d6", fontFamily: "var(--font-inter)",
-                        whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis"
+              {department.processes.map((p) => {
+                const isExpanded = expandedProcesses.has(p.id);
+                const isLoading = loadingBreakdowns.has(p.id);
+                const breakdown = breakdownCache[p.id];
+
+                return (
+                  <div
+                    key={p.id}
+                    className="flex flex-col gap-0 rounded-lg overflow-hidden border transition-colors duration-200"
+                    style={{
+                      backgroundColor: "#1a1c24",
+                      borderColor: isExpanded ? "#282a30" : "#1e2030",
+                    }}
+                  >
+                    <button
+                      onClick={() => toggleProcess(p)}
+                      className="flex items-center justify-between gap-2 w-full text-right"
+                      style={{ padding: "8px 12px", cursor: "pointer", background: "transparent", border: "none" }}
+                    >
+                      <div className="flex items-center gap-2 min-w-0">
+                        {isExpanded ? <ChevronUp size={14} style={{ color: "#8c909f", flexShrink: 0 }} /> : <ChevronDown size={14} style={{ color: "#8c909f", flexShrink: 0 }} />}
+                        {p.isManual ? (
+                          <AlertTriangle size={11} style={{ color: "#fbbf24", flexShrink: 0 }} />
+                        ) : (
+                          <CheckCircle2 size={11} style={{ color: "#34d399", flexShrink: 0 }} />
+                        )}
+                        <span
+                          style={{
+                            fontSize: 12, color: "#c2c6d6", fontFamily: "var(--font-inter)",
+                            whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis"
+                          }}
+                        >
+                          {p.name}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        {p.frequency && (
+                          <span
+                            style={{
+                              fontSize: 9, color: "#424754", fontFamily: "var(--font-inter)",
+                              backgroundColor: "#282a30", padding: "1px 6px", borderRadius: 999
+                            }}
+                          >
+                            {p.frequency}
+                          </span>
+                        )}
+                        <span
+                          style={{
+                            fontSize: 9, fontWeight: 700,
+                            color: p.isManual ? "#fbbf24" : "#34d399",
+                            backgroundColor: p.isManual ? "#fbbf2415" : "#34d39915",
+                            border: `1px solid ${p.isManual ? "#fbbf2430" : "#34d39930"}`,
+                            padding: "2px 7px", borderRadius: 999,
+                            fontFamily: "var(--font-inter)"
+                          }}
+                        >
+                          {p.isManual ? "ידני" : "אוטומטי"}
+                        </span>
+                      </div>
+                    </button>
+
+                    {/* Expandable Breakdown Section */}
+                    <div 
+                      className="transition-all duration-300 ease-in-out overflow-hidden"
+                      style={{ 
+                        maxHeight: isExpanded ? 1000 : 0,
+                        opacity: isExpanded ? 1 : 0,
+                        backgroundColor: "#161821" 
                       }}
                     >
-                      {p.name}
-                    </span>
+                      {isExpanded && (
+                        <div style={{ padding: "12px 12px 16px", borderTop: "1px solid #1e2030" }}>
+                          {isLoading ? (
+                            <div className="flex flex-col items-center justify-center py-4 gap-2">
+                              <Loader2 size={16} className="animate-spin" style={{ color: "#4d8eff" }} />
+                              <span style={{ fontSize: 11, color: "#8c909f", fontFamily: "var(--font-inter)" }}>מנתח תהליך...</span>
+                            </div>
+                          ) : breakdown ? (
+                            <div className="space-y-3">
+                              {breakdown.subSteps.map((step, idx) => (
+                                <div key={idx} className="flex gap-2">
+                                  <div className="shrink-0 flex items-center justify-center w-5 h-5 rounded-full mt-0.5" style={{ backgroundColor: "#1e2030", color: "#8c909f", fontSize: 10, fontWeight: 800 }}>
+                                    {idx + 1}
+                                  </div>
+                                  <div className="min-w-0 flex-1">
+                                    <div className="flex items-start justify-between gap-2 mb-1">
+                                      <span style={{ fontSize: 11, color: "#e2e2eb", fontWeight: 700, fontFamily: "var(--font-inter)", lineHeight: 1.3 }}>{step.name}</span>
+                                      <span style={{ 
+                                        fontSize: 9, fontWeight: 700, padding: "2px 6px", borderRadius: 4, whiteSpace: "nowrap",
+                                        backgroundColor: step.automatable ? "rgba(52,211,153,0.15)" : "rgba(140,144,159,0.15)",
+                                        color: step.automatable ? "#34d399" : "#8c909f"
+                                      }}>
+                                        {step.automatable ? "⚡ ניתן לאוטומציה" : "👤 ידני"}
+                                      </span>
+                                    </div>
+                                    <p style={{ fontSize: 10, color: "#8c909f", lineHeight: 1.4, fontFamily: "var(--font-inter)" }}>
+                                      {step.description}
+                                    </p>
+                                    {step.automatable && step.tool && (
+                                      <div className="mt-1.5 flex items-center gap-1" style={{ backgroundColor: "rgba(251,191,36,0.1)", padding: "2px 6px", borderRadius: 4, width: "fit-content" }}>
+                                        <Zap size={9} style={{ color: "#fbbf24" }} />
+                                        <span style={{ fontSize: 9, color: "#fbbf24", fontFamily: "var(--font-inter)", fontWeight: 600 }}>{step.tool}</span>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <div className="text-center py-2">
+                              <span style={{ fontSize: 11, color: "#f87171" }}>שגיאה בטעינת הנתונים</span>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  <div className="flex items-center gap-1.5 shrink-0">
-                    {p.frequency && (
-                      <span
-                        style={{
-                          fontSize: 9, color: "#424754", fontFamily: "var(--font-inter)",
-                          backgroundColor: "#282a30", padding: "1px 6px", borderRadius: 999
-                        }}
-                      >
-                        {p.frequency}
-                      </span>
-                    )}
-                    <span
-                      style={{
-                        fontSize: 9, fontWeight: 700,
-                        color: p.isManual ? "#fbbf24" : "#34d399",
-                        backgroundColor: p.isManual ? "#fbbf2415" : "#34d39915",
-                        border: `1px solid ${p.isManual ? "#fbbf2430" : "#34d39930"}`,
-                        padding: "2px 7px", borderRadius: 999,
-                        fontFamily: "var(--font-inter)"
-                      }}
-                    >
-                      {p.isManual ? "ידני" : "אוטומטי"}
-                    </span>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </section>

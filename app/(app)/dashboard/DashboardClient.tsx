@@ -340,7 +340,10 @@ export function DashboardClient({ businessId, businessName }: DashboardClientPro
   /** While first-visit-from-analysis, poll for gift row until it exists (generation runs async after /loading). */
   const giftPollUntilRef = useRef(0);
 
-  const todayTip = DAILY_TIPS[Math.floor(Date.now() / 86400000) % DAILY_TIPS.length];
+  const [todayTip, setTodayTip] = useState(DAILY_TIPS[0]);
+  useEffect(() => {
+    setTodayTip(DAILY_TIPS[Math.floor(Date.now() / 86400000) % DAILY_TIPS.length]);
+  }, []);
 
   const { data: opportunitiesSummary = [] } = useQuery<Array<{ estimatedHoursSaved: number | null; estimatedCostSaved: number | null; roadmapStatus: string }>>({
     queryKey: ["opportunities-summary", businessId],
@@ -742,6 +745,31 @@ export function DashboardClient({ businessId, businessName }: DashboardClientPro
           <div className="flex items-center gap-3">
             {!isLoading && data && <HealthScore businessId={businessId} />}
             <div className="w-px h-6 shrink-0" style={{ backgroundColor: "#282a30" }} />
+            
+            {totalHrsSaved > 0 && (
+              <div
+                className="hidden sm:flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold"
+                style={{ backgroundColor: "rgba(52,211,153,0.12)", color: "#34d399", border: "1px solid rgba(52,211,153,0.2)" }}
+              >
+                חסכת {totalHrsSaved.toFixed(0)} שעות
+              </div>
+            )}
+            
+            <div className="relative group flex items-center">
+              <button
+                type="button"
+                className="flex items-center justify-center w-7 h-7 rounded-full transition-colors"
+                style={{ backgroundColor: "rgba(251,191,36,0.1)", border: "1px solid rgba(251,191,36,0.2)", color: "#fbbf24", fontSize: 14 }}
+              >
+                💡
+              </button>
+              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-56 p-3 rounded-xl opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-200 shadow-xl"
+                   style={{ backgroundColor: "#191b22", border: "1px solid #282a30", zIndex: 50 }}>
+                <div className="text-[10px] font-bold uppercase mb-1.5 text-center" style={{ color: "#fbbf24" }}>טיפ יומי</div>
+                <div className="text-xs leading-relaxed text-center" style={{ color: "#c2c6d6", direction: "rtl", fontFamily: "var(--font-inter)" }}>{todayTip}</div>
+              </div>
+            </div>
+
             {!arrivedFromAnalysis && gift && (
               <button
                 type="button"
@@ -848,39 +876,6 @@ export function DashboardClient({ businessId, businessName }: DashboardClientPro
       </header>
 
       <DashboardStats businessId={businessId} />
-
-      {/* Daily tip + savings banner */}
-      <div className="shrink-0" style={{ borderBottom: "1px solid #1e1f26" }}>
-        {totalHrsSaved > 0 && (
-          <div
-            className="px-6 py-2 flex items-center gap-3 flex-wrap"
-            style={{ backgroundColor: "#111319", borderBottom: "1px solid #1e1f26" }}
-          >
-            <div className="flex items-center gap-1.5">
-              <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: "#34d399" }} />
-              <span className="text-xs font-semibold" style={{ color: "#34d399", fontFamily: "var(--font-inter)" }}>
-                חסכת {totalHrsSaved.toFixed(0)} שעות
-              </span>
-            </div>
-            {totalCostSaved > 0 && (
-              <span className="text-xs" style={{ color: "#8c909f", fontFamily: "var(--font-inter)" }}>
-                · ₪{totalCostSaved.toLocaleString()} חיסכון כספי מוערך
-              </span>
-            )}
-          </div>
-        )}
-        <div
-          className="px-6 py-2 flex items-start gap-2"
-          style={{ backgroundColor: "#111319" }}
-        >
-          <span className="text-[10px] font-bold uppercase tracking-widest shrink-0 mt-px" style={{ color: "#4d8eff", fontFamily: "var(--font-inter)" }}>
-            טיפ יומי
-          </span>
-          <span className="text-xs leading-relaxed" style={{ color: "#8c909f", fontFamily: "var(--font-inter)" }}>
-            {todayTip}
-          </span>
-        </div>
-      </div>
 
       {/* Map / loading / error */}
       <div className="flex-1 relative overflow-hidden">

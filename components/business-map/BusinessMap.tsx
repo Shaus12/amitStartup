@@ -86,10 +86,10 @@ function buildSummaryCardNode(
     id: SUMMARY_CARD_NODE_ID,
     type: "summaryCard",
     position,
-    draggable: false,
+    draggable: true,
     selectable: true,
     data: { summary, onOpenReveal },
-    zIndex: 0,
+    zIndex: 50,
   };
 }
 
@@ -269,7 +269,7 @@ function BusinessMapInner({ data, onOpenAnalysisReveal }: BusinessMapProps) {
     // Update all nodes: expand the clicked one, collapse others, raise z-index
     setNodes((nds) =>
       nds.map((n) => {
-        if (n.type === "summaryCard") return n;
+        if (n.type === "summaryCard") return { ...n, zIndex: 1001 };
         const isExpanded = n.id === deptId;
         const deptData = deptMap.get(n.id)!;
         return {
@@ -298,7 +298,7 @@ function BusinessMapInner({ data, onOpenAnalysisReveal }: BusinessMapProps) {
     // Restore all nodes to compact, draggable
     setNodes((nds) =>
       nds.map((n) => {
-        if (n.type === "summaryCard") return n;
+        if (n.type === "summaryCard") return { ...n, zIndex: 50 };
         const deptData = deptMap.get(n.id);
         if (!deptData) return n;
         return {

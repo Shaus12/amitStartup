@@ -12,6 +12,13 @@ export function AccessibilityWidget() {
       
       try {
         new Accessibility({
+          icon: {
+            position: {
+              top: { size: 50, units: 'vh' },
+              left: { size: 20, units: 'px' },
+              type: 'fixed'
+            }
+          },
           labels: {
             resetTitle: 'איפוס תפריט',
             closeTitle: 'סגירה',
@@ -34,14 +41,19 @@ export function AccessibilityWidget() {
           }
         });
 
-        // Layout properties to reposition the accessibility icon to the right side
-        document.body.style.setProperty('--_access-icon-left', 'unset');
-        document.body.style.setProperty('--_access-icon-right', '20px');
-        document.body.style.setProperty('--_access-icon-bottom', '80px');
+        // Ensure left placement via CSS as backup
+        const style = document.createElement('style');
+        style.innerHTML = `
+          ._access-icon, .accessibility-icon {
+            left: 20px !important;
+            right: auto !important;
+          }
+        `;
+        document.head.appendChild(style);
 
         // Force z-index, make draggable, and restore saved position
         setTimeout(() => {
-          const accIcon = document.querySelector('.accessibility-icon') as HTMLElement | null;
+          const accIcon = document.querySelector('._access-icon, .accessibility-icon') as HTMLElement | null;
           if (!accIcon) return;
 
           accIcon.style.zIndex = "9999";
@@ -49,14 +61,19 @@ export function AccessibilityWidget() {
           accIcon.style.touchAction = "none";
           (accIcon.style as CSSStyleDeclaration & { userSelect: string }).userSelect = "none";
 
+          const applyPosition = () => {
+            accIcon.style.transform = `translateY(-50%) translate(${offsetX}px,${offsetY}px)`;
+          };
+
           let offsetX = 0, offsetY = 0;
           let startX = 0, startY = 0, initX = 0, initY = 0;
           let dragging = false, wasDragging = false;
 
           try {
-            const saved = localStorage.getItem("a11y-pos");
-            if (saved) { const p = JSON.parse(saved); offsetX = p.x; offsetY = p.y; accIcon.style.transform = `translate(${offsetX}px,${offsetY}px)`; }
+            // Clear any old saved position that might have placed it on the right
+            localStorage.removeItem("a11y-pos");
           } catch {}
+          applyPosition();
 
           accIcon.addEventListener("pointerdown", (e) => {
             const pe = e as PointerEvent;
@@ -71,7 +88,11 @@ export function AccessibilityWidget() {
             const pe = e as PointerEvent;
             const dx = pe.clientX - startX, dy = pe.clientY - startY;
             if (Math.abs(dx) > 4 || Math.abs(dy) > 4) dragging = true;
-            if (dragging) { offsetX = initX + dx; offsetY = initY + dy; accIcon.style.transform = `translate(${offsetX}px,${offsetY}px)`; }
+            if (dragging) {
+              offsetX = initX + dx;
+              offsetY = initY + dy;
+              applyPosition();
+            }
           });
 
           accIcon.addEventListener("pointerup", () => {

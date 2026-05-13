@@ -3,6 +3,30 @@ import { supabaseAdmin as supabase } from "@/lib/supabase-admin";
 import { createClient } from "@/lib/supabase/server";
 import { verifyBusinessAccess } from "@/lib/supabase/verify-business-access";
 
+type RawTask = {
+  department_name?: string | null;
+  ai_opportunities?: {
+    title?: string | null;
+    is_quick_win?: boolean | null;
+    notification_hook?: string | null;
+    departments?: {
+      name?: string | null;
+      color?: string | null;
+    } | null;
+  } | null;
+  [key: string]: unknown;
+};
+
+type CreateTaskBody = {
+  businessId?: string;
+  title?: string;
+  description?: string | null;
+  opportunityId?: string | null;
+  estimatedHours?: number | null;
+  parent_task_id?: string | null;
+  department_name?: string | null;
+};
+
 export async function GET(req: NextRequest) {
   const businessId = req.nextUrl.searchParams.get("businessId");
   if (!businessId) return NextResponse.json({ error: "Missing businessId" }, { status: 400 });
@@ -20,6 +44,7 @@ export async function GET(req: NextRequest) {
     .select(`
       *,
       ai_opportunities (
+        title,
         is_quick_win,
         notification_hook,
         departments (
@@ -33,15 +58,17 @@ export async function GET(req: NextRequest) {
 
   if (error) return NextResponse.json({ error: "Internal server error" }, { status: 500 });
 
-  const tasks = rawTasks.map((t: any) => {
+  const tasks = ((rawTasks ?? []) as RawTask[]).map((t) => {
     let deptName = t.department_name || null;
     let deptColor = null;
     let isQuickWin = false;
     let notificationHook: string | null = null;
+    let opportunityTitle: string | null = null;
 
     if (t.ai_opportunities) {
       deptName = t.ai_opportunities.departments?.name || deptName;
       deptColor = t.ai_opportunities.departments?.color || null;
+      opportunityTitle = t.ai_opportunities.title ?? null;
       isQuickWin = t.ai_opportunities.is_quick_win ?? false;
       notificationHook = t.ai_opportunities.notification_hook ?? null;
     }
@@ -53,6 +80,7 @@ export async function GET(req: NextRequest) {
       ...t,
       department_name: deptName,
       department_color: deptColor,
+      opportunity_title: opportunityTitle,
       is_quick_win: isQuickWin,
       notification_hook: notificationHook,
     };
@@ -63,7 +91,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const { businessId, title, description, opportunityId, estimatedHours, parent_task_id, department_name } = await req.json();
+    const { businessId, title, description, opportunityId, estimatedHours, parent_task_id, department_name } = (await req.json()) as CreateTaskBody;
     if (!businessId || !title) return NextResponse.json({ error: "Missing fields" }, { status: 400 });
 
     const authClient = await createClient();
@@ -101,7 +129,7 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json(task);
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("Task create error:", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }

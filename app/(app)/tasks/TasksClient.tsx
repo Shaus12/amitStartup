@@ -34,6 +34,7 @@ interface Task {
   department_name?: string | null;
   department_color?: string | null;
   opportunity_id?: string | null;
+  opportunity_title?: string | null;
   parent_task_id?: string | null;
   completed_at?: string | null;
   created_at: string;
@@ -171,7 +172,6 @@ function TaskCard({
   onSubtaskToggle,
   onAddSubtask,
   isDragging,
-  xpButtonRef,
   patchingTaskId,
 }: {
   task: Task;
@@ -180,7 +180,6 @@ function TaskCard({
   onSubtaskToggle: (id: string, done: boolean) => void;
   onAddSubtask: (parentId: string, title: string) => Promise<void>;
   isDragging: boolean;
-  xpButtonRef?: React.RefObject<HTMLButtonElement | null>;
   patchingTaskId: string | null;
 }) {
   const [expanded, setExpanded] = useState(false);
@@ -324,6 +323,27 @@ function TaskCard({
               }}
             >
               {task.department_name}
+            </span>
+          )}
+          {task.opportunity_id && task.opportunity_title && (
+            <span
+              style={{
+                fontSize: 10,
+                fontWeight: 700,
+                padding: "2px 8px",
+                borderRadius: 999,
+                backgroundColor: "rgba(77,142,255,0.1)",
+                color: "#4d8eff",
+                border: "1px solid rgba(77,142,255,0.28)",
+                fontFamily: "var(--font-inter)",
+                whiteSpace: "nowrap",
+                maxWidth: "100%",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+              title={task.opportunity_title}
+            >
+              הזדמנות: {task.opportunity_title}
             </span>
           )}
           {task.estimated_hours && (
@@ -1166,7 +1186,7 @@ export function TasksClient({ businessId, initialXp, initialLevel }: TasksClient
                 אין משימות עדיין
               </p>
               <p style={{ fontSize: 12, color: "#33343b", marginBottom: 16 }}>
-                צור משימות מהמפה ← לחץ על מחלקה ואז "צור משימה"
+                צור משימות מהמפה ← לחץ על מחלקה ואז &quot;צור משימה&quot;
               </p>
               <Link
                 href="/dashboard"

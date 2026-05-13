@@ -17,7 +17,18 @@ export interface AiOpportunityItem {
   pinned: boolean;
   generatedAt: string;
   source: string;
+  roadmapStatus?: "suggested" | "backlog" | "in_progress" | "done";
+  status?: "suggested" | "backlog" | "in_progress" | "done";
   department?: { name: string; color: string } | null;
+  tasks?: Array<{
+    id: string;
+    title: string;
+    description: string | null;
+    status: "todo" | "in_progress" | "done";
+    estimated_hours: number | null;
+    opportunity_id: string | null;
+    parent_task_id?: string | null;
+  }>;
   isQuickWin?: boolean;
   notificationHook?: string | null;
   proofOfValue?: string | null;
