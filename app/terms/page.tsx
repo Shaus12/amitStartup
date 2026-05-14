@@ -5,7 +5,7 @@ export default function TermsPage() {
     <main
       dir="rtl"
       className="min-h-[100dvh] px-5 py-10 md:px-8 md:py-14"
-      style={{ backgroundColor: "#111319", color: "#e2e2eb" }}
+      style={{ backgroundColor: "var(--bv-bg)", color: "var(--bv-text-1)" }}
     >
       <div className="mx-auto w-full max-w-4xl">
         <div className="mb-8 flex items-center justify-between gap-3">
@@ -19,9 +19,9 @@ export default function TermsPage() {
             href="/"
             className="rounded-lg px-3 py-1.5 text-sm font-semibold"
             style={{
-              backgroundColor: "#1e1f26",
-              border: "1px solid #282a30",
-              color: "#8c909f",
+              backgroundColor: "var(--bv-surface-elevated)",
+              border: "1px solid var(--bv-border)",
+              color: "var(--bv-text-3)",
               textDecoration: "none",
               fontFamily: "var(--font-inter)",
             }}
@@ -30,22 +30,22 @@ export default function TermsPage() {
           </Link>
         </div>
 
-        <p className="mb-8 text-sm" style={{ color: "#8c909f", fontFamily: "var(--font-inter)" }}>
+        <p className="mb-8 text-sm" style={{ color: "var(--bv-text-3)", fontFamily: "var(--font-inter)" }}>
           עודכן לאחרונה: אפריל 2026
         </p>
 
         <div className="space-y-6">
-          <section className="rounded-xl border p-5" style={{ borderColor: "#282a30", backgroundColor: "#191b22" }}>
+          <section className="rounded-xl border p-5" style={{ borderColor: "var(--bv-border)", backgroundColor: "var(--bv-surface-raised)" }}>
             <h2 className="mb-2 text-lg font-bold">1. קבלת התנאים</h2>
             <p>השימוש בשירות BizMap מהווה הסכמה לתנאים אלו. אם אינך מסכים לתנאים, אנא הפסק את השימוש בשירות.</p>
           </section>
 
-          <section className="rounded-xl border p-5" style={{ borderColor: "#282a30", backgroundColor: "#191b22" }}>
+          <section className="rounded-xl border p-5" style={{ borderColor: "var(--bv-border)", backgroundColor: "var(--bv-surface-raised)" }}>
             <h2 className="mb-2 text-lg font-bold">2. תיאור השירות</h2>
             <p>BizMap היא פלטפורמה לניתוח עסקי המסייעת לבעלי עסקים קטנים ובינוניים לזהות הזדמנויות לייעול ואוטומציה בעזרת AI. השירות כולל: מיפוי עסקי, המלצות AI, ניהול משימות ואסיסטנט עסקי חכם (ARIA).</p>
           </section>
 
-          <section className="rounded-xl border p-5" style={{ borderColor: "#282a30", backgroundColor: "#191b22" }}>
+          <section className="rounded-xl border p-5" style={{ borderColor: "var(--bv-border)", backgroundColor: "var(--bv-surface-raised)" }}>
             <h2 className="mb-2 text-lg font-bold">3. חשבון משתמש</h2>
             <ul className="space-y-1">
               <li>- עליך להיות מעל גיל 18 לשימוש בשירות</li>
@@ -55,7 +55,7 @@ export default function TermsPage() {
             </ul>
           </section>
 
-          <section className="rounded-xl border p-5" style={{ borderColor: "#282a30", backgroundColor: "#191b22" }}>
+          <section className="rounded-xl border p-5" style={{ borderColor: "var(--bv-border)", backgroundColor: "var(--bv-surface-raised)" }}>
             <h2 className="mb-2 text-lg font-bold">4. שימוש מותר</h2>
             <ul className="space-y-1">
               <li>- השירות מיועד לשימוש עסקי לגיטימי בלבד</li>
@@ -65,7 +65,7 @@ export default function TermsPage() {
             </ul>
           </section>
 
-          <section className="rounded-xl border p-5" style={{ borderColor: "#282a30", backgroundColor: "#191b22" }}>
+          <section className="rounded-xl border p-5" style={{ borderColor: "var(--bv-border)", backgroundColor: "var(--bv-surface-raised)" }}>
             <h2 className="mb-2 text-lg font-bold">5. תוכן המשתמש</h2>
             <ul className="space-y-1">
               <li>- המידע העסקי שאתה מזין שייך לך</li>
@@ -74,7 +74,7 @@ export default function TermsPage() {
             </ul>
           </section>
 
-          <section className="rounded-xl border p-5" style={{ borderColor: "#282a30", backgroundColor: "#191b22" }}>
+          <section className="rounded-xl border p-5" style={{ borderColor: "var(--bv-border)", backgroundColor: "var(--bv-surface-raised)" }}>
             <h2 className="mb-2 text-lg font-bold">6. המלצות AI</h2>
             <ul className="space-y-1">
               <li>- ההמלצות שמספק השירות הן לצורך מידע בלבד</li>
@@ -83,7 +83,7 @@ export default function TermsPage() {
             </ul>
           </section>
 
-          <section className="rounded-xl border p-5" style={{ borderColor: "#282a30", backgroundColor: "#191b22" }}>
+          <section className="rounded-xl border p-5" style={{ borderColor: "var(--bv-border)", backgroundColor: "var(--bv-surface-raised)" }}>
             <h2 className="mb-2 text-lg font-bold">7. תשלום וביטול</h2>
             <ul className="space-y-1">
               <li>- גרסת ה-MVP הנוכחית ניתנת בחינם</li>
@@ -92,12 +92,12 @@ export default function TermsPage() {
             </ul>
           </section>
 
-          <section className="rounded-xl border p-5" style={{ borderColor: "#282a30", backgroundColor: "#191b22" }}>
+          <section className="rounded-xl border p-5" style={{ borderColor: "var(--bv-border)", backgroundColor: "var(--bv-surface-raised)" }}>
             <h2 className="mb-2 text-lg font-bold">8. הגבלת אחריות</h2>
             <p>BizMap מסופקת "כפי שהיא" (AS IS). אנו לא ערבים לזמינות מלאה של השירות ולא נישא באחריות לנזקים עקיפים שנגרמו כתוצאה מהשימוש בשירות.</p>
           </section>
 
-          <section className="rounded-xl border p-5" style={{ borderColor: "#282a30", backgroundColor: "#191b22" }}>
+          <section className="rounded-xl border p-5" style={{ borderColor: "var(--bv-border)", backgroundColor: "var(--bv-surface-raised)" }}>
             <h2 className="mb-2 text-lg font-bold">9. קניין רוחני</h2>
             <ul className="space-y-1">
               <li>- כל הטכנולוגיה, העיצוב והתוכן של BizMap הם קניין של החברה</li>
@@ -105,17 +105,17 @@ export default function TermsPage() {
             </ul>
           </section>
 
-          <section className="rounded-xl border p-5" style={{ borderColor: "#282a30", backgroundColor: "#191b22" }}>
+          <section className="rounded-xl border p-5" style={{ borderColor: "var(--bv-border)", backgroundColor: "var(--bv-surface-raised)" }}>
             <h2 className="mb-2 text-lg font-bold">10. שינויים בשירות</h2>
             <p>אנו שומרים לעצמנו את הזכות לשנות, להשעות או להפסיק חלקים מהשירות בכל עת.</p>
           </section>
 
-          <section className="rounded-xl border p-5" style={{ borderColor: "#282a30", backgroundColor: "#191b22" }}>
+          <section className="rounded-xl border p-5" style={{ borderColor: "var(--bv-border)", backgroundColor: "var(--bv-surface-raised)" }}>
             <h2 className="mb-2 text-lg font-bold">11. דין חל</h2>
             <p>תנאים אלו כפופים לחוק הישראלי. סכסוכים יידונו בבתי המשפט המוסמכים בישראל.</p>
           </section>
 
-          <section className="rounded-xl border p-5" style={{ borderColor: "#282a30", backgroundColor: "#191b22" }}>
+          <section className="rounded-xl border p-5" style={{ borderColor: "var(--bv-border)", backgroundColor: "var(--bv-surface-raised)" }}>
             <h2 className="mb-2 text-lg font-bold">12. יצירת קשר</h2>
             <p>לשאלות בנושא תנאי השימוש: legal@bizmapai.com</p>
           </section>

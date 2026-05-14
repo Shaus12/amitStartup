@@ -33,7 +33,7 @@ export default function PaymentSuccessPage() {
   return (
     <main
       className="flex min-h-screen items-center justify-center px-4"
-      style={{ backgroundColor: "#111319" }}
+      style={{ backgroundColor: "var(--bv-bg)" }}
       dir="rtl"
     >
       <div className="w-full max-w-md text-center">
@@ -55,7 +55,7 @@ export default function PaymentSuccessPage() {
         <button
           type="button"
           onClick={() => router.push("/dashboard")}
-          className="inline-flex h-11 items-center justify-center rounded-xl bg-blue-600 px-6 text-sm font-bold text-white transition-colors hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-[#111319]"
+          className="inline-flex h-11 items-center justify-center rounded-xl bg-blue-600 px-6 text-sm font-bold text-white transition-colors hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-[var(--bv-bg)]"
         >
           עבור לדאשבורד עכשיו
         </button>

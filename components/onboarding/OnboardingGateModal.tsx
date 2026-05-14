@@ -120,7 +120,7 @@ export function OnboardingGateModal({ open, onClose, onboardingPayload }: Props)
           className="w-full max-w-md mx-4 rounded-2xl p-8 text-center relative"
           style={{
             background: "linear-gradient(135deg, #13141a 0%, #1a1c25 100%)",
-            border: "1px solid #2a2d3a",
+            border: "1px solid var(--bv-border)",
             boxShadow: "0 24px 80px rgba(0,0,0,0.6)",
           }}
         >
@@ -137,7 +137,7 @@ export function OnboardingGateModal({ open, onClose, onboardingPayload }: Props)
             <X className="w-4 h-4" />
           </button>
           <h2 className="text-xl font-bold text-white mb-2">בדוק את האימייל שלך</h2>
-          <p className="text-sm" style={{ color: "#8c909f" }}>
+          <p className="text-sm" style={{ color: "var(--bv-text-3)" }}>
             שלחנו קישור לאימות לכתובת <strong className="text-white">{email}</strong>. לאחר האימות תוכל להתחבר ולהמשיך.
           </p>
         </div>
@@ -151,7 +151,7 @@ export function OnboardingGateModal({ open, onClose, onboardingPayload }: Props)
         className="w-full max-w-md mx-4 rounded-2xl overflow-hidden relative"
         style={{
           background: "linear-gradient(135deg, #13141a 0%, #1a1c25 100%)",
-          border: "1px solid #2a2d3a",
+          border: "1px solid var(--bv-border)",
           boxShadow: "0 24px 80px rgba(0,0,0,0.6)",
         }}
       >
@@ -178,7 +178,7 @@ export function OnboardingGateModal({ open, onClose, onboardingPayload }: Props)
             <div className="relative">
               <Mail
                 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none"
-                style={{ color: "#424754" }}
+                style={{ color: "var(--bv-muted)" }}
               />
               <input
                 type="email"
@@ -189,9 +189,9 @@ export function OnboardingGateModal({ open, onClose, onboardingPayload }: Props)
                 disabled={loading}
                 className="w-full rounded-lg pr-10 pl-4 py-3 text-sm outline-none transition-all"
                 style={{
-                  background: "#0f1016",
-                  border: "1px solid #2a2d3a",
-                  color: "#e2e2eb",
+                  background: "var(--bv-surface)",
+                  border: "1px solid var(--bv-border)",
+                  color: "var(--bv-text-1)",
                   fontFamily: "var(--font-inter)",
                 }}
               />
@@ -200,7 +200,7 @@ export function OnboardingGateModal({ open, onClose, onboardingPayload }: Props)
             <div className="relative">
               <Lock
                 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none"
-                style={{ color: "#424754" }}
+                style={{ color: "var(--bv-muted)" }}
               />
               <input
                 type="password"
@@ -212,9 +212,9 @@ export function OnboardingGateModal({ open, onClose, onboardingPayload }: Props)
                 minLength={mode === "signup" ? 8 : undefined}
                 className="w-full rounded-lg pr-10 pl-4 py-3 text-sm outline-none transition-all"
                 style={{
-                  background: "#0f1016",
-                  border: "1px solid #2a2d3a",
-                  color: "#e2e2eb",
+                  background: "var(--bv-surface)",
+                  border: "1px solid var(--bv-border)",
+                  color: "var(--bv-text-1)",
                   fontFamily: "var(--font-inter)",
                 }}
               />
@@ -224,8 +224,8 @@ export function OnboardingGateModal({ open, onClose, onboardingPayload }: Props)
               <div className="flex flex-col gap-2 px-1 py-1">
                 <div className="flex items-center gap-1" dir="ltr">
                   <div className={`h-1.5 flex-1 rounded-full transition-colors ${passwordStrength === 'strong' ? 'bg-green-500' : passwordStrength === 'medium' ? 'bg-yellow-500' : 'bg-red-500'}`} />
-                  <div className={`h-1.5 flex-1 rounded-full transition-colors ${passwordStrength === 'strong' ? 'bg-green-500' : passwordStrength === 'medium' ? 'bg-yellow-500' : 'bg-[#2a2d3a]'}`} />
-                  <div className={`h-1.5 flex-1 rounded-full transition-colors ${passwordStrength === 'strong' ? 'bg-green-500' : 'bg-[#2a2d3a]'}`} />
+                  <div className={`h-1.5 flex-1 rounded-full transition-colors ${passwordStrength === 'strong' ? 'bg-green-500' : passwordStrength === 'medium' ? 'bg-yellow-500' : 'bg-[var(--bv-border)]'}`} />
+                  <div className={`h-1.5 flex-1 rounded-full transition-colors ${passwordStrength === 'strong' ? 'bg-green-500' : 'bg-[var(--bv-border)]'}`} />
                 </div>
                 <div className="text-[11px] space-y-0.5" style={{ color: "#f87171" }}>
                   {!hasMinLength && <p>• הסיסמא חייבת להכיל לפחות 8 תווים</p>}
@@ -243,7 +243,7 @@ export function OnboardingGateModal({ open, onClose, onboardingPayload }: Props)
             )}
 
             {mode === "signup" && (
-              <label className="flex items-start gap-2 px-1 text-xs" style={{ color: "#8c909f", fontFamily: "var(--font-inter)" }}>
+              <label className="flex items-start gap-2 px-1 text-xs" style={{ color: "var(--bv-text-3)", fontFamily: "var(--font-inter)" }}>
                 <input
                   type="checkbox"
                   checked={acceptedLegal}

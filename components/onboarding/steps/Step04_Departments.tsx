@@ -187,7 +187,7 @@ export function Step04_Departments({ onNext, onBack }: Props) {
       <style jsx>{`
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #282a30; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--bv-border); border-radius: 10px; }
       `}</style>
     </StepCard>
   );

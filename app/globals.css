@@ -117,16 +117,77 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+/* ── BizMap palette – dark default ───────────────────────────── */
+:root {
+  --bv-bg:               #111319;
+  --bv-surface:          #13151d;
+  --bv-surface-raised:   #191b22;
+  --bv-surface-elevated: #1e1f26;
+  --bv-border:           #282a30;
+  --bv-border-subtle:    #33343b;
+  --bv-muted:            #424754;
+  --bv-text-3:           #8c909f;
+  --bv-text-2:           #c2c6d6;
+  --bv-text-1:           #e2e2eb;
+}
+
+/* ── Light mode ───────────────────────────────────────────────── */
+[data-theme="light"] {
+  --bv-bg:               #f4f5f8;
+  --bv-surface:          #ffffff;
+  --bv-surface-raised:   #f0f2f7;
+  --bv-surface-elevated: #e8eaf2;
+  --bv-border:           #dde1ec;
+  --bv-border-subtle:    #c8ccd8;
+  --bv-muted:            #8c90a0;
+  --bv-text-3:           #5c6070;
+  --bv-text-2:           #363a4a;
+  --bv-text-1:           #111319;
+}
+
+/* ── System mode (no data-theme attr) ────────────────────────── */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) {
+    --bv-bg:               #f4f5f8;
+    --bv-surface:          #ffffff;
+    --bv-surface-raised:   #f0f2f7;
+    --bv-surface-elevated: #e8eaf2;
+    --bv-border:           #dde1ec;
+    --bv-border-subtle:    #c8ccd8;
+    --bv-muted:            #8c90a0;
+    --bv-text-3:           #5c6070;
+    --bv-text-2:           #363a4a;
+    --bv-text-1:           #111319;
+  }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    background-color: var(--bv-bg);
+    color: var(--bv-text-1);
   }
   html {
     @apply font-sans;
   }
+}
+
+/* ── ReactFlow theme-aware overrides ─────────────────────────── */
+.bv-rf-controls button {
+  background-color: var(--bv-surface-elevated) !important;
+  border-color: var(--bv-border) !important;
+  color: var(--bv-text-3) !important;
+}
+.bv-rf-controls button:hover {
+  background-color: var(--bv-border) !important;
+  color: var(--bv-text-1) !important;
+}
+.bv-rf-minimap {
+  background-color: var(--bv-surface) !important;
+  border-color: var(--bv-border) !important;
+  border-radius: 12px !important;
 }
 
 /* ── Cosmic Parallax Background ──────────────────────────────── */

@@ -342,18 +342,18 @@ function BusinessMapInner({ data, onOpenAnalysisReveal }: BusinessMapProps) {
   }, [expandedId]);
 
   return (
-    <div className="w-full h-full" style={{ backgroundColor: "#0d0f15" }}>
+    <div className="w-full h-full" style={{ backgroundColor: "var(--bv-bg)" }}>
       {/* ESC hint when expanded */}
       {expandedId && (
         <div
           style={{
             position: "absolute", top: 16, left: "50%", transform: "translateX(-50%)",
             zIndex: 10, display: "flex", alignItems: "center", gap: 8,
-            backgroundColor: "#13151d", border: "1px solid #282a30", borderRadius: 8,
+            backgroundColor: "var(--bv-surface)", border: "1px solid var(--bv-border)", borderRadius: 8,
             padding: "6px 14px", pointerEvents: "none",
           }}
         >
-          <span style={{ fontSize: 11, color: "#8c909f", fontFamily: "var(--font-inter)" }}>
+          <span style={{ fontSize: 11, color: "var(--bv-text-3)", fontFamily: "var(--font-inter)" }}>
             לחץ X או ESC לחזרה למבט-על
           </span>
         </div>
@@ -371,7 +371,7 @@ function BusinessMapInner({ data, onOpenAnalysisReveal }: BusinessMapProps) {
         fitViewOptions={{ padding: 0.25 }}
         minZoom={0.15}
         maxZoom={3}
-        style={{ backgroundColor: "#0d0f15" }}
+        style={{ backgroundColor: "var(--bv-bg)" }}
         proOptions={{ hideAttribution: true }}
         // Prevent clicking background from collapsing (only X / ESC should)
         onPaneClick={() => {}}
@@ -384,11 +384,11 @@ function BusinessMapInner({ data, onOpenAnalysisReveal }: BusinessMapProps) {
           style={{ opacity: 0.06 }}
         />
         <Controls
-          className="[&>button]:bg-[#1a1c24] [&>button]:border-[#282a30] [&>button]:text-[#8c909f] [&>button:hover]:bg-[#282a30] [&>button:hover]:text-[#e2e2eb]"
+          className="bv-rf-controls"
           style={{ bottom: 16, left: 16 }}
         />
         <MiniMap
-          className="!bg-[#13151d] !border-[#282a30] !rounded-xl"
+          className="bv-rf-minimap"
           nodeColor={(node) => {
             if (node.type === "summaryCard") return "#4d8eff";
             return (node.data as { color?: string }).color ?? "#4d8eff";

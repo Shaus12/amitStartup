@@ -22,14 +22,14 @@ interface Opportunity {
 interface Props { businessId: string; businessName: string }
 
 const COLUMNS: { key: RoadmapStatus; label: string; desc: string; accent: string }[] = [
-  { key: "backlog",     label: "ממתין",     desc: "טרם התחיל",      accent: "#424754" },
+  { key: "backlog",     label: "ממתין",     desc: "טרם התחיל",      accent: "var(--bv-muted)" },
   { key: "in_progress", label: "בביצוע", desc: "בתהליך יישום",   accent: "#4d8eff" },
   { key: "done",        label: "הושלם",        desc: "הוטמע ופועל",   accent: "#34d399" },
 ];
 
 const C = {
-  bg: "#111319", s1: "#191b22", s2: "#1e1f26", s3: "#282a30", s4: "#33343b",
-  outline: "#424754", muted: "#8c909f", sub: "#c2c6d6", text: "#e2e2eb",
+  bg: "var(--bv-bg)", s1: "var(--bv-surface-raised)", s2: "var(--bv-surface-elevated)", s3: "var(--bv-border)", s4: "var(--bv-border-subtle)",
+  outline: "var(--bv-muted)", muted: "var(--bv-text-3)", sub: "var(--bv-text-2)", text: "var(--bv-text-1)",
   blue: "#4d8eff", green: "#34d399", amber: "#fbbf24",
 };
 const MF: React.CSSProperties = { fontFamily: "var(--font-manrope)" };

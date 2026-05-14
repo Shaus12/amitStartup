@@ -55,14 +55,14 @@ export function StepCard({
       <div className="mb-9">
         <h2
           className="text-[2rem] font-bold leading-tight mb-3"
-          style={{ fontFamily: "var(--font-manrope)", color: "#e2e2eb", letterSpacing: "-0.02em" }}
+          style={{ fontFamily: "var(--font-manrope)", color: "var(--bv-text-1)", letterSpacing: "-0.02em" }}
         >
           {title}
         </h2>
         {subtitle && (
           <p
             className="text-sm leading-relaxed max-w-[52ch]"
-            style={{ color: "#8c909f", fontFamily: "var(--font-inter)" }}
+            style={{ color: "var(--bv-text-3)", fontFamily: "var(--font-inter)" }}
           >
             {subtitle}
           </p>
@@ -96,16 +96,16 @@ export function StepCard({
         </button>
       )}
 
-      <div className="flex items-center justify-between pt-6" style={{ borderTop: "1px solid #282a30" }}>
+      <div className="flex items-center justify-between pt-6" style={{ borderTop: "1px solid var(--bv-border)" }}>
         <div>
           {showBack && (
             <button
               type="button"
               onClick={onBack}
               className="inline-flex items-center gap-2 text-xs font-medium transition-colors duration-150 group"
-              style={{ color: "#8c909f", fontFamily: "var(--font-inter)" }}
-              onMouseEnter={e => (e.currentTarget.style.color = "#c2c6d6")}
-              onMouseLeave={e => (e.currentTarget.style.color = "#8c909f")}
+              style={{ color: "var(--bv-text-3)", fontFamily: "var(--font-inter)" }}
+              onMouseEnter={e => (e.currentTarget.style.color = "var(--bv-text-2)")}
+              onMouseLeave={e => (e.currentTarget.style.color = "var(--bv-text-3)")}
             >
               {t.back}
             </button>
@@ -122,8 +122,8 @@ export function StepCard({
           )}
           style={{
             fontFamily: "var(--font-inter)",
-            background: nextDisabled ? "#282a30" : "linear-gradient(135deg, #4d8eff, #adc6ff)",
-            color: nextDisabled ? "#424754" : "#001a42",
+            background: nextDisabled ? "var(--bv-border)" : "linear-gradient(135deg, #4d8eff, #adc6ff)",
+            color: nextDisabled ? "var(--bv-muted)" : "#001a42",
             cursor: nextDisabled ? "not-allowed" : "pointer",
             boxShadow: nextDisabled ? "none" : "0 4px 16px rgba(77,142,255,0.25)",
           }}

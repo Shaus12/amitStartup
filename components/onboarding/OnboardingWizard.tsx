@@ -64,7 +64,7 @@ const QUICK_LAST_STEP = 4;
 
 function RegistrationModeSelector({ onSelect }: { onSelect: (mode: "quick" | "full") => void }) {
   return (
-    <div className="min-h-[100dvh] flex items-center justify-center px-6" style={{ backgroundColor: "#111319" }}>
+    <div className="min-h-[100dvh] flex items-center justify-center px-6" style={{ backgroundColor: "var(--bv-bg)" }}>
       <div style={{ maxWidth: 480, width: "100%" }}>
         {/* Logo */}
         <Link
@@ -84,14 +84,14 @@ function RegistrationModeSelector({ onSelect }: { onSelect: (mode: "quick" | "fu
           }}
         >
           <img src="/logo.png" alt="BizMap Logo" style={{ width: 40, height: 40, objectFit: "contain" }} />
-          <span style={{ fontSize: 18, fontWeight: 700, color: "#e2e2eb", fontFamily: "var(--font-manrope)" }}>BizMap</span>
+          <span style={{ fontSize: 18, fontWeight: 700, color: "var(--bv-text-1)", fontFamily: "var(--font-manrope)" }}>BizMap</span>
         </Link>
 
         <div style={{ textAlign: "center", marginBottom: 32 }}>
-          <h1 style={{ fontSize: 26, fontWeight: 800, color: "#e2e2eb", fontFamily: "var(--font-manrope)", letterSpacing: "-0.02em", marginBottom: 8 }}>
+          <h1 style={{ fontSize: 26, fontWeight: 800, color: "var(--bv-text-1)", fontFamily: "var(--font-manrope)", letterSpacing: "-0.02em", marginBottom: 8 }}>
             איך תרצה להתחיל?
           </h1>
-          <p style={{ fontSize: 13, color: "#8c909f", fontFamily: "var(--font-inter)", lineHeight: 1.6 }}>
+          <p style={{ fontSize: 13, color: "var(--bv-text-3)", fontFamily: "var(--font-inter)", lineHeight: 1.6 }}>
             בחר את האופן שמתאים לך — אפשר להשלים את הפרטים בכל עת
           </p>
         </div>
@@ -104,8 +104,8 @@ function RegistrationModeSelector({ onSelect }: { onSelect: (mode: "quick" | "fu
               width: "100%",
               padding: "18px 20px",
               borderRadius: 16,
-              border: "1.5px solid #282a30",
-              backgroundColor: "#191b22",
+              border: "1.5px solid var(--bv-border)",
+              backgroundColor: "var(--bv-surface-raised)",
               cursor: "pointer",
               textAlign: "right",
               direction: "rtl",
@@ -116,8 +116,8 @@ function RegistrationModeSelector({ onSelect }: { onSelect: (mode: "quick" | "fu
               (e.currentTarget as HTMLButtonElement).style.backgroundColor = "rgba(77,142,255,0.04)";
             }}
             onMouseLeave={e => {
-              (e.currentTarget as HTMLButtonElement).style.borderColor = "#282a30";
-              (e.currentTarget as HTMLButtonElement).style.backgroundColor = "#191b22";
+              (e.currentTarget as HTMLButtonElement).style.borderColor = "var(--bv-border)";
+              (e.currentTarget as HTMLButtonElement).style.backgroundColor = "var(--bv-surface-raised)";
             }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -130,16 +130,16 @@ function RegistrationModeSelector({ onSelect }: { onSelect: (mode: "quick" | "fu
                 <Zap size={18} color="#4d8eff" />
               </div>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 15, fontWeight: 700, color: "#e2e2eb", fontFamily: "var(--font-manrope)", marginBottom: 3 }}>
+                <div style={{ fontSize: 15, fontWeight: 700, color: "var(--bv-text-1)", fontFamily: "var(--font-manrope)", marginBottom: 3 }}>
                   הרשמה זריזה
                   <span style={{ fontSize: 11, fontWeight: 600, color: "#4d8eff", marginRight: 8, fontFamily: "var(--font-inter)" }}>
                     ~2 דקות
                   </span>
                 </div>
-                <div style={{ fontSize: 12, color: "#8c909f", fontFamily: "var(--font-inter)", lineHeight: 1.5 }}>
+                <div style={{ fontSize: 12, color: "var(--bv-text-3)", fontFamily: "var(--font-inter)", lineHeight: 1.5 }}>
                   שם העסק, גודל צוות, ומחלקות בלבד
                 </div>
-                <div style={{ fontSize: 11, color: "#424754", fontFamily: "var(--font-inter)", marginTop: 4 }}>
+                <div style={{ fontSize: 11, color: "var(--bv-muted)", fontFamily: "var(--font-inter)", marginTop: 4 }}>
                   תוכל להשלים כל מחלקה בנפרד ישירות מהמפה
                 </div>
               </div>
@@ -186,13 +186,13 @@ function RegistrationModeSelector({ onSelect }: { onSelect: (mode: "quick" | "fu
                 <CheckCircle2 size={18} color="#34d399" />
               </div>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 15, fontWeight: 700, color: "#e2e2eb", fontFamily: "var(--font-manrope)", marginBottom: 3 }}>
+                <div style={{ fontSize: 15, fontWeight: 700, color: "var(--bv-text-1)", fontFamily: "var(--font-manrope)", marginBottom: 3 }}>
                   הרשמה מלאה
                   <span style={{ fontSize: 11, fontWeight: 600, color: "#34d399", marginRight: 8, fontFamily: "var(--font-inter)" }}>
                     ~8 דקות
                   </span>
                 </div>
-                <div style={{ fontSize: 12, color: "#8c909f", fontFamily: "var(--font-inter)", lineHeight: 1.5 }}>
+                <div style={{ fontSize: 12, color: "var(--bv-text-3)", fontFamily: "var(--font-inter)", lineHeight: 1.5 }}>
                   מיפוי מלא של תהליכים, כלים ואתגרים
                 </div>
                 <div style={{ fontSize: 11, color: "#34d399", fontFamily: "var(--font-inter)", marginTop: 4, opacity: 0.8 }}>
@@ -204,12 +204,12 @@ function RegistrationModeSelector({ onSelect }: { onSelect: (mode: "quick" | "fu
         </div>
         <div
           className="mt-8 flex items-center justify-center gap-3 text-xs"
-          style={{ color: "#8c909f", fontFamily: "var(--font-inter)" }}
+          style={{ color: "var(--bv-text-3)", fontFamily: "var(--font-inter)" }}
         >
           <Link href="/privacy" className="underline">
             מדיניות פרטיות
           </Link>
-          <span style={{ color: "#424754" }}>•</span>
+          <span style={{ color: "var(--bv-muted)" }}>•</span>
           <Link href="/terms" className="underline">
             תנאי שימוש
           </Link>
@@ -286,12 +286,12 @@ export function OnboardingWizard() {
   const panelHeading = t.wizard.panelHeadings[headingIndex] ?? "";
 
   return (
-    <div className="min-h-[100dvh] flex" style={{ backgroundColor: "#111319" }}>
+    <div className="min-h-[100dvh] flex" style={{ backgroundColor: "var(--bv-bg)" }}>
 
       {/* ── Left brand panel ── */}
       <aside
         className="hidden md:flex md:w-[320px] lg:w-[380px] shrink-0 flex-col justify-between px-10 py-12 relative overflow-hidden"
-        style={{ backgroundColor: "#191b22" }}
+        style={{ backgroundColor: "var(--bv-surface-raised)" }}
       >
         <div
           className="pointer-events-none absolute -top-40 -left-40 w-[500px] h-[500px] rounded-full"
@@ -316,7 +316,7 @@ export function OnboardingWizard() {
             <img src="/logo.png" alt="BizMap Logo" className="w-8 h-8 object-contain" />
             <span
               className="text-sm font-semibold tracking-tight"
-              style={{ fontFamily: "var(--font-manrope)", color: "#e2e2eb" }}
+              style={{ fontFamily: "var(--font-manrope)", color: "var(--bv-text-1)" }}
             >
               BizMap
             </span>
@@ -332,13 +332,13 @@ export function OnboardingWizard() {
           </div>
           <h2
             className="text-2xl font-bold leading-snug mb-3"
-            style={{ fontFamily: "var(--font-manrope)", color: "#e2e2eb", letterSpacing: "-0.02em" }}
+            style={{ fontFamily: "var(--font-manrope)", color: "var(--bv-text-1)", letterSpacing: "-0.02em" }}
           >
             {panelHeading}
           </h2>
           <p
             className="text-sm leading-relaxed max-w-[240px]"
-            style={{ color: "#8c909f" }}
+            style={{ color: "var(--bv-text-3)" }}
           >
             {t.wizard.panelSubtitle}
           </p>
@@ -354,14 +354,14 @@ export function OnboardingWizard() {
                   {i < t.wizard.groups.length - 1 && (
                     <div
                       className="absolute left-[5px] top-[26px] w-[1px] h-full"
-                      style={{ backgroundColor: done ? "#4d8eff" : "#282a30" }}
+                      style={{ backgroundColor: done ? "#4d8eff" : "var(--bv-border)" }}
                     />
                   )}
                   <div
                     className="w-3 h-3 rounded-full shrink-0 flex items-center justify-center transition-all duration-300 relative z-10"
                     style={{
-                      backgroundColor: done ? "#4d8eff" : active ? "transparent" : "#282a30",
-                      border: active ? "2px solid #4d8eff" : done ? "none" : "2px solid #424754",
+                      backgroundColor: done ? "#4d8eff" : active ? "transparent" : "var(--bv-border)",
+                      border: active ? "2px solid #4d8eff" : done ? "none" : "2px solid var(--bv-muted)",
                       boxShadow: active ? "0 0 0 4px rgba(77,142,255,0.12)" : "none",
                     }}
                   >
@@ -375,7 +375,7 @@ export function OnboardingWizard() {
                     className="text-xs font-medium transition-colors duration-200"
                     style={{
                       fontFamily: "var(--font-inter)",
-                      color: active ? "#e2e2eb" : done ? "#4d8eff" : "#424754",
+                      color: active ? "var(--bv-text-1)" : done ? "#4d8eff" : "var(--bv-muted)",
                     }}
                   >
                     {groupLbl}
@@ -387,7 +387,7 @@ export function OnboardingWizard() {
 
           <p
             className="text-[11px] font-medium tabular-nums"
-            style={{ color: "#424754", fontFamily: "var(--font-inter)" }}
+            style={{ color: "var(--bv-muted)", fontFamily: "var(--font-inter)" }}
           >
             {t.wizard.stepOf(currentStep + 1, TOTAL_STEPS)}
           </p>
@@ -396,7 +396,7 @@ export function OnboardingWizard() {
 
       {/* ── Right form area (relative = reset button stays inside this column) ── */}
       <div className="flex-1 flex flex-col min-w-0 relative">
-        <div className="shrink-0 relative overflow-visible" style={{ backgroundColor: "#191b22", height: 6 }}>
+        <div className="shrink-0 relative overflow-visible" style={{ backgroundColor: "var(--bv-surface-raised)", height: 6 }}>
           <div
             className="h-full transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
             style={{ width: `${progressPercent}%`, background: "linear-gradient(90deg, #22c55e, #86efac)" }}
@@ -417,7 +417,7 @@ export function OnboardingWizard() {
 
         <div
           className="flex md:hidden items-center justify-between gap-3 px-5 py-3 border-b min-w-0"
-          style={{ borderColor: "#282a30" }}
+          style={{ borderColor: "var(--bv-border)" }}
         >
           <Link 
             href="/" 
@@ -430,16 +430,16 @@ export function OnboardingWizard() {
             style={{ textDecoration: "none" }}
           >
             <img src="/logo.png" alt="BizMap Logo" className="w-5 h-5 shrink-0 object-contain" />
-            <span className="text-xs font-semibold truncate" style={{ color: "#c2c6d6", fontFamily: "var(--font-manrope)" }}>BizMap</span>
+            <span className="text-xs font-semibold truncate" style={{ color: "var(--bv-text-2)", fontFamily: "var(--font-manrope)" }}>BizMap</span>
           </Link>
-          <span className="text-[11px] tabular-nums shrink-0" style={{ color: "#424754" }}>
+          <span className="text-[11px] tabular-nums shrink-0" style={{ color: "var(--bv-muted)" }}>
             {currentStep + 1} / {TOTAL_STEPS}
           </span>
         </div>
 
         <div
           className="hidden md:flex shrink-0 justify-end items-center px-8 lg:px-12 pt-5 pb-2"
-          style={{ borderBottom: "1px solid #282a30", minHeight: 44 }}
+          style={{ borderBottom: "1px solid var(--bv-border)", minHeight: 44 }}
         />
 
         <div className="flex-1 flex items-center justify-center px-5 py-10 md:py-16 md:px-12 lg:px-20 overflow-hidden">
@@ -493,12 +493,12 @@ export function OnboardingWizard() {
 
         <div
           className="shrink-0 flex items-center justify-center gap-3 px-5 py-3 text-xs"
-          style={{ borderTop: "1px solid #282a30", color: "#8c909f", fontFamily: "var(--font-inter)" }}
+          style={{ borderTop: "1px solid var(--bv-border)", color: "var(--bv-text-3)", fontFamily: "var(--font-inter)" }}
         >
           <Link href="/privacy" className="underline">
             מדיניות פרטיות
           </Link>
-          <span style={{ color: "#424754" }}>•</span>
+          <span style={{ color: "var(--bv-muted)" }}>•</span>
           <Link href="/terms" className="underline">
             תנאי שימוש
           </Link>
@@ -514,8 +514,8 @@ export function OnboardingWizard() {
           <div
             className="w-full max-w-sm rounded-2xl p-8 text-center"
             style={{
-              backgroundColor: "#1e1f26",
-              border: "1px solid #282a30",
+              backgroundColor: "var(--bv-surface-elevated)",
+              border: "1px solid var(--bv-border)",
               boxShadow: "0 24px 80px rgba(0,0,0,0.5)",
               animation: "bv-fade-up 0.4s cubic-bezier(0.16,1,0.3,1) both",
             }}
@@ -523,13 +523,13 @@ export function OnboardingWizard() {
             <div className="text-4xl mb-4">{insightOverlay.emoji}</div>
             <h3
               className="text-lg font-bold mb-2"
-              style={{ fontFamily: "var(--font-manrope)", color: "#e2e2eb" }}
+              style={{ fontFamily: "var(--font-manrope)", color: "var(--bv-text-1)" }}
             >
               {insightOverlay.title}
             </h3>
             <p
               className="text-sm leading-relaxed mb-6"
-              style={{ fontFamily: "var(--font-inter)", color: "#8c909f" }}
+              style={{ fontFamily: "var(--font-inter)", color: "var(--bv-text-3)" }}
             >
               {insightOverlay.body}
             </p>
@@ -553,8 +553,8 @@ export function OnboardingWizard() {
         <div
           className="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-4 py-3 rounded-xl shadow-xl"
           style={{
-            backgroundColor: "#1e1f26",
-            border: "1px solid #282a30",
+            backgroundColor: "var(--bv-surface-elevated)",
+            border: "1px solid var(--bv-border)",
             boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
             animation: "bv-fade-up 0.4s cubic-bezier(0.16,1,0.3,1) both",
             fontFamily: "var(--font-inter)",
@@ -567,13 +567,13 @@ export function OnboardingWizard() {
             א
           </div>
           <div>
-            <p className="text-xs font-semibold" style={{ color: "#e2e2eb" }}>אדיר מראשון לציון</p>
-            <p className="text-[10px]" style={{ color: "#8c909f" }}>מיפה זה עכשיו את 4 המחלקות שלו ✓</p>
+            <p className="text-xs font-semibold" style={{ color: "var(--bv-text-1)" }}>אדיר מראשון לציון</p>
+            <p className="text-[10px]" style={{ color: "var(--bv-text-3)" }}>מיפה זה עכשיו את 4 המחלקות שלו ✓</p>
           </div>
           <button
             onClick={() => { setShowSocialProof(false); setSocialProofDismissed(true); }}
             className="text-[10px] ml-2 leading-none"
-            style={{ color: "#424754" }}
+            style={{ color: "var(--bv-muted)" }}
           >✕</button>
         </div>
       )}

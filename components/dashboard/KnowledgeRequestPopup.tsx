@@ -104,8 +104,8 @@ export function KnowledgeRequestPopup({ businessId, enabled = true }: Props) {
           left: 20,
           zIndex: 9990,
           width: 300,
-          backgroundColor: "#13151d",
-          border: "1px solid #282a30",
+          backgroundColor: "var(--bv-surface)",
+          border: "1px solid var(--bv-border)",
           borderRadius: 18,
           boxShadow: "0 20px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(168,139,250,0.1)",
           fontFamily: "var(--font-inter)",
@@ -149,7 +149,7 @@ export function KnowledgeRequestPopup({ businessId, enabled = true }: Props) {
             >
               תודה רבה!
             </p>
-            <p style={{ fontSize: 12, color: "#8c909f" }}>
+            <p style={{ fontSize: 12, color: "var(--bv-text-3)" }}>
               ה-AI שלך עודכן עם המידע החדש.
             </p>
           </div>
@@ -163,7 +163,7 @@ export function KnowledgeRequestPopup({ businessId, enabled = true }: Props) {
                 alignItems: "center",
                 justifyContent: "space-between",
                 padding: "12px 14px 10px",
-                borderBottom: "1px solid #1e2030",
+                borderBottom: "1px solid var(--bv-border)",
               }}
             >
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -200,14 +200,14 @@ export function KnowledgeRequestPopup({ businessId, enabled = true }: Props) {
                   background: "none",
                   border: "none",
                   cursor: "pointer",
-                  color: "#424754",
+                  color: "var(--bv-muted)",
                   padding: 2,
                   display: "flex",
                   borderRadius: 6,
                   transition: "color 0.12s",
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = "#8c909f")}
-                onMouseLeave={(e) => (e.currentTarget.style.color = "#424754")}
+                onMouseEnter={(e) => (e.currentTarget.style.color = "var(--bv-text-3)")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = "var(--bv-muted)")}
               >
                 <X size={14} />
               </button>
@@ -220,7 +220,7 @@ export function KnowledgeRequestPopup({ businessId, enabled = true }: Props) {
                 style={{
                   fontSize: 13,
                   fontWeight: 600,
-                  color: "#e2e2eb",
+                  color: "var(--bv-text-1)",
                   lineHeight: 1.5,
                   marginBottom: 10,
                   fontFamily: "var(--font-manrope)",
@@ -243,9 +243,9 @@ export function KnowledgeRequestPopup({ businessId, enabled = true }: Props) {
                   width: "100%",
                   resize: "none",
                   borderRadius: 8,
-                  border: "1px solid #282a30",
-                  backgroundColor: "#1a1c24",
-                  color: "#e2e2eb",
+                  border: "1px solid var(--bv-border)",
+                  backgroundColor: "var(--bv-surface-elevated)",
+                  color: "var(--bv-text-1)",
                   fontSize: 12,
                   padding: "8px 10px",
                   outline: "none",
@@ -255,7 +255,7 @@ export function KnowledgeRequestPopup({ businessId, enabled = true }: Props) {
                   boxSizing: "border-box",
                 }}
                 onFocus={(e) => (e.currentTarget.style.borderColor = "rgba(167,139,250,0.4)")}
-                onBlur={(e) => (e.currentTarget.style.borderColor = "#282a30")}
+                onBlur={(e) => (e.currentTarget.style.borderColor = "var(--bv-border)")}
               />
 
               {/* Action buttons */}
@@ -274,20 +274,20 @@ export function KnowledgeRequestPopup({ businessId, enabled = true }: Props) {
                     fontWeight: 600,
                     padding: "5px 12px",
                     borderRadius: 7,
-                    border: "1px solid #282a30",
+                    border: "1px solid var(--bv-border)",
                     backgroundColor: "transparent",
-                    color: "#424754",
+                    color: "var(--bv-muted)",
                     cursor: "pointer",
                     fontFamily: "var(--font-inter)",
                     transition: "all 0.12s",
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = "#1e1f26";
-                    e.currentTarget.style.color = "#8c909f";
+                    e.currentTarget.style.backgroundColor = "var(--bv-surface-elevated)";
+                    e.currentTarget.style.color = "var(--bv-text-3)";
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.backgroundColor = "transparent";
-                    e.currentTarget.style.color = "#424754";
+                    e.currentTarget.style.color = "var(--bv-muted)";
                   }}
                 >
                   אחר כך
@@ -304,8 +304,8 @@ export function KnowledgeRequestPopup({ businessId, enabled = true }: Props) {
                     background:
                       answer.trim() && !saving
                         ? "linear-gradient(135deg, #7c3aed, #a78bfa)"
-                        : "#1e1f26",
-                    color: answer.trim() && !saving ? "white" : "#424754",
+                        : "var(--bv-surface-elevated)",
+                    color: answer.trim() && !saving ? "white" : "var(--bv-muted)",
                     cursor: answer.trim() && !saving ? "pointer" : "not-allowed",
                     fontFamily: "var(--font-inter)",
                     transition: "all 0.15s",

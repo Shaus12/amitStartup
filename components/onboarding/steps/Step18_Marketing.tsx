@@ -40,8 +40,8 @@ const LEAD_COUNT_OPTIONS = [
 ];
 
 const C = {
-  s2: "#1e1f26", s3: "#282a30", blue: "#4d8eff", glow: "#adc6ff",
-  muted: "#8c909f", sub: "#c2c6d6", text: "#e2e2eb", outline: "#424754",
+  s2: "var(--bv-surface-elevated)", s3: "var(--bv-border)", blue: "#4d8eff", glow: "#adc6ff",
+  muted: "var(--bv-text-3)", sub: "var(--bv-text-2)", text: "var(--bv-text-1)", outline: "var(--bv-muted)",
 };
 
 export function Step18_Marketing({ onNext, onBack }: Props) {

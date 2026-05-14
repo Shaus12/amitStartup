@@ -7,8 +7,8 @@ import { AiOpportunityItem } from "@/lib/types/opportunities";
 type OpportunityStatus = "suggested" | "backlog" | "in_progress" | "done";
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; border: string }> = {
-  suggested: { label: "ממתין", color: "#8c909f", bg: "#282a30", border: "#33343b" },
-  backlog: { label: "ממתין", color: "#8c909f", bg: "#282a30", border: "#33343b" },
+  suggested: { label: "ממתין", color: "var(--bv-text-3)", bg: "var(--bv-border)", border: "var(--bv-border-subtle)" },
+  backlog: { label: "ממתין", color: "var(--bv-text-3)", bg: "var(--bv-border)", border: "var(--bv-border-subtle)" },
   in_progress: { label: "בביצוע", color: "#4d8eff", bg: "rgba(77,142,255,0.13)", border: "rgba(77,142,255,0.32)" },
   done: { label: "הושלם", color: "#34d399", bg: "rgba(52,211,153,0.12)", border: "rgba(52,211,153,0.3)" },
 };
@@ -16,15 +16,15 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; 
 const STATUS_OPTIONS: OpportunityStatus[] = ["suggested", "in_progress", "done"];
 
 const C = {
-  bg: "#111319",
-  s1: "#191b22",
-  s2: "#1e1f26",
-  s3: "#282a30",
-  s4: "#33343b",
-  outline: "#424754",
-  muted: "#8c909f",
-  sub: "#c2c6d6",
-  text: "#e2e2eb",
+  bg: "var(--bv-bg)",
+  s1: "var(--bv-surface-raised)",
+  s2: "var(--bv-surface-elevated)",
+  s3: "var(--bv-border)",
+  s4: "var(--bv-border-subtle)",
+  outline: "var(--bv-muted)",
+  muted: "var(--bv-text-3)",
+  sub: "var(--bv-text-2)",
+  text: "var(--bv-text-1)",
   blue: "#4d8eff",
   green: "#34d399",
   amber: "#fbbf24",
@@ -133,7 +133,7 @@ function RobotSVG({ color, active }: { color: string; active: boolean }) {
       <circle cx="57" cy="36" r="5" fill={color} />
       <circle cx="59" cy="34" r="2" fill="white" opacity={0.7} />
       <path d="M34 48 Q45 54 56 48" stroke={color} strokeWidth={2} fill="none" strokeLinecap="round" opacity={0.8} />
-      <rect x="39" y="56" width="12" height="8" rx="3" fill="#1e2030" stroke={color} strokeWidth={1.2} opacity={0.7} />
+      <rect x="39" y="56" width="12" height="8" rx="3" fill="var(--bv-border)" stroke={color} strokeWidth={1.2} opacity={0.7} />
       <rect x="12" y="64" width="66" height="38" rx="12" fill={C.s1} stroke={color} strokeWidth={1.8} />
       <rect x="28" y="72" width="34" height="22" rx="6" fill={color} opacity={0.08} stroke={color} strokeWidth={1} />
       <circle cx="45" cy="83" r="8" fill={color} opacity={0.15} />
@@ -206,7 +206,7 @@ function OpportunityCard({
         width: "100%",
         padding: "18px 16px 16px",
         borderRadius: 16,
-        border: selected ? `1.5px solid ${color}55` : "1.5px solid #282a30",
+        border: selected ? `1.5px solid ${color}55` : "1.5px solid var(--bv-border)",
         backgroundColor: selected ? `${color}08` : C.s1,
         textAlign: "center",
         cursor: "pointer",

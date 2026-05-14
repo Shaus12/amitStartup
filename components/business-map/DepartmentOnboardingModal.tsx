@@ -135,8 +135,8 @@ export function DepartmentOnboardingModal({
           maxWidth: 540,
           maxHeight: "90vh",
           overflowY: "auto",
-          backgroundColor: "#191b22",
-          border: "1px solid #282a30",
+          backgroundColor: "var(--bv-surface-raised)",
+          border: "1px solid var(--bv-border)",
           borderRadius: 20,
           boxShadow: "0 32px 80px rgba(0,0,0,0.7)",
           direction: "rtl",
@@ -146,13 +146,13 @@ export function DepartmentOnboardingModal({
         <div
           style={{
             padding: "18px 20px 14px",
-            borderBottom: "1px solid #1e2030",
+            borderBottom: "1px solid var(--bv-border)",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
             position: "sticky",
             top: 0,
-            backgroundColor: "#191b22",
+            backgroundColor: "var(--bv-surface-raised)",
             zIndex: 1,
           }}
         >
@@ -168,10 +168,10 @@ export function DepartmentOnboardingModal({
               <Lock size={15} color="#4d8eff" />
             </div>
             <div>
-              <div style={{ fontSize: 14, fontWeight: 700, color: "#e2e2eb", fontFamily: "var(--font-manrope)" }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: "var(--bv-text-1)", fontFamily: "var(--font-manrope)" }}>
                 {departmentName}
               </div>
-              <div style={{ fontSize: 11, color: "#8c909f", fontFamily: "var(--font-inter)" }}>
+              <div style={{ fontSize: 11, color: "var(--bv-text-3)", fontFamily: "var(--font-inter)" }}>
                 השלם פרטים לפתיחת ניתוח AI
               </div>
             </div>
@@ -180,10 +180,10 @@ export function DepartmentOnboardingModal({
             onClick={onClose}
             style={{
               background: "none", border: "none", cursor: "pointer",
-              color: "#424754", padding: 4, borderRadius: 6,
+              color: "var(--bv-muted)", padding: 4, borderRadius: 6,
             }}
-            onMouseEnter={e => (e.currentTarget.style.color = "#e2e2eb")}
-            onMouseLeave={e => (e.currentTarget.style.color = "#424754")}
+            onMouseEnter={e => (e.currentTarget.style.color = "var(--bv-text-1)")}
+            onMouseLeave={e => (e.currentTarget.style.color = "var(--bv-muted)")}
           >
             <X size={16} />
           </button>
@@ -192,10 +192,10 @@ export function DepartmentOnboardingModal({
         <div style={{ padding: "20px" }}>
           {/* Processes */}
           <div style={{ marginBottom: 22 }}>
-            <div style={{ fontSize: 12, fontWeight: 700, color: "#c2c6d6", marginBottom: 4, fontFamily: "var(--font-inter)" }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: "var(--bv-text-2)", marginBottom: 4, fontFamily: "var(--font-inter)" }}>
               מהם התהליכים העיקריים במחלקה? *
             </div>
-            <div style={{ fontSize: 11, color: "#424754", marginBottom: 10, fontFamily: "var(--font-inter)" }}>
+            <div style={{ fontSize: 11, color: "var(--bv-muted)", marginBottom: 10, fontFamily: "var(--font-inter)" }}>
               לדוגמה: גיוס לידים, מעקב אחרי הזמנות, דוחות שבועיים
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -209,9 +209,9 @@ export function DepartmentOnboardingModal({
                       flex: 1,
                       height: 38,
                       borderRadius: 8,
-                      border: "1px solid #282a30",
-                      backgroundColor: "#13151d",
-                      color: "#e2e2eb",
+                      border: "1px solid var(--bv-border)",
+                      backgroundColor: "var(--bv-surface)",
+                      color: "var(--bv-text-1)",
                       fontSize: 12,
                       padding: "0 12px",
                       outline: "none",
@@ -219,18 +219,18 @@ export function DepartmentOnboardingModal({
                       direction: "rtl",
                     }}
                     onFocus={e => (e.currentTarget.style.borderColor = "rgba(77,142,255,0.4)")}
-                    onBlur={e => (e.currentTarget.style.borderColor = "#282a30")}
+                    onBlur={e => (e.currentTarget.style.borderColor = "var(--bv-border)")}
                   />
                   {processes.length > 1 && (
                     <button
                       onClick={() => removeProcess(idx)}
                       style={{
-                        background: "none", border: "1px solid #282a30", cursor: "pointer",
-                        color: "#424754", borderRadius: 8, padding: "0 8px",
+                        background: "none", border: "1px solid var(--bv-border)", cursor: "pointer",
+                        color: "var(--bv-muted)", borderRadius: 8, padding: "0 8px",
                         fontSize: 12,
                       }}
                       onMouseEnter={e => (e.currentTarget.style.color = "#f87171")}
-                      onMouseLeave={e => (e.currentTarget.style.color = "#424754")}
+                      onMouseLeave={e => (e.currentTarget.style.color = "var(--bv-muted)")}
                     >
                       ×
                     </button>
@@ -242,16 +242,16 @@ export function DepartmentOnboardingModal({
                 style={{
                   alignSelf: "flex-start",
                   background: "none",
-                  border: "1px dashed #282a30",
+                  border: "1px dashed var(--bv-border)",
                   borderRadius: 8,
                   padding: "6px 14px",
                   fontSize: 11,
-                  color: "#424754",
+                  color: "var(--bv-muted)",
                   cursor: "pointer",
                   fontFamily: "var(--font-inter)",
                 }}
                 onMouseEnter={e => (e.currentTarget.style.color = "#4d8eff")}
-                onMouseLeave={e => (e.currentTarget.style.color = "#424754")}
+                onMouseLeave={e => (e.currentTarget.style.color = "var(--bv-muted)")}
               >
                 + הוסף תהליך
               </button>
@@ -260,7 +260,7 @@ export function DepartmentOnboardingModal({
 
           {/* Tools */}
           <div style={{ marginBottom: 22 }}>
-            <div style={{ fontSize: 12, fontWeight: 700, color: "#c2c6d6", marginBottom: 10, fontFamily: "var(--font-inter)" }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: "var(--bv-text-2)", marginBottom: 10, fontFamily: "var(--font-inter)" }}>
               אילו כלים משתמשים?
             </div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
@@ -275,9 +275,9 @@ export function DepartmentOnboardingModal({
                       borderRadius: 99,
                       fontSize: 11,
                       fontWeight: 600,
-                      border: selected ? "1px solid rgba(77,142,255,0.4)" : "1px solid #282a30",
-                      backgroundColor: selected ? "rgba(77,142,255,0.1)" : "#13151d",
-                      color: selected ? "#4d8eff" : "#8c909f",
+                      border: selected ? "1px solid rgba(77,142,255,0.4)" : "1px solid var(--bv-border)",
+                      backgroundColor: selected ? "rgba(77,142,255,0.1)" : "var(--bv-surface)",
+                      color: selected ? "#4d8eff" : "var(--bv-text-3)",
                       cursor: "pointer",
                       fontFamily: "var(--font-inter)",
                       transition: "all 0.12s",
@@ -292,7 +292,7 @@ export function DepartmentOnboardingModal({
 
           {/* Hours */}
           <div style={{ marginBottom: 22 }}>
-            <div style={{ fontSize: 12, fontWeight: 700, color: "#c2c6d6", marginBottom: 10, fontFamily: "var(--font-inter)" }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: "var(--bv-text-2)", marginBottom: 10, fontFamily: "var(--font-inter)" }}>
               כמה שעות בשבוע הולכות לתהליכים ידניים?
             </div>
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
@@ -305,9 +305,9 @@ export function DepartmentOnboardingModal({
                     borderRadius: 8,
                     fontSize: 12,
                     fontWeight: 600,
-                    border: hoursPerWeek === h ? "1.5px solid rgba(77,142,255,0.5)" : "1px solid #282a30",
-                    backgroundColor: hoursPerWeek === h ? "rgba(77,142,255,0.1)" : "#13151d",
-                    color: hoursPerWeek === h ? "#4d8eff" : "#8c909f",
+                    border: hoursPerWeek === h ? "1.5px solid rgba(77,142,255,0.5)" : "1px solid var(--bv-border)",
+                    backgroundColor: hoursPerWeek === h ? "rgba(77,142,255,0.1)" : "var(--bv-surface)",
+                    color: hoursPerWeek === h ? "#4d8eff" : "var(--bv-text-3)",
                     cursor: "pointer",
                     fontFamily: "var(--font-inter)",
                   }}
@@ -320,7 +320,7 @@ export function DepartmentOnboardingModal({
 
           {/* Main pain */}
           <div style={{ marginBottom: 24 }}>
-            <div style={{ fontSize: 12, fontWeight: 700, color: "#c2c6d6", marginBottom: 8, fontFamily: "var(--font-inter)" }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: "var(--bv-text-2)", marginBottom: 8, fontFamily: "var(--font-inter)" }}>
               מה הבעיה / כאב הכי גדול במחלקה?
             </div>
             <textarea
@@ -331,9 +331,9 @@ export function DepartmentOnboardingModal({
               style={{
                 width: "100%",
                 borderRadius: 10,
-                border: "1px solid #282a30",
-                backgroundColor: "#13151d",
-                color: "#e2e2eb",
+                border: "1px solid var(--bv-border)",
+                backgroundColor: "var(--bv-surface)",
+                color: "var(--bv-text-1)",
                 fontSize: 12,
                 padding: "10px 12px",
                 outline: "none",
@@ -344,7 +344,7 @@ export function DepartmentOnboardingModal({
                 lineHeight: 1.5,
               }}
               onFocus={e => (e.currentTarget.style.borderColor = "rgba(77,142,255,0.4)")}
-              onBlur={e => (e.currentTarget.style.borderColor = "#282a30")}
+              onBlur={e => (e.currentTarget.style.borderColor = "var(--bv-border)")}
             />
           </div>
 
@@ -362,9 +362,9 @@ export function DepartmentOnboardingModal({
               borderRadius: 12,
               border: "none",
               background: !isValid || loading
-                ? "#1e1f26"
+                ? "var(--bv-surface-elevated)"
                 : "linear-gradient(135deg, #4d8eff, #adc6ff)",
-              color: !isValid || loading ? "#424754" : "#001a42",
+              color: !isValid || loading ? "var(--bv-muted)" : "#001a42",
               fontSize: 14,
               fontWeight: 800,
               cursor: !isValid || loading ? "not-allowed" : "pointer",
@@ -379,10 +379,10 @@ export function DepartmentOnboardingModal({
             {loading ? (
               <>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
-                  <span style={{ fontSize: 12, color: "#c2c6d6" }}>{STAGES[stageIdx]}</span>
+                  <span style={{ fontSize: 12, color: "var(--bv-text-2)" }}>{STAGES[stageIdx]}</span>
                   <span style={{ fontSize: 13, fontWeight: 800, color: "#4d8eff" }}>{progress}%</span>
                 </div>
-                <div style={{ width: "100%", height: 5, backgroundColor: "#282a30", borderRadius: 99, overflow: "hidden" }}>
+                <div style={{ width: "100%", height: 5, backgroundColor: "var(--bv-border)", borderRadius: 99, overflow: "hidden" }}>
                   <div
                     style={{
                       height: "100%",

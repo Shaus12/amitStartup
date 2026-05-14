@@ -125,18 +125,18 @@ export function GiftModal({ open, gift, businessName, onClose }: GiftModalProps)
         className="relative z-10 w-full max-w-2xl max-h-[88vh] overflow-hidden rounded-2xl border"
         style={{
           borderColor: "#313440",
-          background: "linear-gradient(180deg, #1b1e27 0%, #13151d 100%)",
+          background: "linear-gradient(180deg, #1b1e27 0%, var(--bv-surface) 100%)",
           boxShadow: "0 30px 80px rgba(0,0,0,0.55)",
         }}
       >
-        <div className="px-6 py-5 border-b" style={{ borderColor: "#282a30" }}>
+        <div className="px-6 py-5 border-b" style={{ borderColor: "var(--bv-border)" }}>
           <h2 className="text-xl font-black" style={{ color: "#eef1ff", fontFamily: "var(--font-manrope)" }}>
             המתנה שלך מוכנה 🎁
           </h2>
           <p className="mt-1 text-sm font-semibold" style={{ color: "#cbd2ff" }}>
             {gift.giftType}
           </p>
-          <p className="mt-1 text-xs" style={{ color: "#8c909f", fontFamily: "var(--font-inter)" }}>
+          <p className="mt-1 text-xs" style={{ color: "var(--bv-text-3)", fontFamily: "var(--font-inter)" }}>
             הוכן במיוחד עבור {businessName}
           </p>
         </div>
@@ -155,7 +155,7 @@ export function GiftModal({ open, gift, businessName, onClose }: GiftModalProps)
           </div>
         </div>
 
-        <div className="px-6 py-4 border-t flex flex-wrap items-center justify-between gap-3" style={{ borderColor: "#282a30" }}>
+        <div className="px-6 py-4 border-t flex flex-wrap items-center justify-between gap-3" style={{ borderColor: "var(--bv-border)" }}>
           <button
             type="button"
             onClick={handleCopy}

@@ -61,7 +61,7 @@ function HealthRingLarge({ score }: { score: number }) {
   return (
     <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
       <svg width={size} height={size} style={{ transform: "rotate(-90deg)" }}>
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#282a30" strokeWidth={sw} />
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="var(--bv-border)" strokeWidth={sw} />
         <circle
           cx={size / 2} cy={size / 2} r={r} fill="none"
           stroke={stroke} strokeWidth={sw} strokeLinecap="round"
@@ -71,7 +71,7 @@ function HealthRingLarge({ score }: { score: number }) {
       </svg>
       <div className="absolute flex flex-col items-center leading-none">
         <span style={{ fontSize: 18, fontWeight: 800, color: stroke, fontFamily: "var(--font-inter)" }}>{score}</span>
-        <span style={{ fontSize: 9, color: "#8c909f", fontFamily: "var(--font-inter)", marginTop: 2 }}>{label}</span>
+        <span style={{ fontSize: 9, color: "var(--bv-text-3)", fontFamily: "var(--font-inter)", marginTop: 2 }}>{label}</span>
       </div>
     </div>
   );
@@ -84,7 +84,7 @@ function ImpactBadge({ type }: { type: string }) {
     revenue:      { label: "📈 הכנסה", color: "#fbbf24", bg: "#fbbf2415" },
     quality:      { label: "✨ איכות", color: "#c084fc", bg: "#c084fc15" },
   };
-  const cfg = map[type] ?? { label: type, color: "#8c909f", bg: "#8c909f15" };
+  const cfg = map[type] ?? { label: type, color: "var(--bv-text-3)", bg: "var(--bv-text-3)15" };
   return (
     <span
       style={{
@@ -186,7 +186,7 @@ export function DepartmentExpandedPanel({ department, onClose }: DepartmentPanel
       className="absolute inset-y-0 right-0 z-50 flex flex-col overflow-hidden"
       style={{
         width: "clamp(320px, 38vw, 480px)",
-        backgroundColor: "#111319",
+        backgroundColor: "var(--bv-bg)",
         borderLeft: `1px solid ${stroke}30`,
         boxShadow: `-8px 0 40px rgba(0,0,0,0.6), 0 0 30px ${stroke}10`,
         animation: "bv-slide-in-right 0.25s cubic-bezier(0.16,1,0.3,1) both",
@@ -196,8 +196,8 @@ export function DepartmentExpandedPanel({ department, onClose }: DepartmentPanel
       <div
         style={{
           padding: "18px 20px 16px",
-          borderBottom: "1px solid #1e2030",
-          background: `linear-gradient(160deg, #16182180 0%, #111319 100%)`,
+          borderBottom: "1px solid var(--bv-border)",
+          background: `linear-gradient(160deg, #16182180 0%, var(--bv-bg) 100%)`,
         }}
       >
         {/* Top glow bar */}
@@ -217,7 +217,7 @@ export function DepartmentExpandedPanel({ department, onClose }: DepartmentPanel
                 <span style={{ fontSize: 20 }}>{emoji}</span>
                 <h2
                   style={{
-                    fontSize: 18, fontWeight: 800, color: "#e2e2eb",
+                    fontSize: 18, fontWeight: 800, color: "var(--bv-text-1)",
                     fontFamily: "var(--font-manrope)", letterSpacing: "-0.02em"
                   }}
                 >
@@ -225,21 +225,21 @@ export function DepartmentExpandedPanel({ department, onClose }: DepartmentPanel
                 </h2>
               </div>
               {department.headcount !== null && (
-                <span style={{ fontSize: 11, color: "#424754", fontFamily: "var(--font-inter)" }}>
+                <span style={{ fontSize: 11, color: "var(--bv-muted)", fontFamily: "var(--font-inter)" }}>
                   {department.headcount} אנשים
                 </span>
               )}
               {/* Mini stats */}
               <div className="flex items-center gap-3 mt-1.5">
-                <span style={{ fontSize: 10, color: "#8c909f", fontFamily: "var(--font-inter)" }}>
-                  <span style={{ color: "#e2e2eb", fontWeight: 700 }}>{department.processes.length}</span> תהליכים
+                <span style={{ fontSize: 10, color: "var(--bv-text-3)", fontFamily: "var(--font-inter)" }}>
+                  <span style={{ color: "var(--bv-text-1)", fontWeight: 700 }}>{department.processes.length}</span> תהליכים
                 </span>
-                <span style={{ fontSize: 10, color: "#424754" }}>·</span>
-                <span style={{ fontSize: 10, color: "#8c909f", fontFamily: "var(--font-inter)" }}>
+                <span style={{ fontSize: 10, color: "var(--bv-muted)" }}>·</span>
+                <span style={{ fontSize: 10, color: "var(--bv-text-3)", fontFamily: "var(--font-inter)" }}>
                   <span style={{ color: "#fbbf24", fontWeight: 700 }}>{manualCount}</span> ידניים
                 </span>
-                <span style={{ fontSize: 10, color: "#424754" }}>·</span>
-                <span style={{ fontSize: 10, color: "#8c909f", fontFamily: "var(--font-inter)" }}>
+                <span style={{ fontSize: 10, color: "var(--bv-muted)" }}>·</span>
+                <span style={{ fontSize: 10, color: "var(--bv-text-3)", fontFamily: "var(--font-inter)" }}>
                   <span style={{ color: "#4d8eff", fontWeight: 700 }}>{department.aiOpportunities.length}</span> הזדמנויות AI
                 </span>
               </div>
@@ -249,17 +249,17 @@ export function DepartmentExpandedPanel({ department, onClose }: DepartmentPanel
             onClick={onClose}
             style={{
               width: 30, height: 30, borderRadius: 8,
-              backgroundColor: "#1a1c24", border: "1px solid #282a30",
-              color: "#8c909f", display: "flex", alignItems: "center", justifyContent: "center",
+              backgroundColor: "var(--bv-surface-elevated)", border: "1px solid var(--bv-border)",
+              color: "var(--bv-text-3)", display: "flex", alignItems: "center", justifyContent: "center",
               cursor: "pointer", flexShrink: 0,
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = "#282a30";
-              e.currentTarget.style.color = "#e2e2eb";
+              e.currentTarget.style.backgroundColor = "var(--bv-border)";
+              e.currentTarget.style.color = "var(--bv-text-1)";
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = "#1a1c24";
-              e.currentTarget.style.color = "#8c909f";
+              e.currentTarget.style.backgroundColor = "var(--bv-surface-elevated)";
+              e.currentTarget.style.color = "var(--bv-text-3)";
             }}
           >
             <X size={13} />
@@ -273,18 +273,18 @@ export function DepartmentExpandedPanel({ department, onClose }: DepartmentPanel
         {/* Processes */}
         <section style={{ marginBottom: 24 }}>
           <div className="flex items-center gap-2 mb-3">
-            <GitBranch size={12} style={{ color: department.color || "#8c909f" }} />
+            <GitBranch size={12} style={{ color: department.color || "var(--bv-text-3)" }} />
             <span
               style={{
                 fontSize: 10, fontWeight: 700, letterSpacing: "0.1em",
-                color: "#424754", textTransform: "uppercase", fontFamily: "var(--font-inter)"
+                color: "var(--bv-muted)", textTransform: "uppercase", fontFamily: "var(--font-inter)"
               }}
             >
               תהליכים ומשימות
             </span>
           </div>
           {department.processes.length === 0 ? (
-            <p style={{ fontSize: 12, color: "#33343b", fontStyle: "italic", fontFamily: "var(--font-inter)" }}>
+            <p style={{ fontSize: 12, color: "var(--bv-border-subtle)", fontStyle: "italic", fontFamily: "var(--font-inter)" }}>
               אין תהליכים עדיין
             </p>
           ) : (
@@ -299,8 +299,8 @@ export function DepartmentExpandedPanel({ department, onClose }: DepartmentPanel
                     key={p.id}
                     className="flex flex-col gap-0 rounded-lg overflow-hidden border transition-colors duration-200"
                     style={{
-                      backgroundColor: "#1a1c24",
-                      borderColor: isExpanded ? "#282a30" : "#1e2030",
+                      backgroundColor: "var(--bv-surface-elevated)",
+                      borderColor: isExpanded ? "var(--bv-border)" : "var(--bv-border)",
                     }}
                   >
                     <button
@@ -309,7 +309,7 @@ export function DepartmentExpandedPanel({ department, onClose }: DepartmentPanel
                       style={{ padding: "8px 12px", cursor: "pointer", background: "transparent", border: "none" }}
                     >
                       <div className="flex items-center gap-2 min-w-0">
-                        {isExpanded ? <ChevronUp size={14} style={{ color: "#8c909f", flexShrink: 0 }} /> : <ChevronDown size={14} style={{ color: "#8c909f", flexShrink: 0 }} />}
+                        {isExpanded ? <ChevronUp size={14} style={{ color: "var(--bv-text-3)", flexShrink: 0 }} /> : <ChevronDown size={14} style={{ color: "var(--bv-text-3)", flexShrink: 0 }} />}
                         {p.isManual ? (
                           <AlertTriangle size={11} style={{ color: "#fbbf24", flexShrink: 0 }} />
                         ) : (
@@ -317,7 +317,7 @@ export function DepartmentExpandedPanel({ department, onClose }: DepartmentPanel
                         )}
                         <span
                           style={{
-                            fontSize: 12, color: "#c2c6d6", fontFamily: "var(--font-inter)",
+                            fontSize: 12, color: "var(--bv-text-2)", fontFamily: "var(--font-inter)",
                             whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis"
                           }}
                         >
@@ -328,8 +328,8 @@ export function DepartmentExpandedPanel({ department, onClose }: DepartmentPanel
                         {p.frequency && (
                           <span
                             style={{
-                              fontSize: 9, color: "#424754", fontFamily: "var(--font-inter)",
-                              backgroundColor: "#282a30", padding: "1px 6px", borderRadius: 999
+                              fontSize: 9, color: "var(--bv-muted)", fontFamily: "var(--font-inter)",
+                              backgroundColor: "var(--bv-border)", padding: "1px 6px", borderRadius: 999
                             }}
                           >
                             {p.frequency}
@@ -360,31 +360,31 @@ export function DepartmentExpandedPanel({ department, onClose }: DepartmentPanel
                       }}
                     >
                       {isExpanded && (
-                        <div style={{ padding: "12px 12px 16px", borderTop: "1px solid #1e2030" }}>
+                        <div style={{ padding: "12px 12px 16px", borderTop: "1px solid var(--bv-border)" }}>
                           {isLoading ? (
                             <div className="flex flex-col items-center justify-center py-4 gap-2">
                               <Loader2 size={16} className="animate-spin" style={{ color: "#4d8eff" }} />
-                              <span style={{ fontSize: 11, color: "#8c909f", fontFamily: "var(--font-inter)" }}>מנתח תהליך...</span>
+                              <span style={{ fontSize: 11, color: "var(--bv-text-3)", fontFamily: "var(--font-inter)" }}>מנתח תהליך...</span>
                             </div>
                           ) : breakdown ? (
                             <div className="space-y-3">
                               {breakdown.subSteps.map((step, idx) => (
                                 <div key={idx} className="flex gap-2">
-                                  <div className="shrink-0 flex items-center justify-center w-5 h-5 rounded-full mt-0.5" style={{ backgroundColor: "#1e2030", color: "#8c909f", fontSize: 10, fontWeight: 800 }}>
+                                  <div className="shrink-0 flex items-center justify-center w-5 h-5 rounded-full mt-0.5" style={{ backgroundColor: "var(--bv-border)", color: "var(--bv-text-3)", fontSize: 10, fontWeight: 800 }}>
                                     {idx + 1}
                                   </div>
                                   <div className="min-w-0 flex-1">
                                     <div className="flex items-start justify-between gap-2 mb-1">
-                                      <span style={{ fontSize: 11, color: "#e2e2eb", fontWeight: 700, fontFamily: "var(--font-inter)", lineHeight: 1.3 }}>{step.name}</span>
+                                      <span style={{ fontSize: 11, color: "var(--bv-text-1)", fontWeight: 700, fontFamily: "var(--font-inter)", lineHeight: 1.3 }}>{step.name}</span>
                                       <span style={{ 
                                         fontSize: 9, fontWeight: 700, padding: "2px 6px", borderRadius: 4, whiteSpace: "nowrap",
                                         backgroundColor: step.automatable ? "rgba(52,211,153,0.15)" : "rgba(140,144,159,0.15)",
-                                        color: step.automatable ? "#34d399" : "#8c909f"
+                                        color: step.automatable ? "#34d399" : "var(--bv-text-3)"
                                       }}>
                                         {step.automatable ? "⚡ ניתן לאוטומציה" : "👤 ידני"}
                                       </span>
                                     </div>
-                                    <p style={{ fontSize: 10, color: "#8c909f", lineHeight: 1.4, fontFamily: "var(--font-inter)" }}>
+                                    <p style={{ fontSize: 10, color: "var(--bv-text-3)", lineHeight: 1.4, fontFamily: "var(--font-inter)" }}>
                                       {step.description}
                                     </p>
                                     {step.automatable && step.tool && (
@@ -419,14 +419,14 @@ export function DepartmentExpandedPanel({ department, onClose }: DepartmentPanel
             <span
               style={{
                 fontSize: 10, fontWeight: 700, letterSpacing: "0.1em",
-                color: "#424754", textTransform: "uppercase", fontFamily: "var(--font-inter)"
+                color: "var(--bv-muted)", textTransform: "uppercase", fontFamily: "var(--font-inter)"
               }}
             >
               הזדמנויות AI
             </span>
           </div>
           {department.aiOpportunities.length === 0 ? (
-            <p style={{ fontSize: 12, color: "#33343b", fontStyle: "italic", fontFamily: "var(--font-inter)" }}>
+            <p style={{ fontSize: 12, color: "var(--bv-border-subtle)", fontStyle: "italic", fontFamily: "var(--font-inter)" }}>
               אין הזדמנויות עדיין — הפעל ניתוח AI לקבלת המלצות
             </p>
           ) : (
@@ -444,7 +444,7 @@ export function DepartmentExpandedPanel({ department, onClose }: DepartmentPanel
                   <div className="flex items-start justify-between gap-2 mb-2">
                     <span
                       style={{
-                        fontSize: 12, fontWeight: 600, color: "#e2e2eb",
+                        fontSize: 12, fontWeight: 600, color: "var(--bv-text-1)",
                         fontFamily: "var(--font-manrope)", lineHeight: 1.4, flex: 1
                       }}
                     >
@@ -458,12 +458,12 @@ export function DepartmentExpandedPanel({ department, onClose }: DepartmentPanel
                     style={{
                       display: "flex", alignItems: "center", gap: 5,
                       fontSize: 10, fontWeight: 700,
-                      color: creatingTask === opp.id ? "#424754" : "#4d8eff",
+                      color: creatingTask === opp.id ? "var(--bv-muted)" : "#4d8eff",
                       background: "transparent", border: "none", cursor: "pointer",
                       padding: 0, fontFamily: "var(--font-inter)"
                     }}
                     onMouseEnter={(e) => { if (creatingTask !== opp.id) e.currentTarget.style.color = "#adc6ff"; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.color = creatingTask === opp.id ? "#424754" : "#4d8eff"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.color = creatingTask === opp.id ? "var(--bv-muted)" : "#4d8eff"; }}
                   >
                     {creatingTask === opp.id ? "יוצר..." : "+ צור משימה"}
                   </button>

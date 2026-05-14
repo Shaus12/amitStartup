@@ -63,19 +63,19 @@ export function ReportClient({ business }: { business: Business }) {
       {/* Print toolbar (hidden when printing) */}
       <div
         className="print:hidden sticky top-0 z-50 flex items-center justify-between px-6 h-12"
-        style={{ backgroundColor: "#111319", borderBottom: "1px solid #282a30" }}
+        style={{ backgroundColor: "var(--bv-bg)", borderBottom: "1px solid var(--bv-border)" }}
       >
-        <Link href="/dashboard" className="flex items-center gap-2 text-xs" style={{ color: "#8c909f", fontFamily: "var(--font-inter)" }}>
+        <Link href="/dashboard" className="flex items-center gap-2 text-xs" style={{ color: "var(--bv-text-3)", fontFamily: "var(--font-inter)" }}>
           <ArrowLeft className="w-3.5 h-3.5" /> Back to dashboard
         </Link>
         <div className="flex items-center gap-2">
-          <span className="text-[11px]" style={{ color: "#424754", fontFamily: "var(--font-inter)" }}>
+          <span className="text-[11px]" style={{ color: "var(--bv-muted)", fontFamily: "var(--font-inter)" }}>
             {business.name} — AI Business Report
           </span>
           <button
             onClick={handlePrint}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-semibold transition-all duration-150 active:scale-[0.97]"
-            style={{ backgroundColor: "#e2e2eb", color: "#0c0e14", fontFamily: "var(--font-inter)" }}
+            style={{ backgroundColor: "var(--bv-text-1)", color: "#0c0e14", fontFamily: "var(--font-inter)" }}
           >
             <Printer className="w-3 h-3" strokeWidth={2} />
             Export PDF

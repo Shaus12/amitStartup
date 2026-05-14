@@ -80,15 +80,15 @@ export function FeedbackWidget({ businessId }: FeedbackWidgetProps) {
             zIndex: 9998,
             width: 300,
             transform: `translate(${dragOffset.x}px, ${dragOffset.y}px)`,
-            backgroundColor: "#13151d",
-            border: "1px solid #282a30",
+            backgroundColor: "var(--bv-surface)",
+            border: "1px solid var(--bv-border)",
             borderRadius: 14,
             padding: 12,
             boxShadow: "0 16px 40px rgba(0,0,0,0.55)",
           }}
         >
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-            <div style={{ fontSize: 12, fontWeight: 700, color: "#e2e2eb", fontFamily: "var(--font-inter)" }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: "var(--bv-text-1)", fontFamily: "var(--font-inter)" }}>
               רעיון למוצר?
             </div>
             <button
@@ -97,7 +97,7 @@ export function FeedbackWidget({ businessId }: FeedbackWidgetProps) {
               style={{
                 background: "none",
                 border: "none",
-                color: "#8c909f",
+                color: "var(--bv-text-3)",
                 cursor: "pointer",
                 padding: 2,
               }}
@@ -117,9 +117,9 @@ export function FeedbackWidget({ businessId }: FeedbackWidgetProps) {
               minHeight: 84,
               resize: "vertical",
               borderRadius: 10,
-              border: "1px solid #282a30",
-              backgroundColor: "#1a1c24",
-              color: "#e2e2eb",
+              border: "1px solid var(--bv-border)",
+              backgroundColor: "var(--bv-surface-elevated)",
+              color: "var(--bv-text-1)",
               fontSize: 12,
               fontFamily: "var(--font-inter)",
               padding: "10px 10px",
@@ -128,7 +128,7 @@ export function FeedbackWidget({ businessId }: FeedbackWidgetProps) {
           />
 
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 8 }}>
-            <span style={{ fontSize: 10, color: status?.includes("תודה") ? "#34d399" : "#8c909f", fontFamily: "var(--font-inter)" }}>
+            <span style={{ fontSize: 10, color: status?.includes("תודה") ? "#34d399" : "var(--bv-text-3)", fontFamily: "var(--font-inter)" }}>
               {status ?? "נשלח ישירות לצוות המוצר"}
             </span>
             <button
@@ -139,8 +139,8 @@ export function FeedbackWidget({ businessId }: FeedbackWidgetProps) {
                 padding: "0 10px",
                 borderRadius: 8,
                 border: "none",
-                background: message.trim() ? "linear-gradient(135deg, #4d8eff, #adc6ff)" : "#1e1f26",
-                color: message.trim() ? "#001a42" : "#424754",
+                background: message.trim() ? "linear-gradient(135deg, #4d8eff, #adc6ff)" : "var(--bv-surface-elevated)",
+                color: message.trim() ? "#001a42" : "var(--bv-muted)",
                 fontSize: 11,
                 fontWeight: 700,
                 fontFamily: "var(--font-inter)",
@@ -173,7 +173,7 @@ export function FeedbackWidget({ businessId }: FeedbackWidgetProps) {
             padding: "0 12px",
             borderRadius: 999,
             border: "1px solid #2a3247",
-            backgroundColor: "#1a1c24",
+            backgroundColor: "var(--bv-surface-elevated)",
             color: "#adc6ff",
             fontSize: 11,
             fontWeight: 700,

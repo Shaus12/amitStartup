@@ -48,27 +48,27 @@ export function OpportunityCard({ opportunity, onPin, onDismiss }: OpportunityCa
       <div
         className="relative rounded-xl overflow-hidden"
         style={{
-          backgroundColor: "#191b22",
-          border: "1px solid #282a30",
+          backgroundColor: "var(--bv-surface-raised)",
+          border: "1px solid var(--bv-border)",
         }}
       >
         <div className="p-4 filter blur-[2px] select-none pointer-events-none" aria-hidden="true">
           <div className="flex items-center gap-2 mb-2">
-            <span className="inline-block w-16 h-4 rounded-full" style={{ backgroundColor: "#282a30" }} />
-            <span className="inline-block w-10 h-4 rounded-full" style={{ backgroundColor: "#282a30" }} />
+            <span className="inline-block w-16 h-4 rounded-full" style={{ backgroundColor: "var(--bv-border)" }} />
+            <span className="inline-block w-10 h-4 rounded-full" style={{ backgroundColor: "var(--bv-border)" }} />
           </div>
-          <div className="w-3/4 h-3.5 rounded mb-1" style={{ backgroundColor: "#282a30" }} />
-          <div className="w-1/2 h-3 rounded mb-3" style={{ backgroundColor: "#1e1f26" }} />
+          <div className="w-3/4 h-3.5 rounded mb-1" style={{ backgroundColor: "var(--bv-border)" }} />
+          <div className="w-1/2 h-3 rounded mb-3" style={{ backgroundColor: "var(--bv-surface-elevated)" }} />
           <div className="flex gap-2">
-            <span className="inline-block w-20 h-6 rounded-full" style={{ backgroundColor: "#1e1f26" }} />
-            <span className="inline-block w-16 h-6 rounded-full" style={{ backgroundColor: "#1e1f26" }} />
+            <span className="inline-block w-20 h-6 rounded-full" style={{ backgroundColor: "var(--bv-surface-elevated)" }} />
+            <span className="inline-block w-16 h-6 rounded-full" style={{ backgroundColor: "var(--bv-surface-elevated)" }} />
           </div>
         </div>
         <div
           className="absolute inset-0 flex flex-col items-center justify-center gap-2"
           style={{ backgroundColor: "rgba(19,21,29,0.7)" }}
         >
-          <Lock className="w-4 h-4" style={{ color: "#8c909f" }} />
+          <Lock className="w-4 h-4" style={{ color: "var(--bv-text-3)" }} />
           <button
             onClick={() => router.push("/billing")}
             className="text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors"
@@ -89,12 +89,12 @@ export function OpportunityCard({ opportunity, onPin, onDismiss }: OpportunityCa
     <div
       className="relative rounded-xl overflow-hidden transition-all duration-150 group"
       style={{
-        backgroundColor: "#191b22",
-        border: isPinned ? `1px solid rgba(251,191,36,0.35)` : "1px solid #282a30",
+        backgroundColor: "var(--bv-surface-raised)",
+        border: isPinned ? `1px solid rgba(251,191,36,0.35)` : "1px solid var(--bv-border)",
         boxShadow: isPinned ? "0 0 0 1px rgba(251,191,36,0.1)" : "none",
       }}
-      onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = isPinned ? "rgba(251,191,36,0.5)" : "#424754"; }}
-      onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = isPinned ? "rgba(251,191,36,0.35)" : "#282a30"; }}
+      onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = isPinned ? "rgba(251,191,36,0.5)" : "var(--bv-muted)"; }}
+      onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = isPinned ? "rgba(251,191,36,0.35)" : "var(--bv-border)"; }}
     >
       {/* Left accent bar */}
       <div
@@ -145,9 +145,9 @@ export function OpportunityCard({ opportunity, onPin, onDismiss }: OpportunityCa
               onClick={onPin}
               aria-label={isPinned ? "הסר נעיצה" : "נעץ"}
               className="p-1.5 rounded-md transition-colors"
-              style={{ color: isPinned ? "#fbbf24" : "#424754" }}
+              style={{ color: isPinned ? "#fbbf24" : "var(--bv-muted)" }}
               onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "#fbbf24"; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = isPinned ? "#fbbf24" : "#424754"; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = isPinned ? "#fbbf24" : "var(--bv-muted)"; }}
             >
               <Star className={`w-3.5 h-3.5 ${isPinned ? "fill-current" : ""}`} />
             </button>
@@ -155,9 +155,9 @@ export function OpportunityCard({ opportunity, onPin, onDismiss }: OpportunityCa
               onClick={onDismiss}
               aria-label="התעלם"
               className="p-1.5 rounded-md transition-colors"
-              style={{ color: "#424754" }}
+              style={{ color: "var(--bv-muted)" }}
               onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "#f87171"; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "#424754"; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "var(--bv-muted)"; }}
             >
               <X className="w-3.5 h-3.5" />
             </button>
@@ -167,7 +167,7 @@ export function OpportunityCard({ opportunity, onPin, onDismiss }: OpportunityCa
         {/* Title */}
         <h3
           className="text-sm font-semibold mb-1 leading-snug"
-          style={{ color: "#e2e2eb", fontFamily: "var(--font-manrope)" }}
+          style={{ color: "var(--bv-text-1)", fontFamily: "var(--font-manrope)" }}
         >
           {opportunity.title}
         </h3>
@@ -175,7 +175,7 @@ export function OpportunityCard({ opportunity, onPin, onDismiss }: OpportunityCa
         {/* Description — 2 lines max */}
         <p
           className="text-xs leading-relaxed mb-3 line-clamp-2"
-          style={{ color: "#8c909f", fontFamily: "var(--font-inter)" }}
+          style={{ color: "var(--bv-text-3)", fontFamily: "var(--font-inter)" }}
         >
           {opportunity.description}
         </p>
@@ -192,8 +192,8 @@ export function OpportunityCard({ opportunity, onPin, onDismiss }: OpportunityCa
             </span>
             {agentTools.length > 0 && (
               <>
-                <span style={{ color: "#424754" }}>·</span>
-                <span className="text-[10px]" style={{ color: "#8c909f" }}>
+                <span style={{ color: "var(--bv-muted)" }}>·</span>
+                <span className="text-[10px]" style={{ color: "var(--bv-text-3)" }}>
                   {agentTools.join(", ")}
                   {(opportunity.agentTools?.split(",").length ?? 0) > 3 ? " +עוד" : ""}
                 </span>
@@ -225,7 +225,7 @@ export function OpportunityCard({ opportunity, onPin, onDismiss }: OpportunityCa
           {opportunity.setupComplexity && (
             <span
               className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-[10px]"
-              style={{ backgroundColor: "#1e1f26", color: "#424754", border: "1px solid #282a30" }}
+              style={{ backgroundColor: "var(--bv-surface-elevated)", color: "var(--bv-muted)", border: "1px solid var(--bv-border)" }}
             >
               {opportunity.setupComplexity === "plug_and_play" ? "מוכן לשימוש" :
                opportunity.setupComplexity === "some_setup" ? "דורש התקנה" : "בנייה מותאמת"}
@@ -233,7 +233,7 @@ export function OpportunityCard({ opportunity, onPin, onDismiss }: OpportunityCa
           )}
 
           {/* Spacer + view arrow */}
-          <ArrowRight className="w-3 h-3 ml-auto opacity-0 group-hover:opacity-40 transition-opacity" style={{ color: "#8c909f" }} />
+          <ArrowRight className="w-3 h-3 ml-auto opacity-0 group-hover:opacity-40 transition-opacity" style={{ color: "var(--bv-text-3)" }} />
         </div>
       </div>
     </div>

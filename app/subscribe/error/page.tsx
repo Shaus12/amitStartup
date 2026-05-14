@@ -9,7 +9,7 @@ export default function SubscribeErrorPage() {
   return (
     <div
       className="min-h-screen flex items-center justify-center px-4"
-      style={{ backgroundColor: "#111319" }}
+      style={{ backgroundColor: "var(--bv-bg)" }}
       dir="rtl"
     >
       <div className="text-center">

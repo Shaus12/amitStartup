@@ -46,15 +46,15 @@ interface MetricCardProps {
   color?: string;
 }
 
-function MetricCard({ icon, value, label, suffix = "", decimals = 0, color = "#e2e2eb" }: MetricCardProps) {
+function MetricCard({ icon, value, label, suffix = "", decimals = 0, color = "var(--bv-text-1)" }: MetricCardProps) {
   const count = useCountUp(value);
   
   return (
     <div 
       className="flex items-center gap-4 p-4 rounded-xl border transition-all duration-300"
       style={{
-        backgroundColor: "#1e1f26",
-        borderColor: "#282a30",
+        backgroundColor: "var(--bv-surface-elevated)",
+        borderColor: "var(--bv-border)",
       }}
     >
       <div 
@@ -66,13 +66,13 @@ function MetricCard({ icon, value, label, suffix = "", decimals = 0, color = "#e
       <div className="min-w-0">
         <div 
           className="text-2xl font-bold font-mono tracking-tight truncate"
-          style={{ color: "#e2e2eb" }}
+          style={{ color: "var(--bv-text-1)" }}
         >
           {count.toFixed(decimals)}{suffix}
         </div>
         <div 
           className="text-[11px] font-medium truncate"
-          style={{ color: "#8c909f", fontFamily: "var(--font-inter)" }}
+          style={{ color: "var(--bv-text-3)", fontFamily: "var(--font-inter)" }}
         >
           {label}
         </div>
@@ -123,7 +123,7 @@ export function DashboardStats({ businessId }: { businessId: string }) {
   if (!isMounted) return null;
 
   return (
-    <div className="shrink-0 transition-all duration-300" style={{ backgroundColor: "#111319", borderBottom: "1px solid #1e1f26" }}>
+    <div className="shrink-0 transition-all duration-300" style={{ backgroundColor: "var(--bv-bg)", borderBottom: "1px solid var(--bv-surface-elevated)" }}>
       <button 
         onClick={toggleCollapse} 
         className="w-full h-8 flex items-center justify-center gap-1.5 transition-colors"
@@ -131,11 +131,11 @@ export function DashboardStats({ businessId }: { businessId: string }) {
           backgroundColor: isCollapsed ? "transparent" : "rgba(25,27,34,0.4)",
         }}
       >
-        <span className="text-xs font-semibold tracking-wide" style={{ color: "#8c909f", fontFamily: "var(--font-inter)" }}>
+        <span className="text-xs font-semibold tracking-wide" style={{ color: "var(--bv-text-3)", fontFamily: "var(--font-inter)" }}>
           סטטיסטיקות
         </span>
         <svg 
-          width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8c909f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+          width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--bv-text-3)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
           style={{ transform: isCollapsed ? "rotate(0deg)" : "rotate(180deg)", transition: "transform 0.3s" }}
         >
           <polyline points="6 9 12 15 18 9"></polyline>
@@ -149,11 +149,11 @@ export function DashboardStats({ businessId }: { businessId: string }) {
           opacity: isCollapsed ? 0 : 1,
         }}
       >
-        <div className="px-6 py-4" style={{ borderTop: "1px solid #1e1f26" }}>
+        <div className="px-6 py-4" style={{ borderTop: "1px solid var(--bv-surface-elevated)" }}>
           {isLoading ? (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {[1, 2, 3, 4].map(i => (
-                <div key={i} className="h-[74px] rounded-xl border animate-pulse" style={{ backgroundColor: "#1e1f26", borderColor: "#282a30" }} />
+                <div key={i} className="h-[74px] rounded-xl border animate-pulse" style={{ backgroundColor: "var(--bv-surface-elevated)", borderColor: "var(--bv-border)" }} />
               ))}
             </div>
           ) : (

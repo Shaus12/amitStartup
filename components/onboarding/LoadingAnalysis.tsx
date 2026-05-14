@@ -173,9 +173,9 @@ export function LoadingAnalysis() {
               href="/dashboard"
               className="inline-flex items-center justify-center rounded-lg px-5 py-2.5 text-sm font-medium"
               style={{
-                background: "#1e1f26",
-                border: "1px solid #282a30",
-                color: "#8c909f",
+                background: "var(--bv-surface-elevated)",
+                border: "1px solid var(--bv-border)",
+                color: "var(--bv-text-3)",
                 textDecoration: "none",
                 fontFamily: "var(--font-inter)",
               }}

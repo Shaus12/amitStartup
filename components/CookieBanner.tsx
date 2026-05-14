@@ -61,7 +61,7 @@ export function CookieBanner() {
             className="w-full md:w-auto px-6 py-2.5 rounded-lg flex items-center justify-center gap-2 transition-all"
             style={{
               background: "linear-gradient(135deg, #4d8eff, #adc6ff)",
-              color: "#111319"
+              color: "var(--bv-bg)"
             }}
           >
             <span className="text-sm font-bold" style={{ fontFamily: "var(--font-manrope)" }}>אני מסכים/ה ✓</span>

@@ -382,8 +382,8 @@ export function FloatingAgent({ businessId }: { businessId: string }) {
             width: 340,
             height: 470,
             transform: `translate(${dragOffset.x}px, ${dragOffset.y}px)`,
-            backgroundColor: "#13151d",
-            border: "1px solid #282a30",
+            backgroundColor: "var(--bv-surface)",
+            border: "1px solid var(--bv-border)",
             borderRadius: 20,
             display: "flex",
             flexDirection: "column",
@@ -396,7 +396,7 @@ export function FloatingAgent({ businessId }: { businessId: string }) {
               <div
                 style={{
                   padding: "12px 14px",
-                  borderBottom: "1px solid #1e2030",
+                  borderBottom: "1px solid var(--bv-border)",
                   display: "flex",
                   alignItems: "center",
                   gap: 10,
@@ -424,7 +424,7 @@ export function FloatingAgent({ businessId }: { businessId: string }) {
                     minWidth: 0,
                     fontSize: 14,
                     fontWeight: 800,
-                    color: "#e2e2eb",
+                    color: "var(--bv-text-1)",
                     fontFamily: "var(--font-manrope)",
                   }}
                 >
@@ -439,14 +439,14 @@ export function FloatingAgent({ businessId }: { businessId: string }) {
                     background: "none",
                     border: "none",
                     cursor: "pointer",
-                    color: "#424754",
+                    color: "var(--bv-muted)",
                     padding: 4,
                     display: "flex",
                     borderRadius: 6,
                     transition: "color 0.12s",
                   }}
-                  onMouseEnter={(e) => (e.currentTarget.style.color = "#e2e2eb")}
-                  onMouseLeave={(e) => (e.currentTarget.style.color = "#424754")}
+                  onMouseEnter={(e) => (e.currentTarget.style.color = "var(--bv-text-1)")}
+                  onMouseLeave={(e) => (e.currentTarget.style.color = "var(--bv-muted)")}
                 >
                   <X size={15} />
                 </button>
@@ -485,7 +485,7 @@ export function FloatingAgent({ businessId }: { businessId: string }) {
                 }}
               >
                 {sessionsLoading ? (
-                  <div style={{ color: "#8c909f", fontSize: 12, paddingTop: 10 }}>טוען שיחות...</div>
+                  <div style={{ color: "var(--bv-text-3)", fontSize: 12, paddingTop: 10 }}>טוען שיחות...</div>
                 ) : sessionsLoadError ? (
                   <div
                     style={{
@@ -518,7 +518,7 @@ export function FloatingAgent({ businessId }: { businessId: string }) {
                     </button>
                   </div>
                 ) : sessions.length === 0 ? (
-                  <div style={{ color: "#8c909f", fontSize: 12, paddingTop: 10 }}>
+                  <div style={{ color: "var(--bv-text-3)", fontSize: 12, paddingTop: 10 }}>
                     עדיין אין שיחות — התחל שיחה חדשה
                   </div>
                 ) : (
@@ -536,12 +536,12 @@ export function FloatingAgent({ businessId }: { businessId: string }) {
                       style={{
                         width: "100%",
                         textAlign: "right",
-                        backgroundColor: "#1a1c24",
-                        border: "1px solid #282a30",
+                        backgroundColor: "var(--bv-surface-elevated)",
+                        border: "1px solid var(--bv-border)",
                         borderRadius: 12,
                         padding: "10px 11px",
                         cursor: "pointer",
-                        color: "#e2e2eb",
+                        color: "var(--bv-text-1)",
                         fontFamily: "var(--font-inter)",
                         transition: "opacity 0.2s ease, transform 0.2s ease",
                         opacity: deletingSessionId === session.id ? 0 : 1,
@@ -581,8 +581,8 @@ export function FloatingAgent({ businessId }: { businessId: string }) {
                               height: 24,
                               borderRadius: 6,
                               border: "1px solid rgba(77,142,255,0.35)",
-                              backgroundColor: "#11141d",
-                              color: "#e2e2eb",
+                              backgroundColor: "var(--bv-surface)",
+                              color: "var(--bv-text-1)",
                               fontSize: 12,
                               fontWeight: 700,
                               padding: "0 8px",
@@ -639,9 +639,9 @@ export function FloatingAgent({ businessId }: { businessId: string }) {
                               width: 22,
                               height: 22,
                               borderRadius: 6,
-                              border: "1px solid #2b2f3c",
-                              background: "#171a24",
-                              color: "#8c909f",
+                              border: "1px solid var(--bv-border)",
+                              background: "var(--bv-surface-elevated)",
+                              color: "var(--bv-text-3)",
                               display: "flex",
                               alignItems: "center",
                               justifyContent: "center",
@@ -676,7 +676,7 @@ export function FloatingAgent({ businessId }: { businessId: string }) {
                             <Trash2 size={11} />
                           </button>
                         </div>
-                        <span style={{ fontSize: 10, color: "#8c909f", flexShrink: 0 }}>
+                        <span style={{ fontSize: 10, color: "var(--bv-text-3)", flexShrink: 0 }}>
                           {formatSessionDate(session.last_message_at || session.updated_at)}
                         </span>
                       </div>
@@ -720,9 +720,9 @@ export function FloatingAgent({ businessId }: { businessId: string }) {
                                 setConfirmDeleteSessionId(null);
                               }}
                               style={{
-                                border: "1px solid #2b2f3c",
-                                background: "#171a24",
-                                color: "#8c909f",
+                                border: "1px solid var(--bv-border)",
+                                background: "var(--bv-surface-elevated)",
+                                color: "var(--bv-text-3)",
                                 borderRadius: 6,
                                 fontSize: 10,
                                 padding: "2px 8px",
@@ -738,7 +738,7 @@ export function FloatingAgent({ businessId }: { businessId: string }) {
                         <div
                           style={{
                             fontSize: 11,
-                            color: "#8c909f",
+                            color: "var(--bv-text-3)",
                             whiteSpace: "nowrap",
                             overflow: "hidden",
                             textOverflow: "ellipsis",
@@ -758,7 +758,7 @@ export function FloatingAgent({ businessId }: { businessId: string }) {
               <div
                 style={{
                   padding: "12px 14px",
-                  borderBottom: "1px solid #1e2030",
+                  borderBottom: "1px solid var(--bv-border)",
                   display: "flex",
                   alignItems: "center",
                   gap: 10,
@@ -772,7 +772,7 @@ export function FloatingAgent({ businessId }: { businessId: string }) {
                     background: "none",
                     border: "none",
                     cursor: "pointer",
-                    color: "#8c909f",
+                    color: "var(--bv-text-3)",
                     padding: "2px 6px",
                     display: "flex",
                     alignItems: "center",
@@ -789,7 +789,7 @@ export function FloatingAgent({ businessId }: { businessId: string }) {
                     style={{
                       fontSize: 13,
                       fontWeight: 800,
-                      color: "#e2e2eb",
+                      color: "var(--bv-text-1)",
                       fontFamily: "var(--font-manrope)",
                       overflow: "hidden",
                       textOverflow: "ellipsis",
@@ -810,14 +810,14 @@ export function FloatingAgent({ businessId }: { businessId: string }) {
                     background: "none",
                     border: "none",
                     cursor: "pointer",
-                    color: "#424754",
+                    color: "var(--bv-muted)",
                     padding: 4,
                     display: "flex",
                     borderRadius: 6,
                     transition: "color 0.12s",
                   }}
-                  onMouseEnter={(e) => (e.currentTarget.style.color = "#e2e2eb")}
-                  onMouseLeave={(e) => (e.currentTarget.style.color = "#424754")}
+                  onMouseEnter={(e) => (e.currentTarget.style.color = "var(--bv-text-1)")}
+                  onMouseLeave={(e) => (e.currentTarget.style.color = "var(--bv-muted)")}
                 >
                   <X size={15} />
                 </button>
@@ -834,7 +834,7 @@ export function FloatingAgent({ businessId }: { businessId: string }) {
                 }}
               >
                 {messagesLoading ? (
-                  <div style={{ color: "#8c909f", fontSize: 12 }}>טוען היסטוריה...</div>
+                  <div style={{ color: "var(--bv-text-3)", fontSize: 12 }}>טוען היסטוריה...</div>
                 ) : (
                   messages.map((msg, i) => (
                     <div
@@ -856,12 +856,12 @@ export function FloatingAgent({ businessId }: { businessId: string }) {
                             width: 24,
                             height: 24,
                             borderRadius: 7,
-                            border: "1px solid #2a2f3c",
-                            backgroundColor: "#171a24",
+                            border: "1px solid var(--bv-border)",
+                            backgroundColor: "var(--bv-surface-elevated)",
                             color:
                               copiedMessageKey === (msg.id || `${msg.role}-${i}`)
                                 ? "#86efac"
-                                : "#8c909f",
+                                : "var(--bv-text-3)",
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
@@ -885,12 +885,12 @@ export function FloatingAgent({ businessId }: { businessId: string }) {
                               ? "14px 14px 14px 4px"
                               : "14px 14px 4px 14px",
                           backgroundColor:
-                            msg.role === "user" ? "#1e1f26" : "rgba(77,142,255,0.10)",
+                            msg.role === "user" ? "var(--bv-surface-elevated)" : "rgba(77,142,255,0.10)",
                           border: `1px solid ${
-                            msg.role === "user" ? "#282a30" : "rgba(77,142,255,0.20)"
+                            msg.role === "user" ? "var(--bv-border)" : "rgba(77,142,255,0.20)"
                           }`,
                           fontSize: 12,
-                          color: "#e2e2eb",
+                          color: "var(--bv-text-1)",
                           lineHeight: 1.55,
                           fontFamily: "var(--font-inter)",
                           direction: "rtl",
@@ -972,9 +972,9 @@ export function FloatingAgent({ businessId }: { businessId: string }) {
                       padding: "3px 9px",
                       borderRadius: 99,
                       cursor: "pointer",
-                      backgroundColor: "#1a1c24",
-                      border: "1px solid #282a30",
-                      color: "#8c909f",
+                      backgroundColor: "var(--bv-surface-elevated)",
+                      border: "1px solid var(--bv-border)",
+                      color: "var(--bv-text-3)",
                       fontFamily: "var(--font-inter)",
                       direction: "rtl",
                       transition: "all 0.12s",
@@ -984,8 +984,8 @@ export function FloatingAgent({ businessId }: { businessId: string }) {
                       e.currentTarget.style.color = "#4d8eff";
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.borderColor = "#282a30";
-                      e.currentTarget.style.color = "#8c909f";
+                      e.currentTarget.style.borderColor = "var(--bv-border)";
+                      e.currentTarget.style.color = "var(--bv-text-3)";
                     }}
                   >
                     {q}
@@ -1012,9 +1012,9 @@ export function FloatingAgent({ businessId }: { businessId: string }) {
                     flex: 1,
                     height: 38,
                     borderRadius: 10,
-                    border: "1px solid #282a30",
-                    backgroundColor: "#1a1c24",
-                    color: "#e2e2eb",
+                    border: "1px solid var(--bv-border)",
+                    backgroundColor: "var(--bv-surface-elevated)",
+                    color: "var(--bv-text-1)",
                     fontSize: 12,
                     padding: "0 12px",
                     outline: "none",
@@ -1022,7 +1022,7 @@ export function FloatingAgent({ businessId }: { businessId: string }) {
                     transition: "border-color 0.15s",
                   }}
                   onFocus={(e) => (e.currentTarget.style.borderColor = "rgba(77,142,255,0.4)")}
-                  onBlur={(e) => (e.currentTarget.style.borderColor = "#282a30")}
+                  onBlur={(e) => (e.currentTarget.style.borderColor = "var(--bv-border)")}
                 />
                 <button
                   onClick={send}
@@ -1035,7 +1035,7 @@ export function FloatingAgent({ businessId }: { businessId: string }) {
                     background:
                       input.trim() && !isLoading
                         ? "linear-gradient(135deg, #4d8eff, #adc6ff)"
-                        : "#1e1f26",
+                        : "var(--bv-surface-elevated)",
                     cursor: input.trim() && !isLoading ? "pointer" : "not-allowed",
                     display: "flex",
                     alignItems: "center",
@@ -1048,14 +1048,14 @@ export function FloatingAgent({ businessId }: { businessId: string }) {
                     <Loader2
                       size={14}
                       style={{
-                        color: "#424754",
+                        color: "var(--bv-muted)",
                         animation: "spin 1s linear infinite",
                       }}
                     />
                   ) : (
                     <Send
                       size={14}
-                      style={{ color: input.trim() ? "#001a42" : "#424754" }}
+                      style={{ color: input.trim() ? "#001a42" : "var(--bv-muted)" }}
                     />
                   )}
                 </button>
@@ -1082,9 +1082,9 @@ export function FloatingAgent({ businessId }: { businessId: string }) {
           height: 56,
           borderRadius: 16,
           background: isOpen
-            ? "#1e1f26"
+            ? "var(--bv-surface-elevated)"
             : "linear-gradient(135deg, #4d8eff 0%, #adc6ff 100%)",
-          border: isOpen ? "1px solid #282a30" : "none",
+          border: isOpen ? "1px solid var(--bv-border)" : "none",
           boxShadow: isOpen
             ? "0 4px 12px rgba(0,0,0,0.4)"
             : "0 8px 28px rgba(77,142,255,0.45), 0 0 0 1px rgba(77,142,255,0.2)",
@@ -1105,7 +1105,7 @@ export function FloatingAgent({ businessId }: { businessId: string }) {
           }}
         >
           {isOpen ? (
-            <X size={22} style={{ color: "#8c909f" }} />
+            <X size={22} style={{ color: "var(--bv-text-3)" }} />
           ) : (
             <img src="/logo.png" alt="BizMap" style={{ width: 26, height: 26, objectFit: "contain" }} />
           )}

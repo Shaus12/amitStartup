@@ -66,12 +66,12 @@ export function Step08_ManualWork({ onNext, onBack }: Props) {
               style={{
                 backgroundColor: selected ? "rgba(77,142,255,0.08)" : "rgba(39,39,42,0.5)",
                 borderColor: selected ? "rgba(77,142,255,0.5)" : "rgba(63,63,70,0.5)",
-                color: selected ? "#e2e2eb" : "#a1a1aa",
+                color: selected ? "var(--bv-text-1)" : "#a1a1aa",
               }}
               onMouseEnter={(e) => {
                 if (!selected) {
                   (e.currentTarget as HTMLElement).style.borderColor = "rgba(63,63,70,0.9)";
-                  (e.currentTarget as HTMLElement).style.color = "#e2e2eb";
+                  (e.currentTarget as HTMLElement).style.color = "var(--bv-text-1)";
                 }
               }}
               onMouseLeave={(e) => {

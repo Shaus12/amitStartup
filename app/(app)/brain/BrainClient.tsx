@@ -103,7 +103,7 @@ export function BrainClient({ businessId, businessName, departments }: BrainClie
   const totalDocs = uploads.filter((u) => u.status === "ready").length;
 
   return (
-    <div style={{ minHeight: "100%", backgroundColor: "#111319" }}>
+    <div style={{ minHeight: "100%", backgroundColor: "var(--bv-bg)" }}>
       <div style={{ maxWidth: 800, margin: "0 auto", padding: "32px 24px" }}>
 
         {/* Header */}
@@ -114,7 +114,7 @@ export function BrainClient({ businessId, businessName, departments }: BrainClie
               style={{
                 fontSize: 22,
                 fontWeight: 800,
-                color: "#e2e2eb",
+                color: "var(--bv-text-1)",
                 fontFamily: "var(--font-manrope)",
                 letterSpacing: "-0.02em",
                 margin: 0,
@@ -123,7 +123,7 @@ export function BrainClient({ businessId, businessName, departments }: BrainClie
               מוח העסק
             </h1>
           </div>
-          <p style={{ fontSize: 13, color: "#424754", fontFamily: "var(--font-inter)", margin: 0 }}>
+          <p style={{ fontSize: 13, color: "var(--bv-muted)", fontFamily: "var(--font-inter)", margin: 0 }}>
             {businessName} · העלה מסמכים לכל מחלקה — AI ילמד מהם ויספק ניתוח מדויק יותר
           </p>
           {totalDocs > 0 && (
@@ -178,7 +178,7 @@ export function BrainClient({ businessId, businessName, departments }: BrainClie
               "מדריכי עבודה",
               "שאלות נפוצות של לקוחות",
             ].map((item) => (
-              <div key={item} style={{ fontSize: 11, color: "#8c909f", display: "flex", alignItems: "center", gap: 6 }}>
+              <div key={item} style={{ fontSize: 11, color: "var(--bv-text-3)", display: "flex", alignItems: "center", gap: 6 }}>
                 <div style={{ width: 4, height: 4, borderRadius: "50%", backgroundColor: "#4d8eff", flexShrink: 0 }} />
                 {item}
               </div>
@@ -188,7 +188,7 @@ export function BrainClient({ businessId, businessName, departments }: BrainClie
 
         {/* Department selector */}
         <div style={{ marginBottom: 20 }}>
-          <div style={{ fontSize: 10, fontWeight: 700, color: "#424754", letterSpacing: "0.1em", textTransform: "uppercase", fontFamily: "var(--font-inter)", marginBottom: 8 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, color: "var(--bv-muted)", letterSpacing: "0.1em", textTransform: "uppercase", fontFamily: "var(--font-inter)", marginBottom: 8 }}>
             בחר מחלקה
           </div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
@@ -205,15 +205,15 @@ export function BrainClient({ businessId, businessName, departments }: BrainClie
                     gap: 6,
                     padding: "6px 12px",
                     borderRadius: 10,
-                    border: active ? `1.5px solid ${dept.color}60` : "1px solid #282a30",
-                    backgroundColor: active ? `${dept.color}10` : "#1a1c24",
+                    border: active ? `1.5px solid ${dept.color}60` : "1px solid var(--bv-border)",
+                    backgroundColor: active ? `${dept.color}10` : "var(--bv-surface-elevated)",
                     cursor: "pointer",
                     transition: "all 0.15s",
                     fontFamily: "var(--font-inter)",
                   }}
                 >
                   <span style={{ fontSize: 14 }}>{getDeptEmoji(dept.name)}</span>
-                  <span style={{ fontSize: 12, fontWeight: active ? 700 : 500, color: active ? "#e2e2eb" : "#8c909f" }}>
+                  <span style={{ fontSize: 12, fontWeight: active ? 700 : 500, color: active ? "var(--bv-text-1)" : "var(--bv-text-3)" }}>
                     {dept.name}
                   </span>
                   {docCount > 0 && (
@@ -248,12 +248,12 @@ export function BrainClient({ businessId, businessName, departments }: BrainClie
           }}
           onClick={() => fileInputRef.current?.click()}
           style={{
-            border: `2px dashed ${dragging ? "rgba(77,142,255,0.5)" : "#282a30"}`,
+            border: `2px dashed ${dragging ? "rgba(77,142,255,0.5)" : "var(--bv-border)"}`,
             borderRadius: 16,
             padding: "40px 24px",
             textAlign: "center",
             cursor: "pointer",
-            backgroundColor: dragging ? "rgba(77,142,255,0.04)" : "#191b22",
+            backgroundColor: dragging ? "rgba(77,142,255,0.04)" : "var(--bv-surface-raised)",
             transition: "all 0.2s",
             marginBottom: 20,
           }}
@@ -269,15 +269,15 @@ export function BrainClient({ businessId, businessName, departments }: BrainClie
           {uploading ? (
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10 }}>
               <Loader2 size={32} style={{ color: "#4d8eff", animation: "spin 1s linear infinite" }} />
-              <span style={{ fontSize: 13, color: "#8c909f", fontFamily: "var(--font-inter)" }}>מעלה מסמכים...</span>
+              <span style={{ fontSize: 13, color: "var(--bv-text-3)", fontFamily: "var(--font-inter)" }}>מעלה מסמכים...</span>
             </div>
           ) : (
             <>
-              <Upload size={32} style={{ color: dragging ? "#4d8eff" : "#424754", marginBottom: 12 }} />
-              <p style={{ fontSize: 14, fontWeight: 700, color: dragging ? "#e2e2eb" : "#8c909f", fontFamily: "var(--font-manrope)", margin: "0 0 4px" }}>
+              <Upload size={32} style={{ color: dragging ? "#4d8eff" : "var(--bv-muted)", marginBottom: 12 }} />
+              <p style={{ fontSize: 14, fontWeight: 700, color: dragging ? "var(--bv-text-1)" : "var(--bv-text-3)", fontFamily: "var(--font-manrope)", margin: "0 0 4px" }}>
                 {selectedDept ? `העלה מסמכים ל${selectedDept.name}` : "בחר מחלקה"}
               </p>
-              <p style={{ fontSize: 11, color: "#33343b", fontFamily: "var(--font-inter)", margin: 0 }}>
+              <p style={{ fontSize: 11, color: "var(--bv-border-subtle)", fontFamily: "var(--font-inter)", margin: 0 }}>
                 PDF, Word, TXT, CSV · גרור ושחרר או לחץ לבחירה
               </p>
             </>
@@ -299,7 +299,7 @@ export function BrainClient({ businessId, businessName, departments }: BrainClie
         {/* Uploaded docs for selected dept */}
         {deptUploads.length > 0 && (
           <div>
-            <div style={{ fontSize: 10, fontWeight: 700, color: "#424754", letterSpacing: "0.1em", textTransform: "uppercase", fontFamily: "var(--font-inter)", marginBottom: 8 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, color: "var(--bv-muted)", letterSpacing: "0.1em", textTransform: "uppercase", fontFamily: "var(--font-inter)", marginBottom: 8 }}>
               מסמכים שהועלו — {selectedDept?.name}
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
@@ -311,17 +311,17 @@ export function BrainClient({ businessId, businessName, departments }: BrainClie
                     alignItems: "center",
                     gap: 10,
                     padding: "10px 14px",
-                    backgroundColor: "#191b22",
-                    border: "1px solid #282a30",
+                    backgroundColor: "var(--bv-surface-raised)",
+                    border: "1px solid var(--bv-border)",
                     borderRadius: 10,
                   }}
                 >
                   <FileText size={16} style={{ color: "#4d8eff", flexShrink: 0 }} />
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 12, fontWeight: 600, color: "#e2e2eb", fontFamily: "var(--font-inter)", direction: "rtl", textAlign: "right" }}>
+                    <div style={{ fontSize: 12, fontWeight: 600, color: "var(--bv-text-1)", fontFamily: "var(--font-inter)", direction: "rtl", textAlign: "right" }}>
                       {doc.name}
                     </div>
-                    <div style={{ fontSize: 10, color: "#424754", fontFamily: "var(--font-inter)" }}>
+                    <div style={{ fontSize: 10, color: "var(--bv-muted)", fontFamily: "var(--font-inter)" }}>
                       {doc.size} · {doc.uploadedAt}
                     </div>
                   </div>
@@ -338,9 +338,9 @@ export function BrainClient({ businessId, businessName, departments }: BrainClie
                   )}
                   <button
                     onClick={() => setUploads((prev) => prev.filter((u) => u.id !== doc.id))}
-                    style={{ background: "none", border: "none", cursor: "pointer", color: "#424754", padding: 4, borderRadius: 6, transition: "color 0.1s" }}
+                    style={{ background: "none", border: "none", cursor: "pointer", color: "var(--bv-muted)", padding: 4, borderRadius: 6, transition: "color 0.1s" }}
                     onMouseEnter={(e) => (e.currentTarget.style.color = "#f87171")}
-                    onMouseLeave={(e) => (e.currentTarget.style.color = "#424754")}
+                    onMouseLeave={(e) => (e.currentTarget.style.color = "var(--bv-muted)")}
                   >
                     <Trash2 size={12} />
                   </button>
@@ -351,7 +351,7 @@ export function BrainClient({ businessId, businessName, departments }: BrainClie
         )}
 
         {deptUploads.length === 0 && (
-          <div style={{ textAlign: "center", color: "#33343b", fontSize: 12, fontFamily: "var(--font-inter)", padding: "20px 0" }}>
+          <div style={{ textAlign: "center", color: "var(--bv-border-subtle)", fontSize: 12, fontFamily: "var(--font-inter)", padding: "20px 0" }}>
             {selectedDept ? `אין מסמכים עדיין עבור ${selectedDept.name}` : "בחר מחלקה כדי להתחיל"}
           </div>
         )}

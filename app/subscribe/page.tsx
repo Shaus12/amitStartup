@@ -95,7 +95,7 @@ export default function SubscribePage() {
   return (
     <div
       className="min-h-screen flex items-center justify-center px-4 py-16"
-      style={{ backgroundColor: "#111319" }}
+      style={{ backgroundColor: "var(--bv-bg)" }}
       dir="rtl"
     >
       <div className="w-full max-w-2xl">

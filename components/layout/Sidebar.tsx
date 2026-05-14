@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, CheckSquare, GitBranch, Sparkles, FileText, CreditCard } from "lucide-react";
 import { useT } from "@/lib/i18n";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
 
 const NAV_ICONS = [LayoutDashboard, CheckSquare, GitBranch, Sparkles, FileText, CreditCard];
 
@@ -15,7 +16,7 @@ export function MobileNav() {
   return (
     <nav
       className="md:hidden fixed bottom-0 left-0 right-0 z-50 flex"
-      style={{ backgroundColor: "#191b22", borderTop: "1px solid #282a30" }}
+      style={{ backgroundColor: "var(--bv-surface-raised)", borderTop: "1px solid var(--bv-border)" }}
     >
       {nav.map(({ href, label, icon: Icon }: { href: string; label: string; icon: React.ElementType }) => {
         const active = pathname === href || pathname.startsWith(href + "/");
@@ -24,7 +25,7 @@ export function MobileNav() {
             key={href}
             href={href}
             className="flex-1 flex flex-col items-center justify-center gap-1 py-2.5"
-            style={{ color: active ? "#4d8eff" : "#8c909f" }}
+            style={{ color: active ? "#4d8eff" : "var(--bv-text-3)" }}
           >
             <Icon className="w-5 h-5" strokeWidth={active ? 2 : 1.5} style={{ color: active ? "#4d8eff" : "inherit" }} />
             <span className="text-[9px] font-medium leading-none" style={{ fontFamily: "var(--font-inter)" }}>{label}</span>
@@ -43,17 +44,17 @@ export function Sidebar() {
   return (
     <aside
       className="hidden md:flex w-[220px] shrink-0 flex-col"
-      style={{ backgroundColor: "#191b22", borderRight: "1px solid #282a30" }}
+      style={{ backgroundColor: "var(--bv-surface-raised)", borderRight: "1px solid var(--bv-border)" }}
     >
       {/* Logo */}
-      <div className="px-5 h-14 flex items-center" style={{ borderBottom: "1px solid #282a30" }}>
+      <div className="px-5 h-14 flex items-center" style={{ borderBottom: "1px solid var(--bv-border)" }}>
         <div className="flex items-center gap-2.5">
           <img src="/logo.png" alt="BizMap Logo" className="w-8 h-8 object-contain" />
           <div>
-            <p className="text-sm font-bold tracking-tight leading-none" style={{ fontFamily: "var(--font-manrope)", color: "#e2e2eb" }}>
+            <p className="text-sm font-bold tracking-tight leading-none" style={{ fontFamily: "var(--font-manrope)", color: "var(--bv-text-1)" }}>
               BizMap
             </p>
-            <p className="text-[10px] mt-0.5 leading-none" style={{ color: "#424754", fontFamily: "var(--font-inter)" }}>
+            <p className="text-[10px] mt-0.5 leading-none" style={{ color: "var(--bv-muted)", fontFamily: "var(--font-inter)" }}>
               {t.sidebar.intelligence}
             </p>
           </div>
@@ -62,7 +63,7 @@ export function Sidebar() {
 
       {/* Section label */}
       <div className="px-5 pt-6 pb-2">
-        <p className="text-[9px] font-bold tracking-[0.12em] uppercase" style={{ color: "#424754", fontFamily: "var(--font-inter)" }}>
+        <p className="text-[9px] font-bold tracking-[0.12em] uppercase" style={{ color: "var(--bv-muted)", fontFamily: "var(--font-inter)" }}>
           {t.sidebar.workspace}
         </p>
       </div>
@@ -77,20 +78,20 @@ export function Sidebar() {
               href={href}
               data-tour={href === "/tasks" ? "tasks-sidebar-item" : undefined}
               className="group flex items-center gap-3 px-3 py-2.5 rounded transition-all duration-150"
-              style={{ backgroundColor: active ? "#282a30" : "transparent", color: active ? "#e2e2eb" : "#8c909f" }}
+              style={{ backgroundColor: active ? "var(--bv-border)" : "transparent", color: active ? "var(--bv-text-1)" : "var(--bv-text-3)" }}
               onMouseEnter={e => {
-                if (!active) e.currentTarget.style.backgroundColor = "#1e1f26";
-                if (!active) e.currentTarget.style.color = "#c2c6d6";
+                if (!active) e.currentTarget.style.backgroundColor = "var(--bv-surface-elevated)";
+                if (!active) e.currentTarget.style.color = "var(--bv-text-2)";
               }}
               onMouseLeave={e => {
                 if (!active) e.currentTarget.style.backgroundColor = "transparent";
-                if (!active) e.currentTarget.style.color = "#8c909f";
+                if (!active) e.currentTarget.style.color = "var(--bv-text-3)";
               }}
             >
               <Icon className="w-4 h-4 shrink-0" strokeWidth={active ? 2 : 1.5} style={{ color: active ? "#4d8eff" : "inherit" }} />
               <div className="min-w-0 flex-1">
                 <p className="text-xs font-medium leading-none truncate" style={{ fontFamily: "var(--font-inter)" }}>{label}</p>
-                <p className="text-[10px] leading-none mt-1 truncate" style={{ color: active ? "#424754" : "#33343b", fontFamily: "var(--font-inter)" }}>
+                <p className="text-[10px] leading-none mt-1 truncate" style={{ color: active ? "var(--bv-muted)" : "var(--bv-border-subtle)", fontFamily: "var(--font-inter)" }}>
                   {description}
                 </p>
               </div>
@@ -107,7 +108,7 @@ export function Sidebar() {
         <div
           style={{
             borderRadius: 12,
-            border: "1px dashed #282a30",
+            border: "1px dashed var(--bv-border)",
             padding: "10px 12px",
             cursor: "pointer",
             transition: "all 0.15s",
@@ -117,27 +118,28 @@ export function Sidebar() {
             (e.currentTarget as HTMLElement).style.backgroundColor = "rgba(77,142,255,0.04)";
           }}
           onMouseLeave={e => {
-            (e.currentTarget as HTMLElement).style.borderColor = "#282a30";
+            (e.currentTarget as HTMLElement).style.borderColor = "var(--bv-border)";
             (e.currentTarget as HTMLElement).style.backgroundColor = "transparent";
           }}
           onClick={() => window.location.href = "/brain"}
         >
           <div className="flex items-center gap-2 mb-1">
             <span style={{ fontSize: 14 }}>🧠</span>
-            <span style={{ fontSize: 11, fontWeight: 700, color: "#8c909f", fontFamily: "var(--font-inter)" }}>
+            <span style={{ fontSize: 11, fontWeight: 700, color: "var(--bv-text-3)", fontFamily: "var(--font-inter)" }}>
               מוח העסק
             </span>
           </div>
-          <p style={{ fontSize: 10, color: "#33343b", fontFamily: "var(--font-inter)", lineHeight: 1.4 }}>
+          <p style={{ fontSize: 10, color: "var(--bv-border-subtle)", fontFamily: "var(--font-inter)", lineHeight: 1.4 }}>
             העלה מסמכים לשיפור הניתוח
           </p>
         </div>
       </div>
 
-      <div className="px-5 py-4" style={{ borderTop: "1px solid #282a30" }}>
-        <p className="text-[10px]" style={{ color: "#33343b", fontFamily: "var(--font-inter)" }}>
+      <div className="px-4 py-3 flex items-center justify-between" style={{ borderTop: "1px solid var(--bv-border)" }}>
+        <p className="text-[10px]" style={{ color: "var(--bv-border-subtle)", fontFamily: "var(--font-inter)" }}>
           {t.sidebar.footer}
         </p>
+        <ThemeToggle />
       </div>
     </aside>
   );

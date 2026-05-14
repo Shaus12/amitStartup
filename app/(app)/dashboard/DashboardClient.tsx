@@ -196,8 +196,8 @@ function DashboardTourOverlay({
     width: tooltipWidthPx,
     maxHeight: "min(340px, calc(100vh - 24px))",
     overflowY: "auto",
-    background: "#191b22",
-    border: "1px solid #282a30",
+    background: "var(--bv-surface-raised)",
+    border: "1px solid var(--bv-border)",
     borderRadius: 14,
     boxShadow: "0 20px 55px rgba(0,0,0,0.6)",
     color: "#fff",
@@ -234,12 +234,12 @@ function DashboardTourOverlay({
             type="button"
             onClick={onSkip}
             className="text-[11px] underline"
-            style={{ color: "#8c909f" }}
+            style={{ color: "var(--bv-text-3)" }}
           >
             דלג על הסיור
           </button>
           <div className="flex items-center gap-3">
-            <span className="text-[11px]" style={{ color: "#8c909f" }}>
+            <span className="text-[11px]" style={{ color: "var(--bv-text-3)" }}>
               {stepIndex + 1} מתוך {totalSteps}
             </span>
             <button
@@ -248,7 +248,7 @@ function DashboardTourOverlay({
               className="rounded-lg px-3 py-1.5 text-xs font-bold"
               style={{
                 background: "linear-gradient(135deg, #4d8eff, #adc6ff)",
-                color: "#111319",
+                color: "var(--bv-bg)",
               }}
             >
               {isLast ? "בואו נתחיל! 🚀" : "הבא ←"}
@@ -265,16 +265,16 @@ function SkeletonNode() {
   return (
     <div
       className="w-[300px] rounded overflow-hidden animate-pulse"
-      style={{ backgroundColor: "#1e1f26", border: "1px solid #282a30" }}
+      style={{ backgroundColor: "var(--bv-surface-elevated)", border: "1px solid var(--bv-border)" }}
     >
-      <div className="h-[2px]" style={{ backgroundColor: "#282a30" }} />
+      <div className="h-[2px]" style={{ backgroundColor: "var(--bv-border)" }} />
       <div className="p-4 space-y-3">
-        <div className="h-3 rounded w-2/3" style={{ backgroundColor: "#282a30" }} />
-        <div className="h-2 rounded w-1/2" style={{ backgroundColor: "#1e1f26" }} />
+        <div className="h-3 rounded w-2/3" style={{ backgroundColor: "var(--bv-border)" }} />
+        <div className="h-2 rounded w-1/2" style={{ backgroundColor: "var(--bv-surface-elevated)" }} />
         <div className="space-y-2 pt-2">
-          <div className="h-2 rounded w-full" style={{ backgroundColor: "#282a30" }} />
-          <div className="h-2 rounded w-4/5" style={{ backgroundColor: "#282a30" }} />
-          <div className="h-2 rounded w-3/5" style={{ backgroundColor: "#1e1f26" }} />
+          <div className="h-2 rounded w-full" style={{ backgroundColor: "var(--bv-border)" }} />
+          <div className="h-2 rounded w-4/5" style={{ backgroundColor: "var(--bv-border)" }} />
+          <div className="h-2 rounded w-3/5" style={{ backgroundColor: "var(--bv-surface-elevated)" }} />
         </div>
       </div>
     </div>
@@ -701,11 +701,11 @@ export function DashboardClient({ businessId, businessName }: DashboardClientPro
     tourStep === null;
 
   return (
-    <div className="flex flex-col h-full" style={{ backgroundColor: "#111319" }}>
+    <div className="flex flex-col h-full" style={{ backgroundColor: "var(--bv-bg)" }}>
       {/* Header */}
       <header
         className="shrink-0"
-        style={{ backgroundColor: "#191b22", borderBottom: "1px solid #282a30" }}
+        style={{ backgroundColor: "var(--bv-surface-raised)", borderBottom: "1px solid var(--bv-border)" }}
       >
         <div className="flex items-center justify-between gap-6 px-6 h-14">
           {/* Left */}
@@ -714,11 +714,11 @@ export function DashboardClient({ businessId, businessName }: DashboardClientPro
               <Network
                 className="w-4 h-4 shrink-0"
                 strokeWidth={1.5}
-                style={{ color: "#424754" }}
+                style={{ color: "var(--bv-muted)" }}
               />
               <h1
                 className="text-base font-bold truncate"
-                style={{ fontFamily: "var(--font-manrope)", color: "#e2e2eb", letterSpacing: "-0.01em" }}
+                style={{ fontFamily: "var(--font-manrope)", color: "var(--bv-text-1)", letterSpacing: "-0.01em" }}
               >
                 {businessName}
               </h1>
@@ -726,15 +726,15 @@ export function DashboardClient({ businessId, businessName }: DashboardClientPro
             {!isLoading && data && (
               <div
                 className="hidden sm:flex items-center gap-3 text-xs"
-                style={{ color: "#424754", fontFamily: "var(--font-inter)" }}
+                style={{ color: "var(--bv-muted)", fontFamily: "var(--font-inter)" }}
               >
                 <span>
-                  <span className="font-semibold" style={{ color: "#8c909f" }}>{deptCount}</span>
+                  <span className="font-semibold" style={{ color: "var(--bv-text-3)" }}>{deptCount}</span>
                   {" "}departments
                 </span>
-                <div className="w-px h-3" style={{ backgroundColor: "#282a30" }} />
+                <div className="w-px h-3" style={{ backgroundColor: "var(--bv-border)" }} />
                 <span>
-                  <span className="font-semibold" style={{ color: "#8c909f" }}>{processCount}</span>
+                  <span className="font-semibold" style={{ color: "var(--bv-text-3)" }}>{processCount}</span>
                   {" "}processes
                 </span>
               </div>
@@ -744,7 +744,7 @@ export function DashboardClient({ businessId, businessName }: DashboardClientPro
           {/* Right */}
           <div className="flex items-center gap-3">
             {!isLoading && data && <HealthScore businessId={businessId} />}
-            <div className="w-px h-6 shrink-0" style={{ backgroundColor: "#282a30" }} />
+            <div className="w-px h-6 shrink-0" style={{ backgroundColor: "var(--bv-border)" }} />
             
             {totalHrsSaved > 0 && (
               <div
@@ -764,9 +764,9 @@ export function DashboardClient({ businessId, businessName }: DashboardClientPro
                 💡
               </button>
               <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-56 p-3 rounded-xl opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-200 shadow-xl"
-                   style={{ backgroundColor: "#191b22", border: "1px solid #282a30", zIndex: 50 }}>
+                   style={{ backgroundColor: "var(--bv-surface-raised)", border: "1px solid var(--bv-border)", zIndex: 50 }}>
                 <div className="text-[10px] font-bold uppercase mb-1.5 text-center" style={{ color: "#fbbf24" }}>טיפ יומי</div>
-                <div className="text-xs leading-relaxed text-center" style={{ color: "#c2c6d6", direction: "rtl", fontFamily: "var(--font-inter)" }}>{todayTip}</div>
+                <div className="text-xs leading-relaxed text-center" style={{ color: "var(--bv-text-2)", direction: "rtl", fontFamily: "var(--font-inter)" }}>{todayTip}</div>
               </div>
             </div>
 
@@ -794,8 +794,8 @@ export function DashboardClient({ businessId, businessName }: DashboardClientPro
               style={{
                 fontFamily: "var(--font-inter)",
                 backgroundColor: "transparent",
-                border: "1px solid #282a30",
-                color: "#8c909f",
+                border: "1px solid var(--bv-border)",
+                color: "var(--bv-text-3)",
               }}
               onMouseEnter={e => {
                 (e.currentTarget as HTMLElement).style.color = "#f87171";
@@ -803,8 +803,8 @@ export function DashboardClient({ businessId, businessName }: DashboardClientPro
                 (e.currentTarget as HTMLElement).style.backgroundColor = "#f8717108";
               }}
               onMouseLeave={e => {
-                (e.currentTarget as HTMLElement).style.color = "#8c909f";
-                (e.currentTarget as HTMLElement).style.borderColor = "#282a30";
+                (e.currentTarget as HTMLElement).style.color = "var(--bv-text-3)";
+                (e.currentTarget as HTMLElement).style.borderColor = "var(--bv-border)";
                 (e.currentTarget as HTMLElement).style.backgroundColor = "transparent";
               }}
             >
@@ -816,12 +816,12 @@ export function DashboardClient({ businessId, businessName }: DashboardClientPro
               className="hidden sm:inline-flex items-center gap-1.5 rounded px-3 py-1.5 text-xs font-medium transition-all duration-150"
               style={{
                 fontFamily: "var(--font-inter)",
-                backgroundColor: "#1e1f26",
-                border: "1px solid #282a30",
-                color: "#c2c6d6",
+                backgroundColor: "var(--bv-surface-elevated)",
+                border: "1px solid var(--bv-border)",
+                color: "var(--bv-text-2)",
               }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "#424754"; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "#282a30"; }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "var(--bv-muted)"; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "var(--bv-border)"; }}
             >
               <FileText className="w-3 h-3" strokeWidth={2} />
               ייצוא PDF
@@ -838,21 +838,21 @@ export function DashboardClient({ businessId, businessName }: DashboardClientPro
                 className="inline-flex items-center gap-2 rounded px-3 py-1.5 text-xs font-medium transition-all duration-150 active:scale-[0.98]"
                 style={{
                   fontFamily: "var(--font-inter)",
-                  backgroundColor: "#1e1f26",
-                  border: "1px solid #282a30",
+                  backgroundColor: "var(--bv-surface-elevated)",
+                  border: "1px solid var(--bv-border)",
                   color:
-                    isRegenerating || !canRefreshAnalysis ? "#424754" : "#c2c6d6",
+                    isRegenerating || !canRefreshAnalysis ? "var(--bv-muted)" : "var(--bv-text-2)",
                   cursor:
                     isRegenerating || !canRefreshAnalysis ? "not-allowed" : "pointer",
                   opacity: isRegenerating || !canRefreshAnalysis ? 0.5 : 1,
                 }}
                 onMouseEnter={(e) => {
                   if (!isRegenerating && canRefreshAnalysis) {
-                    e.currentTarget.style.borderColor = "#424754";
+                    e.currentTarget.style.borderColor = "var(--bv-muted)";
                   }
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = "#282a30";
+                  e.currentTarget.style.borderColor = "var(--bv-border)";
                 }}
               >
                 <RotateCcw className={`w-3 h-3 ${isRegenerating ? "animate-spin" : ""}`} strokeWidth={2} />
@@ -866,7 +866,7 @@ export function DashboardClient({ businessId, businessName }: DashboardClientPro
         {!isLoading && data && (
           <div
             className="hidden sm:flex px-6 pb-2.5 items-center gap-1.5 text-[10px]"
-            style={{ color: "#424754", fontFamily: "var(--font-inter)" }}
+            style={{ color: "var(--bv-muted)", fontFamily: "var(--font-inter)" }}
           >
             <span>Drag nodes to rearrange</span>
             <span>·</span>
@@ -901,11 +901,11 @@ export function DashboardClient({ businessId, businessName }: DashboardClientPro
               </div>
               <p
                 className="text-sm font-semibold mb-1"
-                style={{ fontFamily: "var(--font-manrope)", color: "#e2e2eb" }}
+                style={{ fontFamily: "var(--font-manrope)", color: "var(--bv-text-1)" }}
               >
                 Failed to load map
               </p>
-              <p className="text-xs" style={{ color: "#424754" }}>
+              <p className="text-xs" style={{ color: "var(--bv-muted)" }}>
                 {error instanceof Error ? error.message : "An unexpected error occurred"}
               </p>
             </div>
@@ -931,10 +931,10 @@ export function DashboardClient({ businessId, businessName }: DashboardClientPro
         {!isLoading && !isError && data && data.departments.length === 0 && (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             <div className="text-center px-6">
-              <p className="text-sm font-semibold mb-1" style={{ color: "#424754", fontFamily: "var(--font-manrope)" }}>
+              <p className="text-sm font-semibold mb-1" style={{ color: "var(--bv-muted)", fontFamily: "var(--font-manrope)" }}>
                 No departments yet
               </p>
-              <p className="text-xs" style={{ color: "#33343b" }}>
+              <p className="text-xs" style={{ color: "var(--bv-border-subtle)" }}>
                 Complete onboarding to generate your map.
               </p>
             </div>
@@ -971,24 +971,24 @@ export function DashboardClient({ businessId, businessName }: DashboardClientPro
             <div
               className="w-full max-w-md rounded-2xl border p-6 shadow-2xl"
               style={{
-                backgroundColor: "#191b22",
-                borderColor: "#282a30",
+                backgroundColor: "var(--bv-surface-raised)",
+                borderColor: "var(--bv-border)",
                 fontFamily: "var(--font-inter)",
               }}
             >
               <h2
                 id="refresh-analysis-dialog-title"
                 className="text-base font-bold mb-3"
-                style={{ fontFamily: "var(--font-manrope)", color: "#e2e2eb" }}
+                style={{ fontFamily: "var(--font-manrope)", color: "var(--bv-text-1)" }}
               >
                 רענון ניתוח AI
               </h2>
-              <p className="text-sm leading-relaxed mb-2" style={{ color: "#8c909f" }}>
+              <p className="text-sm leading-relaxed mb-2" style={{ color: "var(--bv-text-3)" }}>
                 ניתן להריץ רענון ניתוח מלא{" "}
-                <span style={{ color: "#c2c6d6", fontWeight: 700 }}>פעם בשבוע בלבד</span>.
+                <span style={{ color: "var(--bv-text-2)", fontWeight: 700 }}>פעם בשבוע בלבד</span>.
                 הרענון מחליף את הזדמנויות ה-AI והנתונים המחושבים לפי המידע העדכני בעסק שלך.
               </p>
-              <p className="text-sm leading-relaxed mb-6" style={{ color: "#8c909f" }}>
+              <p className="text-sm leading-relaxed mb-6" style={{ color: "var(--bv-text-3)" }}>
                 לאחר הרענון, הניתוח הבא יהיה זמין שוב רק לאחר שבוע מלא. האם להמשיך?
               </p>
               <div className="flex items-center justify-end gap-2">
@@ -997,8 +997,8 @@ export function DashboardClient({ businessId, businessName }: DashboardClientPro
                   onClick={() => setRefreshConfirmOpen(false)}
                   className="rounded-lg px-4 py-2 text-xs font-semibold border"
                   style={{
-                    borderColor: "#282a30",
-                    color: "#8c909f",
+                    borderColor: "var(--bv-border)",
+                    color: "var(--bv-text-3)",
                     backgroundColor: "transparent",
                   }}
                 >
@@ -1010,7 +1010,7 @@ export function DashboardClient({ businessId, businessName }: DashboardClientPro
                   className="rounded-lg px-4 py-2 text-xs font-bold"
                   style={{
                     background: "linear-gradient(135deg, #4d8eff, #adc6ff)",
-                    color: "#111319",
+                    color: "var(--bv-bg)",
                   }}
                 >
                   המשך לרענון

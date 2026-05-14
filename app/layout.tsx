@@ -27,6 +27,9 @@ export const metadata: Metadata = {
 
 import { AccessibilityWidget } from "@/components/AccessibilityWidget";
 import { CookieBanner } from "@/components/CookieBanner";
+import { ThemeProvider } from "@/lib/theme";
+
+const themeInitScript = `(function(){try{var t=localStorage.getItem('bv-theme')||'dark';if(t==='system'){t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();`;
 
 export default function RootLayout({
   children,
@@ -38,13 +41,18 @@ export default function RootLayout({
       lang="en"
       className={`${manrope.variable} ${inter.variable} h-full antialiased`}
     >
-      <body className="min-h-full text-[#e2e2eb]" style={{ backgroundColor: "#111319", fontFamily: "var(--font-inter), system-ui, sans-serif" }}>
-        <LanguageProvider>
-          <QueryProvider>
-            {children}
-          </QueryProvider>
-        </LanguageProvider>
-        <Toaster theme="dark" position="bottom-right" />
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
+      <body className="min-h-full" style={{ fontFamily: "var(--font-inter), system-ui, sans-serif" }}>
+        <ThemeProvider>
+          <LanguageProvider>
+            <QueryProvider>
+              {children}
+            </QueryProvider>
+          </LanguageProvider>
+        </ThemeProvider>
+        <Toaster position="bottom-right" />
         <AccessibilityWidget />
         <CookieBanner />
       </body>

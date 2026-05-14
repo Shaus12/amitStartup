@@ -50,7 +50,7 @@ function SkeletonCard() {
   return (
     <div
       className="rounded-xl h-28 animate-pulse"
-      style={{ backgroundColor: "#191b22", border: "1px solid #282a30" }}
+      style={{ backgroundColor: "var(--bv-surface-raised)", border: "1px solid var(--bv-border)" }}
     />
   );
 }
@@ -161,9 +161,9 @@ export function OpportunitiesClient({ businessId, businessName }: OpportunitiesC
             dir="rtl"
             className="rounded-xl px-4 py-3 text-sm shadow-lg"
             style={{
-              backgroundColor: "#191b22",
-              border: "1px solid #282a30",
-              color: "#e2e2eb",
+              backgroundColor: "var(--bv-surface-raised)",
+              border: "1px solid var(--bv-border)",
+              color: "var(--bv-text-1)",
               fontFamily: "var(--font-inter)",
             }}
           >
@@ -264,7 +264,7 @@ export function OpportunitiesClient({ businessId, businessName }: OpportunitiesC
   }, [activeOpportunities, activeStatusTab, activeCategoryTab]);
 
   return (
-    <div className="min-h-full py-8 px-4 sm:px-6" style={{ backgroundColor: "#111319" }}>
+    <div className="min-h-full py-8 px-4 sm:px-6" style={{ backgroundColor: "var(--bv-bg)" }}>
       <div className="max-w-3xl mx-auto">
 
         {/* Header */}
@@ -272,7 +272,7 @@ export function OpportunitiesClient({ businessId, businessName }: OpportunitiesC
           <div className="flex items-center gap-2 mb-1">
             <h1
               className="text-xl font-bold"
-              style={{ color: "#e2e2eb", fontFamily: "var(--font-manrope)" }}
+              style={{ color: "var(--bv-text-1)", fontFamily: "var(--font-manrope)" }}
             >
               הזדמנויות AI
             </h1>
@@ -284,19 +284,19 @@ export function OpportunitiesClient({ businessId, businessName }: OpportunitiesC
               מבוסס AI
             </span>
           </div>
-          <p className="text-xs" style={{ color: "#424754", fontFamily: "var(--font-inter)" }}>
+          <p className="text-xs" style={{ color: "var(--bv-muted)", fontFamily: "var(--font-inter)" }}>
             {businessName}
           </p>
           <div className="mt-5 text-center" dir="rtl">
             <h2
               className="text-base font-bold mb-2"
-              style={{ color: "#c2c6d6", fontFamily: "var(--font-manrope)" }}
+              style={{ color: "var(--bv-text-2)", fontFamily: "var(--font-manrope)" }}
             >
               הזדמנויות שAI זיהה בעסק שלך
             </h2>
             <p
               className="text-xs leading-relaxed mx-auto max-w-xl"
-              style={{ color: "#8c909f", fontFamily: "var(--font-inter)" }}
+              style={{ color: "var(--bv-text-3)", fontFamily: "var(--font-inter)" }}
             >
               כל הזדמנות מייצגת תהליך שאפשר לייעל או לאוטומט — עם הערכה של כמה זמן וכסף היא שווה. לחץ על כל הזדמנות כדי לראות איך מיישמים אותה.
             </p>
@@ -306,7 +306,7 @@ export function OpportunitiesClient({ businessId, businessName }: OpportunitiesC
         {/* Loading */}
         {isLoading && (
           <>
-            <div className="rounded-xl h-20 animate-pulse mb-6" style={{ backgroundColor: "#191b22", border: "1px solid #282a30" }} />
+            <div className="rounded-xl h-20 animate-pulse mb-6" style={{ backgroundColor: "var(--bv-surface-raised)", border: "1px solid var(--bv-border)" }} />
             <div className="space-y-3">
               <SkeletonCard />
               <SkeletonCard />
@@ -345,9 +345,9 @@ export function OpportunitiesClient({ businessId, businessName }: OpportunitiesC
                     onClick={() => setActiveStatusTab(tab.value)}
                     className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-all duration-150"
                     style={{
-                      backgroundColor: isActive ? "rgba(77,142,255,0.15)" : "#1e1f26",
-                      border: isActive ? "1px solid rgba(77,142,255,0.35)" : "1px solid #282a30",
-                      color: isActive ? "#4d8eff" : "#8c909f",
+                      backgroundColor: isActive ? "rgba(77,142,255,0.15)" : "var(--bv-surface-elevated)",
+                      border: isActive ? "1px solid rgba(77,142,255,0.35)" : "1px solid var(--bv-border)",
+                      color: isActive ? "#4d8eff" : "var(--bv-text-3)",
                       fontFamily: "var(--font-inter)",
                     }}
                   >
@@ -357,8 +357,8 @@ export function OpportunitiesClient({ businessId, businessName }: OpportunitiesC
                       <span
                         className="rounded-full px-1.5 py-0.5 text-[9px] font-bold tabular-nums"
                         style={{
-                          backgroundColor: isActive ? "rgba(77,142,255,0.25)" : "#282a30",
-                          color: isActive ? "#4d8eff" : "#424754",
+                          backgroundColor: isActive ? "rgba(77,142,255,0.25)" : "var(--bv-border)",
+                          color: isActive ? "#4d8eff" : "var(--bv-muted)",
                         }}
                       >
                         {count}
@@ -381,8 +381,8 @@ export function OpportunitiesClient({ businessId, businessName }: OpportunitiesC
                     className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium transition-all duration-150"
                     style={{
                       backgroundColor: isActive ? "rgba(140,144,159,0.14)" : "transparent",
-                      border: isActive ? "1px solid #424754" : "1px solid #282a30",
-                      color: isActive ? "#c2c6d6" : "#8c909f",
+                      border: isActive ? "1px solid var(--bv-muted)" : "1px solid var(--bv-border)",
+                      color: isActive ? "var(--bv-text-2)" : "var(--bv-text-3)",
                       fontFamily: "var(--font-inter)",
                     }}
                   >
@@ -390,7 +390,7 @@ export function OpportunitiesClient({ businessId, businessName }: OpportunitiesC
                     {count > 0 && (
                       <span
                         className="rounded-full px-1.5 py-0.5 text-[9px] font-bold tabular-nums"
-                        style={{ backgroundColor: "#282a30", color: "#8c909f" }}
+                        style={{ backgroundColor: "var(--bv-border)", color: "var(--bv-text-3)" }}
                       >
                         {count}
                       </span>

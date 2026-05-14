@@ -84,14 +84,14 @@ export default function LoginPage() {
       <div className="relative w-full max-w-sm mx-4">
         <div className="flex items-center justify-center gap-2 mb-8">
           <img src="/logo.png" alt="BizMap Logo" className="w-10 h-10 object-contain" />
-          <span className="text-base font-semibold" style={{ color: "#e2e2eb", fontFamily: "var(--font-manrope)" }}>
+          <span className="text-base font-semibold" style={{ color: "var(--bv-text-1)", fontFamily: "var(--font-manrope)" }}>
             BizMap
           </span>
         </div>
 
         <div
           className="rounded-2xl overflow-hidden"
-          style={{ background: "linear-gradient(135deg, #13141a 0%, #1a1c25 100%)", border: "1px solid #2a2d3a", boxShadow: "0 24px 80px rgba(0,0,0,0.5)" }}
+          style={{ background: "linear-gradient(135deg, #13141a 0%, #1a1c25 100%)", border: "1px solid var(--bv-border)", boxShadow: "0 24px 80px rgba(0,0,0,0.5)" }}
         >
           <div className="h-0.5 w-full" style={{ background: "linear-gradient(90deg, #6366f1, #8b5cf6, #ec4899)" }} />
 
@@ -104,7 +104,7 @@ export default function LoginPage() {
                 onClick={() => { setMode(m); setError(""); setSignedUp(false); }}
                 className="flex-1 py-3 text-sm font-semibold transition-colors"
                 style={{
-                  color: mode === m ? "#e2e2eb" : "#6b6f7e",
+                  color: mode === m ? "var(--bv-text-1)" : "#6b6f7e",
                   borderBottom: mode === m ? "2px solid #6366f1" : "2px solid transparent",
                   background: "transparent",
                 }}
@@ -125,7 +125,7 @@ export default function LoginPage() {
               </div>
             ) : (
               <>
-                <h1 className="text-2xl font-bold mb-1" style={{ color: "#e2e2eb", fontFamily: "var(--font-manrope)" }}>
+                <h1 className="text-2xl font-bold mb-1" style={{ color: "var(--bv-text-1)", fontFamily: "var(--font-manrope)" }}>
                   {mode === "signin" ? t.login.welcome : "יצירת חשבון"}
                 </h1>
                 <p className="text-sm mb-7" style={{ color: "#6b6f7e" }}>
@@ -135,7 +135,7 @@ export default function LoginPage() {
                 <form onSubmit={handleSubmit} className="space-y-3">
                   {/* Email */}
                   <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: "#424754" }} />
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: "var(--bv-muted)" }} />
                     <input
                       type="email"
                       required
@@ -145,15 +145,15 @@ export default function LoginPage() {
                       onChange={(e) => setEmail(e.target.value)}
                       disabled={loading}
                       className="w-full rounded-lg pl-10 pr-4 py-3 text-sm outline-none transition-all"
-                      style={{ background: "#0f1016", border: "1px solid #2a2d3a", color: "#e2e2eb" }}
+                      style={{ background: "var(--bv-surface)", border: "1px solid var(--bv-border)", color: "var(--bv-text-1)" }}
                       onFocus={(e) => (e.target.style.borderColor = "#6366f1")}
-                      onBlur={(e) => (e.target.style.borderColor = "#2a2d3a")}
+                      onBlur={(e) => (e.target.style.borderColor = "var(--bv-border)")}
                     />
                   </div>
 
                   {/* Password */}
                   <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: "#424754" }} />
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: "var(--bv-muted)" }} />
                     <input
                       type={showPassword ? "text" : "password"}
                       required
@@ -162,15 +162,15 @@ export default function LoginPage() {
                       onChange={(e) => setPassword(e.target.value)}
                       disabled={loading}
                       className="w-full rounded-lg pl-10 pr-10 py-3 text-sm outline-none transition-all"
-                      style={{ background: "#0f1016", border: "1px solid #2a2d3a", color: "#e2e2eb" }}
+                      style={{ background: "var(--bv-surface)", border: "1px solid var(--bv-border)", color: "var(--bv-text-1)" }}
                       onFocus={(e) => (e.target.style.borderColor = "#6366f1")}
-                      onBlur={(e) => (e.target.style.borderColor = "#2a2d3a")}
+                      onBlur={(e) => (e.target.style.borderColor = "var(--bv-border)")}
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword((v) => !v)}
                       className="absolute right-3 top-1/2 -translate-y-1/2"
-                      style={{ color: "#424754" }}
+                      style={{ color: "var(--bv-muted)" }}
                     >
                       {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
@@ -213,9 +213,9 @@ export default function LoginPage() {
           </div>
         </div>
 
-        <p className="text-center text-xs mt-5" style={{ color: "#33343b" }}>
+        <p className="text-center text-xs mt-5" style={{ color: "var(--bv-border-subtle)" }}>
           {t.login.noAccount}{" "}
-          <a href="/" style={{ color: "#424754", textDecoration: "underline" }}>
+          <a href="/" style={{ color: "var(--bv-muted)", textDecoration: "underline" }}>
             {t.login.homepage}
           </a>
           .

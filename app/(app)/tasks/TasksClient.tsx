@@ -119,8 +119,8 @@ function SubtaskRow({
     <div
       className="flex items-center gap-2 py-1.5 px-2 rounded-lg"
       style={{
-        backgroundColor: isDone ? "#34d39908" : "#1a1c24",
-        border: `1px solid ${isDone ? "#34d39930" : "#282a30"}`,
+        backgroundColor: isDone ? "#34d39908" : "var(--bv-surface-elevated)",
+        border: `1px solid ${isDone ? "#34d39930" : "var(--bv-border)"}`,
       }}
     >
       <button
@@ -131,7 +131,7 @@ function SubtaskRow({
           width: 16,
           height: 16,
           borderRadius: 4,
-          border: `1.5px solid ${isDone ? "#34d399" : "#424754"}`,
+          border: `1.5px solid ${isDone ? "#34d399" : "var(--bv-muted)"}`,
           backgroundColor: isDone ? "#34d399" : "transparent",
           display: "flex",
           alignItems: "center",
@@ -151,7 +151,7 @@ function SubtaskRow({
       <span
         style={{
           fontSize: 12,
-          color: isDone ? "#424754" : "#c2c6d6",
+          color: isDone ? "var(--bv-muted)" : "var(--bv-text-2)",
           textDecoration: isDone ? "line-through" : "none",
           fontFamily: "var(--font-inter)",
           flex: 1,
@@ -220,8 +220,8 @@ function TaskCard({
   return (
     <div
       style={{
-        backgroundColor: isDone ? "#13151d" : "#191b22",
-        border: `1px solid ${isDone ? "#34d39920" : isDragging ? "#4d8eff60" : "#282a30"}`,
+        backgroundColor: isDone ? "var(--bv-surface)" : "var(--bv-surface-raised)",
+        border: `1px solid ${isDone ? "#34d39920" : isDragging ? "#4d8eff60" : "var(--bv-border)"}`,
         borderRadius: 14,
         overflow: "hidden",
         boxShadow: isDragging
@@ -282,7 +282,7 @@ function TaskCard({
               style={{
                 fontSize: 13,
                 fontWeight: 600,
-                color: isDone ? "#424754" : "#e2e2eb",
+                color: isDone ? "var(--bv-muted)" : "var(--bv-text-1)",
                 fontFamily: "var(--font-manrope)",
                 lineHeight: 1.4,
                 textDecoration: isDone ? "line-through" : "none",
@@ -349,13 +349,13 @@ function TaskCard({
           {task.estimated_hours && (
             <span
               className="flex items-center gap-1"
-              style={{ fontSize: 10, color: "#424754", fontFamily: "var(--font-inter)" }}
+              style={{ fontSize: 10, color: "var(--bv-muted)", fontFamily: "var(--font-inter)" }}
             >
               <Clock size={9} />~{task.estimated_hours} שעות
             </span>
           )}
           {subtasks.length > 0 && (
-            <span style={{ fontSize: 10, color: "#424754", fontFamily: "var(--font-inter)" }}>
+            <span style={{ fontSize: 10, color: "var(--bv-muted)", fontFamily: "var(--font-inter)" }}>
               {completedSubtasks}/{subtasks.length} תת-משימות
             </span>
           )}
@@ -427,9 +427,9 @@ function TaskCard({
               alignItems: "center",
               gap: 4,
               fontSize: 10,
-              color: "#424754",
+              color: "var(--bv-muted)",
               background: "transparent",
-              border: "1px solid #282a30",
+              border: "1px solid var(--bv-border)",
               cursor: "pointer",
               padding: "4px 8px",
               borderRadius: 6,
@@ -442,8 +442,8 @@ function TaskCard({
               e.currentTarget.style.backgroundColor = "rgba(77,142,255,0.08)";
             }}
             onMouseLeave={e => {
-              e.currentTarget.style.borderColor = "#282a30";
-              e.currentTarget.style.color = "#424754";
+              e.currentTarget.style.borderColor = "var(--bv-border)";
+              e.currentTarget.style.color = "var(--bv-muted)";
               e.currentTarget.style.backgroundColor = "transparent";
             }}
           >
@@ -459,7 +459,7 @@ function TaskCard({
               alignItems: "center",
               gap: 4,
               fontSize: 10,
-              color: "#424754",
+              color: "var(--bv-muted)",
               background: "transparent",
               border: "none",
               cursor: "pointer",
@@ -467,8 +467,8 @@ function TaskCard({
               borderRadius: 6,
               fontFamily: "var(--font-inter)",
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = "#8c909f")}
-            onMouseLeave={(e) => (e.currentTarget.style.color = "#424754")}
+            onMouseEnter={(e) => (e.currentTarget.style.color = "var(--bv-text-3)")}
+            onMouseLeave={(e) => (e.currentTarget.style.color = "var(--bv-muted)")}
           >
             {expanded ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
             {subtasks.length > 0 ? `תתי-משימות (${subtasks.length})` : "תתי-משימות"}
@@ -480,9 +480,9 @@ function TaskCard({
       {expanded && (
         <div
           style={{
-            borderTop: "1px solid #1e2030",
+            borderTop: "1px solid var(--bv-border)",
             padding: "10px 14px 12px",
-            backgroundColor: "#111319",
+            backgroundColor: "var(--bv-bg)",
           }}
         >
           {subtasks.length > 0 && (
@@ -515,8 +515,8 @@ function TaskCard({
                   padding: "5px 10px",
                   borderRadius: 7,
                   border: "1px solid #4d8eff40",
-                  backgroundColor: "#1a1c24",
-                  color: "#e2e2eb",
+                  backgroundColor: "var(--bv-surface-elevated)",
+                  color: "var(--bv-text-1)",
                   fontFamily: "var(--font-inter)",
                   outline: "none",
                   direction: "rtl",
@@ -546,7 +546,7 @@ function TaskCard({
               className="flex items-center gap-1.5"
               style={{
                 fontSize: 11,
-                color: "#424754",
+                color: "var(--bv-muted)",
                 background: "transparent",
                 border: "none",
                 cursor: "pointer",
@@ -554,8 +554,8 @@ function TaskCard({
                 fontFamily: "var(--font-inter)",
                 marginTop: subtasks.length > 0 ? 4 : 0,
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = "#8c909f")}
-              onMouseLeave={(e) => (e.currentTarget.style.color = "#424754")}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "var(--bv-text-3)")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "var(--bv-muted)")}
             >
               <Plus size={11} />
               הוסף תת-משימה
@@ -652,7 +652,7 @@ function KanbanColumn({
                 style={{
                   textAlign: "center",
                   padding: "32px 16px",
-                  color: "#33343b",
+                  color: "var(--bv-border-subtle)",
                   fontSize: 12,
                   fontStyle: "italic",
                   fontFamily: "var(--font-inter)",
@@ -803,7 +803,7 @@ export function TasksClient({ businessId, initialXp, initialLevel }: TasksClient
           toast.success(`עלית רמה! 🎉 רמה ${newLevel}`, {
             duration: 4000,
             style: {
-              background: "#1a1c24",
+              background: "var(--bv-surface-elevated)",
               border: "1px solid #fbbf2430",
               color: "#fbbf24",
               fontFamily: "var(--font-manrope)",
@@ -819,9 +819,9 @@ export function TasksClient({ businessId, initialXp, initialLevel }: TasksClient
             toast.custom((tId) => (
               <div 
                 style={{
-                  background: "#1a1c24",
+                  background: "var(--bv-surface-elevated)",
                   border: "1px solid #4d8eff30",
-                  color: "#e2e2eb",
+                  color: "var(--bv-text-1)",
                   padding: "12px 16px",
                   borderRadius: "8px",
                   fontFamily: "var(--font-inter)",
@@ -966,7 +966,7 @@ export function TasksClient({ businessId, initialXp, initialLevel }: TasksClient
     <div
       dir="rtl"
       className="flex flex-col h-full"
-      style={{ backgroundColor: "#111319", fontFamily: "var(--font-inter)" }}
+      style={{ backgroundColor: "var(--bv-bg)", fontFamily: "var(--font-inter)" }}
     >
       {/* XP float animations */}
       {xpAnimations.map((anim) => (
@@ -982,8 +982,8 @@ export function TasksClient({ businessId, initialXp, initialLevel }: TasksClient
       <header
         className="shrink-0 flex items-center justify-between px-6"
         style={{
-          backgroundColor: "#191b22",
-          borderBottom: "1px solid #282a30",
+          backgroundColor: "var(--bv-surface-raised)",
+          borderBottom: "1px solid var(--bv-border)",
           height: 64,
           gap: 16,
         }}
@@ -997,7 +997,7 @@ export function TasksClient({ businessId, initialXp, initialLevel }: TasksClient
               alignItems: "center",
               gap: 6,
               fontSize: 12,
-              color: "#424754",
+              color: "var(--bv-muted)",
               textDecoration: "none",
             }}
           >
@@ -1022,7 +1022,7 @@ export function TasksClient({ businessId, initialXp, initialLevel }: TasksClient
               style={{
                 fontSize: 16,
                 fontWeight: 800,
-                color: "#e2e2eb",
+                color: "var(--bv-text-1)",
                 fontFamily: "var(--font-manrope)",
                 letterSpacing: "-0.02em",
                 lineHeight: 1,
@@ -1030,7 +1030,7 @@ export function TasksClient({ businessId, initialXp, initialLevel }: TasksClient
             >
               משימות
             </h1>
-            <p style={{ fontSize: 10, color: "#424754", marginTop: 2 }}>
+            <p style={{ fontSize: 10, color: "var(--bv-muted)", marginTop: 2 }}>
               {rootTasks.length} משימות • {rootTasks.filter((t) => t.status === "done").length} הושלמו
             </p>
           </div>
@@ -1044,10 +1044,10 @@ export function TasksClient({ businessId, initialXp, initialLevel }: TasksClient
             <span style={{ fontSize: 12, fontWeight: 700, color: "#fb923c", fontFamily: "var(--font-inter)" }}>
               {streak}
             </span>
-            <span style={{ fontSize: 10, color: "#424754" }}>ימים רצופים</span>
+            <span style={{ fontSize: 10, color: "var(--bv-muted)" }}>ימים רצופים</span>
           </div>
 
-          <div style={{ width: 1, height: 20, backgroundColor: "#282a30" }} />
+          <div style={{ width: 1, height: 20, backgroundColor: "var(--bv-border)" }} />
 
           {/* Level */}
           <div className="flex items-center gap-2">
@@ -1068,7 +1068,7 @@ export function TasksClient({ businessId, initialXp, initialLevel }: TasksClient
               <div style={{ fontSize: 11, fontWeight: 700, color: "#fbbf24", lineHeight: 1 }}>
                 רמה {level}
               </div>
-              <div style={{ fontSize: 9, color: "#424754", marginTop: 1 }}>
+              <div style={{ fontSize: 9, color: "var(--bv-muted)", marginTop: 1 }}>
                 {xp} / {xpNext} XP
               </div>
             </div>
@@ -1080,7 +1080,7 @@ export function TasksClient({ businessId, initialXp, initialLevel }: TasksClient
               width: 120,
               height: 6,
               borderRadius: 999,
-              backgroundColor: "#1e2030",
+              backgroundColor: "var(--bv-border)",
               overflow: "hidden",
             }}
           >
@@ -1153,14 +1153,14 @@ export function TasksClient({ businessId, initialXp, initialLevel }: TasksClient
                 style={{
                   width: 40,
                   height: 40,
-                  border: "3px solid #282a30",
+                  border: "3px solid var(--bv-border)",
                   borderTopColor: "#4d8eff",
                   borderRadius: "50%",
                   animation: "spin 0.8s linear infinite",
                   margin: "0 auto 12px",
                 }}
               />
-              <p style={{ fontSize: 12, color: "#424754" }}>טוען משימות...</p>
+              <p style={{ fontSize: 12, color: "var(--bv-muted)" }}>טוען משימות...</p>
             </div>
           </div>
         ) : noTasks ? (
@@ -1171,8 +1171,8 @@ export function TasksClient({ businessId, initialXp, initialLevel }: TasksClient
                   width: 56,
                   height: 56,
                   borderRadius: 16,
-                  backgroundColor: "#1a1c24",
-                  border: "1px solid #282a30",
+                  backgroundColor: "var(--bv-surface-elevated)",
+                  border: "1px solid var(--bv-border)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -1182,10 +1182,10 @@ export function TasksClient({ businessId, initialXp, initialLevel }: TasksClient
               >
                 📋
               </div>
-              <p style={{ fontSize: 14, fontWeight: 700, color: "#8c909f", fontFamily: "var(--font-manrope)", marginBottom: 6 }}>
+              <p style={{ fontSize: 14, fontWeight: 700, color: "var(--bv-text-3)", fontFamily: "var(--font-manrope)", marginBottom: 6 }}>
                 אין משימות עדיין
               </p>
-              <p style={{ fontSize: 12, color: "#33343b", marginBottom: 16 }}>
+              <p style={{ fontSize: 12, color: "var(--bv-border-subtle)", marginBottom: 16 }}>
                 צור משימות מהמפה ← לחץ על מחלקה ואז &quot;צור משימה&quot;
               </p>
               <Link

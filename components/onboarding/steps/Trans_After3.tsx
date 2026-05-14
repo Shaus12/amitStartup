@@ -7,10 +7,10 @@ export function Trans_After3({ onNext, onBack }: { onNext: () => void; onBack: (
   return (
     <div className="flex flex-col h-full justify-center">
       <div className="text-center">
-        <h2 className="text-3xl font-bold mb-4" style={{ fontFamily: "var(--font-manrope)", color: "#e2e2eb", letterSpacing: "-0.02em" }}>
+        <h2 className="text-3xl font-bold mb-4" style={{ fontFamily: "var(--font-manrope)", color: "var(--bv-text-1)", letterSpacing: "-0.02em" }}>
           מעולה, אנחנו כבר מתחילים לזהות איך העסק שלך עובד
         </h2>
-        <p className="text-base mb-10 leading-relaxed" style={{ color: "#8c909f" }}>
+        <p className="text-base mb-10 leading-relaxed" style={{ color: "var(--bv-text-3)" }}>
           מה שענית עד עכשיו כבר נותן לנו תמונה די ברורה על איך העסק שלך עובד ובמיוחד איפה יש פוטנציאל לחסוך זמן וכסף. בשלב הבא נצלול פנימה ונראה איפה הפעולות היומיומיות שלך יכולות לעבוד בשבילך במקום שאתה תעבוד בשבילן.
         </p>
       </div>
@@ -19,9 +19,9 @@ export function Trans_After3({ onNext, onBack }: { onNext: () => void; onBack: (
         <button
           onClick={onBack}
           className="text-sm font-medium transition-colors"
-          style={{ color: "#8c909f" }}
-          onMouseEnter={e => e.currentTarget.style.color = "#e2e2eb"}
-          onMouseLeave={e => e.currentTarget.style.color = "#8c909f"}
+          style={{ color: "var(--bv-text-3)" }}
+          onMouseEnter={e => e.currentTarget.style.color = "var(--bv-text-1)"}
+          onMouseLeave={e => e.currentTarget.style.color = "var(--bv-text-3)"}
         >
           {t.back}
         </button>

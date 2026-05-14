@@ -15,7 +15,7 @@ export default async function LoadingAnalysisPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-[100dvh] flex items-center justify-center" style={{ backgroundColor: "#111319" }} />
+        <div className="min-h-[100dvh] flex items-center justify-center" style={{ backgroundColor: "var(--bv-bg)" }} />
       }
     >
       <LoadingAnalysis />

@@ -18,8 +18,8 @@ interface HealthData {
 }
 
 const C = {
-  s1: "#191b22", s2: "#1e1f26", s3: "#282a30", s4: "#33343b",
-  outline: "#424754", muted: "#8c909f", sub: "#c2c6d6", text: "#e2e2eb",
+  s1: "var(--bv-surface-raised)", s2: "var(--bv-surface-elevated)", s3: "var(--bv-border)", s4: "var(--bv-border-subtle)",
+  outline: "var(--bv-muted)", muted: "var(--bv-text-3)", sub: "var(--bv-text-2)", text: "var(--bv-text-1)",
   blue: "#4d8eff", green: "#34d399", amber: "#fbbf24", red: "#f87171",
 };
 const MF: React.CSSProperties = { fontFamily: "var(--font-manrope)" };

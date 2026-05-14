@@ -30,7 +30,7 @@ export default async function DashboardPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-[100dvh]" style={{ backgroundColor: "#111319" }} aria-hidden />
+        <div className="min-h-[100dvh]" style={{ backgroundColor: "var(--bv-bg)" }} aria-hidden />
       }
     >
       <DashboardClient businessId={business.id} businessName={business.name} />

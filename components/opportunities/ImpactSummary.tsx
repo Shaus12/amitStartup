@@ -57,7 +57,7 @@ export function ImpactSummary({
         <div
           key={key}
           className="rounded-xl px-4 py-3.5"
-          style={{ backgroundColor: "#191b22", border: "1px solid #282a30" }}
+          style={{ backgroundColor: "var(--bv-surface-raised)", border: "1px solid var(--bv-border)" }}
         >
           <div className="flex items-center gap-1.5 mb-2.5">
             <div
@@ -68,7 +68,7 @@ export function ImpactSummary({
             </div>
             <span
               className="text-[10px] font-medium"
-              style={{ color: "#424754", fontFamily: "var(--font-inter)" }}
+              style={{ color: "var(--bv-muted)", fontFamily: "var(--font-inter)" }}
             >
               {label}
             </span>

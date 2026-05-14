@@ -54,7 +54,7 @@ function SuccessContent() {
   return (
     <div
       className="min-h-screen flex items-center justify-center px-4"
-      style={{ backgroundColor: "#111319" }}
+      style={{ backgroundColor: "var(--bv-bg)" }}
       dir="rtl"
     >
       <div className="text-center max-w-sm">
@@ -91,7 +91,7 @@ function SuccessContent() {
 export default function SubscribeSuccessPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "#111319" }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "var(--bv-bg)" }}>
         <Loader2 className="w-8 h-8 text-blue-400 animate-spin" />
       </div>
     }>

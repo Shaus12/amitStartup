@@ -25,7 +25,7 @@ export function QuickReviewStep({ onBack }: Props) {
           style={{
             fontSize: 22,
             fontWeight: 800,
-            color: "#e2e2eb",
+            color: "var(--bv-text-1)",
             fontFamily: "var(--font-manrope)",
             letterSpacing: "-0.02em",
             marginBottom: 8,
@@ -33,7 +33,7 @@ export function QuickReviewStep({ onBack }: Props) {
         >
           מוכן ליצירת מפה מהירה!
         </h2>
-        <p style={{ fontSize: 13, color: "#8c909f", lineHeight: 1.6, margin: 0 }}>
+        <p style={{ fontSize: 13, color: "var(--bv-text-3)", lineHeight: 1.6, margin: 0 }}>
           {answers.departments.length} מחלקות יתווספו למפה.
           <br />
           תוכל להשלים כל מחלקה בנפרד ישירות מהמפה.
@@ -50,10 +50,10 @@ export function QuickReviewStep({ onBack }: Props) {
               gap: 6,
               padding: "6px 12px",
               borderRadius: 99,
-              backgroundColor: "#1e1f26",
-              border: "1px solid #282a30",
+              backgroundColor: "var(--bv-surface-elevated)",
+              border: "1px solid var(--bv-border)",
               fontSize: 12,
-              color: "#c2c6d6",
+              color: "var(--bv-text-2)",
               fontWeight: 600,
             }}
           >
@@ -71,7 +71,7 @@ export function QuickReviewStep({ onBack }: Props) {
           padding: "12px 16px",
           marginBottom: 28,
           fontSize: 12,
-          color: "#8c909f",
+          color: "var(--bv-text-3)",
           lineHeight: 1.5,
           direction: "rtl",
           textAlign: "right",
@@ -115,7 +115,7 @@ export function QuickReviewStep({ onBack }: Props) {
             background: "none",
             border: "none",
             cursor: "pointer",
-            color: "#424754",
+            color: "var(--bv-muted)",
             fontSize: 13,
             fontWeight: 600,
             display: "flex",
