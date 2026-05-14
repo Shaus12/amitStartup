@@ -1,10 +1,56 @@
 import { NextRequest, NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
+export const maxDuration = 300;
 import { supabaseAdmin as supabase } from "@/lib/supabase-admin";
 import { analyzeBusinessData } from "@/lib/ai/analyzeBusinessData";
 import { createClient } from "@/lib/supabase/server";
 import { verifyBusinessAccess } from "@/lib/supabase/verify-business-access";
 import { checkRateLimit } from "@/lib/rate-limit";
+
+const MAX_KNOWLEDGE_ROWS = 20;
+const MAX_KNOWLEDGE_TOKENS = 3000;
+const APPROX_CHARS_PER_TOKEN = 4;
+
+type ClaudeKnowledgeRow = { category: string; content: string; metadata?: unknown };
+type DepartmentRow = { id: string; name: string };
+type KnowledgeInsert = {
+  business_id: string;
+  department_id: string | null;
+  category: string;
+  content: string;
+  source: string;
+};
+
+function approximateTokenCount(text: string): number {
+  return Math.ceil(text.length / APPROX_CHARS_PER_TOKEN);
+}
+
+function limitKnowledgeContext(rows: ClaudeKnowledgeRow[], maxTokens: number): ClaudeKnowledgeRow[] {
+  const maxChars = maxTokens * APPROX_CHARS_PER_TOKEN;
+  let usedChars = 0;
+  const limitedRows: ClaudeKnowledgeRow[] = [];
+
+  for (const row of rows) {
+    const prefix = `### ${row.category.toUpperCase()}\n- `;
+    const separator = limitedRows.length > 0 ? "\n\n" : "";
+    const overheadChars = separator.length + prefix.length;
+    const remainingChars = maxChars - usedChars - overheadChars;
+
+    if (remainingChars <= 0) break;
+
+    const content =
+      row.content.length > remainingChars
+        ? `${row.content.slice(0, Math.max(0, remainingChars - 16)).trimEnd()}\n[truncated]`
+        : row.content;
+
+    limitedRows.push({ ...row, content });
+    usedChars += overheadChars + content.length;
+
+    if (row.content.length > content.length) break;
+  }
+
+  return limitedRows;
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -31,7 +77,12 @@ export async function POST(req: NextRequest) {
       { data: departments },
       { data: sessionRows },
     ] = await Promise.all([
-      supabase.from("business_knowledge").select("*").eq("business_id", businessId),
+      supabase
+        .from("business_knowledge")
+        .select("*")
+        .eq("business_id", businessId)
+        .order("created_at", { ascending: false })
+        .limit(MAX_KNOWLEDGE_ROWS),
       supabase.from("departments").select("*").eq("business_id", businessId),
       supabase
         .from("onboarding_sessions")
@@ -44,11 +95,11 @@ export async function POST(req: NextRequest) {
 
     if (knowledgeError) throw knowledgeError;
 
-    const depts = departments ?? [];
+    const depts = (departments ?? []) as DepartmentRow[];
     const deptNameToId = new Map<string, string>(
-      depts.map((d: any) => [d.name.toLowerCase(), d.id])
+      depts.map((d) => [d.name.toLowerCase(), d.id])
     );
-    const departmentNames = depts.map((d: any) => d.name);
+    const departmentNames = depts.map((d) => d.name);
 
     console.log("[generate] Departments found:", departmentNames);
     console.log("[generate] Knowledge rows:", knowledgeRows?.length ?? 0);
@@ -65,13 +116,27 @@ export async function POST(req: NextRequest) {
     const safeKnowledgeRows = [
       ...snapshotRows,
       ...(knowledgeRows || []).map((r) => ({
-        category: r.category,
-        content: r.content,
+        category: String(r.category ?? "uncategorized"),
+        content: String(r.content ?? ""),
         metadata: r.metadata,
       })),
     ];
+    const limitedKnowledgeRows = limitKnowledgeContext(safeKnowledgeRows, MAX_KNOWLEDGE_TOKENS);
+    const approximateKnowledgeTokens = approximateTokenCount(
+      limitedKnowledgeRows
+        .map((row) => `### ${row.category.toUpperCase()}\n- ${row.content}`)
+        .join("\n\n")
+    );
 
-    const result = await analyzeBusinessData(safeKnowledgeRows, departmentNames, {
+    console.log(
+      "[generate] Knowledge context sent to Claude:",
+      limitedKnowledgeRows.length,
+      "rows, approx",
+      approximateKnowledgeTokens,
+      "tokens"
+    );
+
+    const result = await analyzeBusinessData(limitedKnowledgeRows, departmentNames, {
       businessId,
       userId: user?.id ?? null,
     });
@@ -175,7 +240,7 @@ export async function POST(req: NextRequest) {
 
     // ── 6. Save per-department health scores + pain/action insights ────────
     const deptAnalyses = result.departments ?? [];
-    const knowledgeInserts: any[] = [];
+    const knowledgeInserts: KnowledgeInsert[] = [];
 
     for (const deptResult of deptAnalyses) {
       const deptId = deptNameToId.get(deptResult.department_name.toLowerCase()) ?? null;
@@ -232,7 +297,7 @@ export async function POST(req: NextRequest) {
       departments: deptAnalyses.length,
       summary: result.summary,
     });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("[generate] FAILED:", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
