@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, ArrowRight, Shuffle } from "lucide-react";
+import { Shuffle } from "lucide-react";
 import { useT } from "@/lib/i18n";
 import { createContext, useContext } from "react";
 import { cn } from "@/lib/utils";
@@ -107,7 +107,6 @@ export function StepCard({
               onMouseEnter={e => (e.currentTarget.style.color = "#c2c6d6")}
               onMouseLeave={e => (e.currentTarget.style.color = "#8c909f")}
             >
-              <ArrowLeft className="w-3.5 h-3.5 transition-transform duration-150 group-hover:-translate-x-0.5" strokeWidth={2} />
               {t.back}
             </button>
           )}
@@ -130,7 +129,6 @@ export function StepCard({
           }}
         >
           {label}
-          {!nextDisabled && <ArrowRight className="w-4 h-4" strokeWidth={3} />}
         </button>
       </div>
     </div>

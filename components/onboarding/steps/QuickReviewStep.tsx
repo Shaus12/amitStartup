@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronLeft, Zap } from "lucide-react";
+import { Zap } from "lucide-react";
 import { useOnboardingStore } from "@/lib/hooks/useOnboardingStore";
 import { OnboardingGateModal } from "@/components/onboarding/OnboardingGateModal";
 
@@ -126,7 +126,6 @@ export function QuickReviewStep({ onBack }: Props) {
             fontFamily: "var(--font-inter)",
           }}
         >
-          <ChevronLeft size={14} />
           חזור
         </button>
       </div>

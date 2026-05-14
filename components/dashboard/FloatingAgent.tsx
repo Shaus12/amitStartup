@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Bot, X, Send, Loader2, History, Pencil, Trash2, Copy, Check } from "lucide-react";
+import { X, Send, Loader2, History, Pencil, Trash2, Copy, Check } from "lucide-react";
 
 interface Message {
   id?: string;
@@ -416,7 +416,7 @@ export function FloatingAgent({ businessId }: { businessId: string }) {
                     boxShadow: "0 4px 12px rgba(77,142,255,0.35)",
                   }}
                 >
-                  <Bot size={18} style={{ color: "#001a42" }} />
+                  <img src="/logo.png" alt="BizMap" style={{ width: 20, height: 20, objectFit: "contain" }} />
                 </div>
                 <div
                   style={{
@@ -1107,7 +1107,7 @@ export function FloatingAgent({ businessId }: { businessId: string }) {
           {isOpen ? (
             <X size={22} style={{ color: "#8c909f" }} />
           ) : (
-            <Bot size={24} style={{ color: "#001a42" }} />
+            <img src="/logo.png" alt="BizMap" style={{ width: 26, height: 26, objectFit: "contain" }} />
           )}
         </div>
       </button>

@@ -542,7 +542,7 @@ export function OnboardingWizard() {
                 color: "#052e16",
               }}
             >
-              המשך →
+              המשך
             </button>
           </div>
         </div>
@@ -564,10 +564,10 @@ export function OnboardingWizard() {
             className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-xs font-bold"
             style={{ backgroundColor: "#4d8eff20", color: "#4d8eff" }}
           >
-            מ
+            א
           </div>
           <div>
-            <p className="text-xs font-semibold" style={{ color: "#e2e2eb" }}>מוחמד מנצרת</p>
+            <p className="text-xs font-semibold" style={{ color: "#e2e2eb" }}>אדיר מראשון לציון</p>
             <p className="text-[10px]" style={{ color: "#8c909f" }}>מיפה זה עכשיו את 4 המחלקות שלו ✓</p>
           </div>
           <button

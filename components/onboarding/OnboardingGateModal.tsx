@@ -282,9 +282,9 @@ export function OnboardingGateModal({ open, onClose, onboardingPayload }: Props)
                   {mode === "signup" ? "יוצר חשבון…" : "מתחבר…"}
                 </>
               ) : mode === "signup" ? (
-                "צור חשבון וראה את המפה ←"
+                "צור חשבון וראה את המפה"
               ) : (
-                "התחבר ←"
+                "התחבר"
               )}
             </button>
           </form>

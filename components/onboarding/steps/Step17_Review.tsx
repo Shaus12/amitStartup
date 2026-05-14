@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CheckCircle2, ChevronLeft, Sparkles } from "lucide-react";
+import { CheckCircle2, Sparkles } from "lucide-react";
 import { useOnboardingStore } from "@/lib/hooks/useOnboardingStore";
 import { cn } from "@/lib/utils";
 import { useT } from "@/lib/i18n";
@@ -118,7 +118,6 @@ export function Step17_Review({ onBack }: Props) {
           onClick={onBack}
           className="flex items-center gap-2 text-zinc-500 hover:text-zinc-200 text-sm font-bold transition-all"
         >
-          <ChevronLeft className="w-4 h-4 rotate-180" />
           {t.step17.backBtn}
         </button>
 
