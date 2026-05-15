@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Loader2, Mail, Lock, Eye, EyeOff, CheckCircle2, XCircle } from "lucide-react";
@@ -140,6 +141,10 @@ export default function LoginPage() {
                       type="email"
                       required
                       autoFocus
+                      inputMode="email"
+                      autoComplete="email"
+                      autoCapitalize="none"
+                      spellCheck={false}
                       placeholder={t.login.emailPlaceholder}
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
@@ -215,9 +220,9 @@ export default function LoginPage() {
 
         <p className="text-center text-xs mt-5" style={{ color: "var(--bv-border-subtle)" }}>
           {t.login.noAccount}{" "}
-          <a href="/" style={{ color: "var(--bv-muted)", textDecoration: "underline" }}>
+          <Link href="/" style={{ color: "var(--bv-muted)", textDecoration: "underline" }}>
             {t.login.homepage}
-          </a>
+          </Link>
           .
         </p>
       </div>

@@ -60,8 +60,8 @@ export function SaveMapModal({ businessId, businessName }: Props) {
 
       // 5. Refresh — server re-renders with session, modal disappears
       router.refresh();
-    } catch (err: any) {
-      setError(err.message ?? "Something went wrong. Please try again.");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
       setLoading(false);
     }
   }
@@ -149,6 +149,10 @@ export function SaveMapModal({ businessId, businessName }: Props) {
                 id="save-map-email"
                 type="email"
                 required
+                inputMode="email"
+                autoComplete="email"
+                autoCapitalize="none"
+                spellCheck={false}
                 placeholder="your@email.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}

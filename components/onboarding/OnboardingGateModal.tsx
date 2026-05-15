@@ -183,6 +183,10 @@ export function OnboardingGateModal({ open, onClose, onboardingPayload }: Props)
               <input
                 type="email"
                 required
+                inputMode="email"
+                autoComplete="email"
+                autoCapitalize="none"
+                spellCheck={false}
                 placeholder="האימייל שלך"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
