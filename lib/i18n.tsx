@@ -449,7 +449,6 @@ const TRANSLATIONS = {
       nav: [
         { href: "/dashboard", label: "מפת עסק", description: "סקירה ויזואלית" },
         { href: "/tasks", label: "משימות", description: "לוח משימות" },
-        { href: "/sops", label: "תהליכי עבודה", description: "SOPs ואוטומציה" },
         { href: "/opportunities", label: "הזדמנויות AI", description: "חיסכון וסוכנים" },
         { href: "/report", label: "ייצוא דוח", description: "סיכום PDF" },
         { href: "/billing", label: "תוכניות", description: "מסלולים ושדרוג" },
@@ -907,7 +906,6 @@ const TRANSLATIONS = {
       nav: [
         { href: "/dashboard", label: "Business Map", description: "Visual overview" },
         { href: "/tasks", label: "Tasks", description: "Kanban board" },
-        { href: "/sops", label: "Work Processes", description: "SOPs & automation" },
         { href: "/opportunities", label: "AI Opportunities", description: "Savings & agents" },
         { href: "/report", label: "Export Report", description: "PDF summary" },
         { href: "/billing", label: "Plans", description: "Plans & upgrades" },

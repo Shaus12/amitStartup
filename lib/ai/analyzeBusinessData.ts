@@ -11,7 +11,7 @@ export interface OpportunityResult {
   estimated_hours_saved: number | null;
   estimated_cost_saved: number | null;
   priority: number;             // 1–5
-  department_name: string | null;
+  department_name?: string | null;
   is_quick_win?: boolean;       // implementable <3h, no new tool, visible result same day
   notification_hook?: string;   // max 12-word motivating copy
   proof_of_value?: string;      // trust-building sentence tailored to their context
@@ -39,9 +39,47 @@ export interface AnalysisResult {
   };
   healthScore: {
     score: number;
-    breakdown: any;
+    breakdown: unknown;
     dailyTip: string;
   };
+}
+
+type RawAnalysisResult = {
+  overall_health_score: number;
+  daily_tip: string;
+  biggest_pain: string;
+  departments: RawDepartmentAnalysis[];
+};
+
+type RawDepartmentAnalysis = Omit<DepartmentAnalysis, "department_name"> & {
+  department_name?: string;
+  name?: string;
+};
+
+type PartialAnalysisResult = Partial<Omit<RawAnalysisResult, "departments">> & {
+  departments?: RawDepartmentAnalysis[];
+};
+
+type NormalizedAnalysisResult = Omit<RawAnalysisResult, "departments"> & {
+  departments: DepartmentAnalysis[];
+};
+
+function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
+
+export class AnalysisParseError extends Error {
+  partial: PartialAnalysisResult;
+  responseLength: number;
+  responseTail: string;
+
+  constructor(message: string, partial: PartialAnalysisResult, responseText: string) {
+    super(message);
+    this.name = "AnalysisParseError";
+    this.partial = partial;
+    this.responseLength = responseText.length;
+    this.responseTail = responseText.slice(-200);
+  }
 }
 
 // ── Stub ──────────────────────────────────────────────────────────────────────
@@ -101,10 +139,170 @@ STUB_RESULT.opportunities = STUB_RESULT.departments.flatMap((d) =>
   d.opportunities.map((o) => ({ ...o, department_name: d.department_name }))
 );
 
+function stripMarkdownJsonFence(text: string): string {
+  if (!text.startsWith("```")) return text;
+  return text
+    .replace(/^```(?:json)?\s*/, "")
+    .replace(/\s*```\s*$/, "")
+    .trim();
+}
+
+function extractCompleteJsonObject(text: string): string | null {
+  const start = text.indexOf("{");
+  if (start === -1) return null;
+
+  let depth = 0;
+  let inString = false;
+  let escaped = false;
+
+  for (let i = start; i < text.length; i++) {
+    const ch = text[i];
+
+    if (inString) {
+      if (escaped) {
+        escaped = false;
+      } else if (ch === "\\") {
+        escaped = true;
+      } else if (ch === "\"") {
+        inString = false;
+      }
+      continue;
+    }
+
+    if (ch === "\"") {
+      inString = true;
+    } else if (ch === "{") {
+      depth++;
+    } else if (ch === "}") {
+      depth--;
+      if (depth === 0) return text.slice(start, i + 1);
+    }
+  }
+
+  return null;
+}
+
+function extractNumberField(text: string, field: string): number | undefined {
+  const match = text.match(new RegExp(`"${field}"\\s*:\\s*(-?\\d+(?:\\.\\d+)?)`));
+  if (!match) return undefined;
+  const n = Number(match[1]);
+  return Number.isFinite(n) ? n : undefined;
+}
+
+function extractStringField(text: string, field: string): string | undefined {
+  const match = text.match(new RegExp(`"${field}"\\s*:\\s*"((?:\\\\.|[^"\\\\])*)"`));
+  if (!match) return undefined;
+  try {
+    return JSON.parse(`"${match[1]}"`);
+  } catch {
+    return match[1];
+  }
+}
+
+function extractCompleteDepartmentObjects(text: string): RawDepartmentAnalysis[] {
+  const keyIndex = text.indexOf("\"departments\"");
+  if (keyIndex === -1) return [];
+  const arrayStart = text.indexOf("[", keyIndex);
+  if (arrayStart === -1) return [];
+
+  const departments: RawDepartmentAnalysis[] = [];
+  let objectStart = -1;
+  let objectDepth = 0;
+  let inString = false;
+  let escaped = false;
+
+  for (let i = arrayStart + 1; i < text.length; i++) {
+    const ch = text[i];
+
+    if (inString) {
+      if (escaped) {
+        escaped = false;
+      } else if (ch === "\\") {
+        escaped = true;
+      } else if (ch === "\"") {
+        inString = false;
+      }
+      continue;
+    }
+
+    if (ch === "\"") {
+      inString = true;
+      continue;
+    }
+
+    if (ch === "{") {
+      if (objectDepth === 0) objectStart = i;
+      objectDepth++;
+    } else if (ch === "}") {
+      objectDepth--;
+      if (objectDepth === 0 && objectStart !== -1) {
+        try {
+          departments.push(JSON.parse(text.slice(objectStart, i + 1)) as RawDepartmentAnalysis);
+        } catch {
+          // Ignore malformed department objects and keep scanning for later complete ones.
+        }
+        objectStart = -1;
+      }
+    } else if (ch === "]" && objectDepth === 0) {
+      break;
+    }
+  }
+
+  return departments;
+}
+
+function normalizeAnalysisResult(raw: RawAnalysisResult): NormalizedAnalysisResult {
+  return {
+    ...raw,
+    departments: (raw.departments ?? []).map((department) => ({
+      department_name: department.department_name ?? department.name ?? "Unknown",
+      health_score: department.health_score,
+      main_pain: department.main_pain,
+      first_action: department.first_action,
+      opportunities: department.opportunities ?? [],
+    })),
+  };
+}
+
+function parseAnalysisResponse(text: string): RawAnalysisResult {
+  try {
+    return JSON.parse(text) as RawAnalysisResult;
+  } catch {
+    const jsonObject = extractCompleteJsonObject(text);
+    if (jsonObject) {
+      return JSON.parse(jsonObject) as RawAnalysisResult;
+    }
+  }
+
+  const partial: PartialAnalysisResult = {
+    overall_health_score: extractNumberField(text, "overall_health_score"),
+    daily_tip: extractStringField(text, "daily_tip"),
+    biggest_pain: extractStringField(text, "biggest_pain"),
+    departments: extractCompleteDepartmentObjects(text),
+  };
+
+  if (
+    typeof partial.overall_health_score === "number" &&
+    partial.daily_tip &&
+    partial.biggest_pain &&
+    partial.departments &&
+    partial.departments.length > 0
+  ) {
+    console.warn(
+      "[Claude JSON partial parse recovered]:",
+      partial.departments.length,
+      "complete departments"
+    );
+    return partial as RawAnalysisResult;
+  }
+
+  throw new AnalysisParseError("Claude response was not valid JSON and could not be safely recovered", partial, text);
+}
+
 // ── Main analysis function ────────────────────────────────────────────────────
 
 export async function analyzeBusinessData(
-  knowledgeRows: Array<{ category: string; content: string; metadata?: any }>,
+  knowledgeRows: Array<{ category: string; content: string; metadata?: unknown }>,
   departmentNames: string[] = [],
   usageContext?: { businessId?: string | null; userId?: string | null }
 ): Promise<AnalysisResult> {
@@ -139,29 +337,19 @@ export async function analyzeBusinessData(
 
     let text = textBlock.text.trim();
     
-    // Log raw response for debugging
+    console.log("[Claude response length]:", text.length);
+    console.log("[Claude response tail]:", text.slice(-200));
     console.log("[Claude raw response excerpt]:", text.slice(0, 300));
-    
-    // Strip markdown code fences (handles ```json ... ``` or ``` ... ```)
-    if (text.startsWith("```")) {
-      text = text
-        .replace(/^```(?:json)?\s*/, "")
-        .replace(/\s*```\s*$/, "")
-        .trim();
-    }
 
-    let parsed: {
-      overall_health_score: number;
-      daily_tip: string;
-      biggest_pain: string;
-      departments: DepartmentAnalysis[];
-    };
+    text = stripMarkdownJsonFence(text);
+
+    let parsed: NormalizedAnalysisResult;
     
     try {
-      parsed = JSON.parse(text);
+      parsed = normalizeAnalysisResult(parseAnalysisResponse(text));
     } catch (parseErr) {
       console.error("[Claude JSON parse failed]. Raw text:", text.slice(0, 500));
-      throw new Error(`JSON parse failed: ${(parseErr as Error).message}`);
+      throw parseErr;
     }
 
     // Validate the expected structure
@@ -201,9 +389,17 @@ export async function analyzeBusinessData(
         dailyTip: parsed.daily_tip,
       },
     };
-  } catch (err: any) {
+  } catch (err: unknown) {
+    if (err instanceof AnalysisParseError) {
+      console.error("Claude JSON parsing failed with partial data:", {
+        partial: err.partial,
+        responseLength: err.responseLength,
+        responseTail: err.responseTail,
+      });
+      throw err;
+    }
     console.error("Claude API error or JSON parsing failed:", err);
-    throw new Error(`Claude analysis failed: ${err.message}`);
+    throw new Error(`Claude analysis failed: ${errorMessage(err)}`);
   }
 }
 
@@ -226,7 +422,7 @@ export async function callClaudeForChat(
       model: "claude-sonnet-4-6",
       max_tokens: 2048,
       system: systemPrompt,
-      messages: messages as any,
+      messages,
     });
     await logClaudeApiUsage({
       businessId: usageContext?.businessId,
@@ -238,9 +434,9 @@ export async function callClaudeForChat(
 
     const textBlock = response.content.find((b) => b.type === "text");
     return textBlock?.type === "text" ? textBlock.text : "No response generated";
-  } catch (e: any) {
+  } catch (e: unknown) {
     console.error("Claude chat error:", e);
-    return `Error: ${e.message}`;
+    return `Error: ${errorMessage(e)}`;
   }
 }
 
@@ -281,7 +477,7 @@ Return ONLY the Hebrew string. No quotes, no intro, no emojis.`;
 
     const textBlock = response.content.find((b) => b.type === "text");
     return textBlock?.type === "text" ? textBlock.text.trim().replace(/^["']|["']$/g, '') : "בדוק את רשימת המשימות שלך וסגור משימות ישנות.";
-  } catch (e: any) {
+  } catch (e: unknown) {
     console.error("Claude daily tip error:", e);
     return "זכור שכל דקה שאתה חוסך שווה יותר עבור העסק שלך.";
   }
@@ -317,7 +513,7 @@ export async function generateConstraintQuestion(
 
     const textBlock = response.content.find((b) => b.type === "text");
     return textBlock?.type === "text" ? textBlock.text.trim() : "האם יש מגבלות מסוימות לצוות?";
-  } catch (e: any) {
+  } catch (e: unknown) {
     console.error("Claude constraint question error:", e);
     return "האם יש מגבלות מסוימות לצוות או לתקציב?";
   }
@@ -350,8 +546,8 @@ export async function generateProjectPlan(
 
     const textBlock = response.content.find((b) => b.type === "text");
     return textBlock?.type === "text" ? textBlock.text : "No plan generated";
-  } catch (e: any) {
+  } catch (e: unknown) {
     console.error("Claude project plan error:", e);
-    return `Error generating plan: ${e.message}`;
+    return `Error generating plan: ${errorMessage(e)}`;
   }
 }

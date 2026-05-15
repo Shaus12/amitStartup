@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
 import { supabaseAdmin as supabase } from "@/lib/supabase-admin";
-import { analyzeBusinessData } from "@/lib/ai/analyzeBusinessData";
+import { AnalysisParseError, analyzeBusinessData } from "@/lib/ai/analyzeBusinessData";
 import { createClient } from "@/lib/supabase/server";
 import { verifyBusinessAccess } from "@/lib/supabase/verify-business-access";
 import { checkRateLimit } from "@/lib/rate-limit";
@@ -299,6 +299,17 @@ export async function POST(req: NextRequest) {
     });
   } catch (err: unknown) {
     console.error("[generate] FAILED:", err);
+    if (err instanceof AnalysisParseError) {
+      return NextResponse.json(
+        {
+          error: "Claude returned invalid or truncated JSON",
+          partial: err.partial,
+          responseLength: err.responseLength,
+          responseTail: err.responseTail,
+        },
+        { status: 502 }
+      );
+    }
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

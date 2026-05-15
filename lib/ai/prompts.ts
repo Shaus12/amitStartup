@@ -18,7 +18,9 @@ export function buildAnalysisPrompt(
     ? departmentNames.map((d) => `- "${d}"`).join("\n")
     : "- (no departments provided — treat the whole business as one unit)";
 
-  return `You are an elite business operations consultant and AI strategist. Your goal is to analyze the business onboarding data below and produce a deeply personal, insightful, and non-generic AI roadmap.
+  return `Be extremely concise. Total response must be under 6000 tokens. Prioritize quality over quantity.
+
+You are an elite business operations consultant and AI strategist. Your goal is to analyze the business onboarding data below and produce a deeply personal, insightful, and non-generic AI roadmap.
 
 DEPARTMENTS IN THIS BUSINESS (you MUST include all of them in your response, using EXACT names):
 ${deptList}
@@ -43,6 +45,7 @@ CORE ANALYSIS RULES:
    - GOOD: "Your sales team spends ~3h/week on manual prospect outreach. An AI sequence tool like Instantly.ai could automate initial outreach, freeing those hours for closing deals."
    Always mention: A specific tool recommendation (use real product names like Zapier, Make, ChatGPT Plus, Instantly.ai, Fireflies.ai, etc.), a realistic time/cost saving estimate, and WHY it fits THIS specific business.
    All user-facing opportunity copy MUST be written in Hebrew (עברית): title, description, notification_hook, and proof_of_value. Keep real product names in English.
+   Keep each opportunity description concise: maximum 50 words.
 
 4. HEALTH SCORE LOGIC: 
    Scores must reflect reality, not optimism. Base the score on the ratio of manual vs automated processes, tool sophistication, and pain severity.
@@ -55,7 +58,8 @@ CORE ANALYSIS RULES:
    - Provide a realistic health score (do not default to 90+).
    - 'main_pain': Specific to THIS department's data, written in Hebrew, referencing actual processes or assumed bottlenecks.
    - 'first_action': A concrete, highly specific action mentioning a real tool, written in Hebrew.
-   - Supply 2-3 highly specific opportunities (using real tool names) per department.
+   - Generate EXACTLY 2-3 opportunities per department, no more.
+   - Keep main_pain and first_action at maximum 30 words each.
 
 6. DAILY TIP: 
    Must be actionable immediately and specific to their biggest current pain. 
@@ -67,7 +71,7 @@ CORE ANALYSIS RULES:
    - Explicitly state your assumptions in the opportunity descriptions or pain points.
    - Use industry benchmarks for estimates.
    - Weave a request for more information into the opportunity descriptions or main_pain (e.g., "Assuming you do manual outreach, X tool saves Y hours. Let me know your exact CRM to sharpen this.").
-   - STILL produce 2-3 highly specific opportunities per department.
+   - STILL generate EXACTLY 2-3 highly specific opportunities per department, no more.
 
 8. EXISTING TOOL RESPECT (CRITICAL):
    The knowledge base may contain rows starting with "CURRENT TOOL IN USE:" or "CURRENT TOOL FOR".
@@ -87,33 +91,34 @@ CORE ANALYSIS RULES:
 
 10. COMPELLING COPY RULE:
     For every opportunity, write two additional copy fields:
-    - "notification_hook": A single sentence, maximum 12 words, framed as a concrete benefit the owner will feel personally. Lead with a number or time saving. Example: "Cut 4 hours of manual data entry this week."
-    - "proof_of_value": One sentence of trust-building evidence, tailored to this business's size/industry. Example: "Service businesses like yours save an average of 6h/week after this automation." Reference their industry, team size, or a specific pain they mentioned.
+    - "notification_hook": A single sentence, maximum 10 words, framed as a concrete benefit the owner will feel personally.
+    - "proof_of_value": One sentence, maximum 20 words, tailored to this business's size/industry.
 
 ───────────────────────────────────────────────────────────────────
 REQUIRED OUTPUT — return ONLY valid JSON matching this exact schema:
 ───────────────────────────────────────────────────────────────────
+Keep ONLY the fields shown below. Do not add extra fields. Do not write long paragraphs.
 {
   "overall_health_score": <number 0-100 based on health score logic>,
   "daily_tip": "<one highly actionable, specific tip in HEBREW (עברית) based on biggest pain point>",
   "biggest_pain": "<one sentence in HEBREW (עברית) summarising the main business problem, its downstream effect, and real cost>",
   "departments": [
     {
-      "department_name": "<EXACT name from the list above>",
+      "name": "<EXACT name from the list above>",
       "health_score": <number 0-100>,
-      "main_pain": "<one sentence in HEBREW (עברית) highlighting specific friction and cost>",
-      "first_action": "<must be written in Hebrew (עברית) — a single concrete action mentioning a real tool>",
+      "main_pain": "<max 30 words in HEBREW (עברית), highlighting specific friction and cost>",
+      "first_action": "<max 30 words in HEBREW (עברית), a single concrete action mentioning a real tool>",
       "opportunities": [
         {
-          "title": "<specific, action-oriented title in Hebrew (עברית), mentioning a real tool name if useful>",
-          "description": "<detailed sentence in Hebrew (עברית) explaining the bottleneck, the specific tool to fix it, and the customized impact>",
+          "title": "<max 10 words in Hebrew (עברית), action-oriented>",
+          "description": "<max 50 words in Hebrew (עברית), explaining bottleneck, tool, and impact>",
           "impact_type": "time" | "money" | "growth",
-          "estimated_hours_saved": <realistic number per week based on benchmarks>,
-          "estimated_cost_saved": <realistic number in ILS per month based on benchmarks>,
+          "estimated_hours_saved": <number only>,
+          "estimated_cost_saved": <number only>,
           "priority": <1=highest … 5=lowest>,
-          "is_quick_win": <true if meets quick win criteria: <3h to implement, no new tool purchase, visible result within 24h — else false>,
-          "notification_hook": "<max 12 words in Hebrew (עברית), concrete benefit framed as what the owner gains>",
-          "proof_of_value": "<one sentence in Hebrew (עברית) of trust evidence referencing their industry, size, or specific pain>"
+          "is_quick_win": <boolean>,
+          "notification_hook": "<max 10 words in Hebrew (עברית)>",
+          "proof_of_value": "<max 20 words in Hebrew (עברית)>"
         }
       ]
     }
