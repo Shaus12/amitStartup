@@ -53,7 +53,6 @@ export default function SubscribePage() {
   const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
-  const [redirectUrl, setRedirectUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const plan = PLANS.find((p) => p.id === selectedPlan)!;
@@ -77,16 +76,16 @@ export default function SubscribePage() {
           amount: plan.amount,
         }),
       });
-      const data = await res.json();
+      const data = (await res.json()) as { redirectUrl?: unknown; error?: string };
       if (!res.ok) throw new Error(data.error ?? "שגיאה");
 
-      if (data.redirectUrl) {
+      if (typeof data.redirectUrl === "string" && data.redirectUrl) {
         window.location.href = data.redirectUrl;
       } else {
         setDone(true);
       }
-    } catch (err: any) {
-      setError(err.message ?? "משהו השתבש, נסה שוב");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "משהו השתבש, נסה שוב");
     } finally {
       setLoading(false);
     }
@@ -129,13 +128,19 @@ export default function SubscribePage() {
                     key={p.id}
                     type="button"
                     onClick={() => setSelectedPlan(p.id)}
-                    className={`relative rounded-2xl border p-6 text-right transition-all ${
-                      selected
+                    className="relative rounded-2xl border p-6 text-right transition-all"
+                    style={{
+                      backgroundColor: selected
                         ? p.color === "purple"
-                          ? "border-purple-500 bg-purple-500/10"
-                          : "border-blue-500 bg-blue-500/10"
-                        : "border-[var(--bv-border)] bg-[var(--bv-surface)]/40 hover:border-[var(--bv-border-subtle)]"
-                    }`}
+                          ? "rgba(168, 85, 247, 0.10)"
+                          : "rgba(59, 130, 246, 0.10)"
+                        : "var(--bv-surface)",
+                      borderColor: selected
+                        ? p.color === "purple"
+                          ? "rgb(168 85 247)"
+                          : "rgb(59 130 246)"
+                        : "var(--bv-border)",
+                    }}
                   >
                     {"popular" in p && p.popular && (
                       <span className="absolute top-3 left-3 text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30">
@@ -152,9 +157,15 @@ export default function SubscribePage() {
                       }`}
                     />
                     <div className="flex items-end gap-1 mb-1">
-                      <span className="text-3xl font-extrabold text-white">{p.amount}</span>
-                      <span className="text-base font-bold text-white mb-0.5">₪</span>
-                      <span className="text-[var(--bv-muted)] text-xs mb-1">/ חודש</span>
+                      <span className="text-3xl font-extrabold" style={{ color: "var(--bv-text-1)" }}>
+                        {p.amount}
+                      </span>
+                      <span className="text-base font-bold mb-0.5" style={{ color: "var(--bv-text-1)" }}>
+                        ₪
+                      </span>
+                      <span className="text-xs mb-1" style={{ color: "var(--bv-text-3)" }}>
+                        / חודש
+                      </span>
                     </div>
                     <p
                       className={`text-sm font-bold mb-1 ${
@@ -167,11 +178,17 @@ export default function SubscribePage() {
                     >
                       {p.label}
                     </p>
-                    <p className="text-xs text-[var(--bv-muted)]">{p.description}</p>
+                    <p className="text-xs" style={{ color: "var(--bv-text-3)" }}>
+                      {p.description}
+                    </p>
                     <ul className="mt-4 space-y-1.5">
                       {p.features.map((f) => (
-                        <li key={f} className="flex items-center gap-2 text-xs text-[var(--bv-text-3)]">
-                          <Check className="w-3 h-3 text-[var(--bv-muted)] flex-shrink-0" />
+                        <li
+                          key={f}
+                          className="flex items-center gap-2 text-xs"
+                          style={{ color: "var(--bv-text-2)" }}
+                        >
+                          <Check className="w-3 h-3 text-zinc-500 flex-shrink-0" />
                           {f}
                         </li>
                       ))}
@@ -182,11 +199,16 @@ export default function SubscribePage() {
             </div>
 
             {/* Contact fields */}
-            <div className="rounded-2xl border border-[var(--bv-border)] bg-[var(--bv-surface)]/40 p-6 space-y-4 mb-6">
-              <p className="text-[var(--bv-text-2)] text-sm font-bold">פרטי יצירת קשר</p>
+            <div
+              className="rounded-2xl border p-6 space-y-4 mb-6"
+              style={{ backgroundColor: "var(--bv-surface)", borderColor: "var(--bv-border)" }}
+            >
+              <p className="text-sm font-bold" style={{ color: "var(--bv-text-2)" }}>
+                פרטי יצירת קשר
+              </p>
 
               <div>
-                <label className="block text-xs text-[var(--bv-muted)] font-bold mb-1.5">
+                <label className="block text-xs font-bold mb-1.5" style={{ color: "var(--bv-text-3)" }}>
                   שם מלא <span className="text-blue-400">*</span>
                 </label>
                 <input
@@ -194,7 +216,12 @@ export default function SubscribePage() {
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   placeholder="שם פרטי ושם משפחה"
-                  className="w-full rounded-xl bg-[var(--bv-surface-raised)]/60 border border-[var(--bv-border-subtle)] text-[var(--bv-text-1)] placeholder:text-[var(--bv-muted)] px-4 py-3 text-sm outline-none focus:border-blue-500 transition-colors"
+                  className="w-full rounded-xl border px-4 py-3 text-sm outline-none transition-colors placeholder:text-[var(--bv-muted)] focus:border-blue-500"
+                  style={{
+                    backgroundColor: "var(--bv-surface-raised)",
+                    borderColor: "var(--bv-border)",
+                    color: "var(--bv-text-1)",
+                  }}
                 />
                 {fullName && fullName.trim().split(" ").filter((w) => w.length >= 2).length < 2 && (
                   <p className="text-xs text-red-400 mt-1">יש להזין שם פרטי ושם משפחה</p>
@@ -202,7 +229,7 @@ export default function SubscribePage() {
               </div>
 
               <div>
-                <label className="block text-xs text-[var(--bv-muted)] font-bold mb-1.5">
+                <label className="block text-xs font-bold mb-1.5" style={{ color: "var(--bv-text-3)" }}>
                   טלפון נייד <span className="text-blue-400">*</span>
                 </label>
                 <input
@@ -212,7 +239,12 @@ export default function SubscribePage() {
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="0500000000"
                   dir="ltr"
-                  className="w-full rounded-xl bg-[var(--bv-surface-raised)]/60 border border-[var(--bv-border-subtle)] text-[var(--bv-text-1)] placeholder:text-[var(--bv-muted)] px-4 py-3 text-sm outline-none focus:border-blue-500 transition-colors"
+                  className="w-full rounded-xl border px-4 py-3 text-sm outline-none transition-colors placeholder:text-[var(--bv-muted)] focus:border-blue-500"
+                  style={{
+                    backgroundColor: "var(--bv-surface-raised)",
+                    borderColor: "var(--bv-border)",
+                    color: "var(--bv-text-1)",
+                  }}
                 />
                 {phone && !isValidIsraeliPhone(phone) && (
                   <p className="text-xs text-red-400 mt-1">מספר טלפון ישראלי לא תקין (לדוגמה: 0501234567)</p>

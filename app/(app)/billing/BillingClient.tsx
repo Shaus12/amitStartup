@@ -36,7 +36,7 @@ const PLAN_CARDS: Record<Plan, PlanCard> = {
       "2 מחלקות עם ניתוח מלא",
       "2 הזדמנויות פעילות במקביל",
       "2 תוצרים מותאמים אישית",
-      "יועץ AI — 10 הודעות ביום",
+      "יועץ עסקי מבוסס AI - עד 10 הודעות ביום",
       "רענון ניתוח אחת לחודש",
     ],
   },
@@ -49,7 +49,7 @@ const PLAN_CARDS: Record<Plan, PlanCard> = {
       "4 מחלקות עם ניתוח מלא",
       "5 הזדמנויות פעילות במקביל",
       "5 תוצרים מותאמים אישית",
-      "יועץ AI — 50 הודעות ביום",
+      "יועץ עסקי מבוסס AI - עד 50 הודעות ביום",
       "רענון ניתוח אחת לשבוע",
       "תמיכה מועדפת",
     ],
@@ -62,7 +62,7 @@ const PLAN_CARDS: Record<Plan, PlanCard> = {
       "מחלקות ללא הגבלה",
       "פרויקטים ללא הגבלה",
       "תוצרים ללא הגבלה",
-      "יועץ AI — ללא הגבלה",
+      "יועץ עסקי מבוסס AI - ללא הגבלה",
       "רענון ניתוח אחת לשבוע",
       "צוות — עובדים יכולים לצפות במערכת",
       "תמיכה VIP",
@@ -104,7 +104,12 @@ function PlanAction({ plan, currentPlan }: { plan: Plan; currentPlan: Plan }) {
       <button
         type="button"
         disabled
-        className="mt-6 h-11 w-full rounded-xl border border-[var(--bv-border-subtle)] bg-[var(--bv-surface-raised)]/70 px-4 text-sm font-bold text-[var(--bv-text-3)]"
+        className="mt-6 h-11 w-full rounded-xl border px-4 text-sm font-bold"
+        style={{
+          backgroundColor: "var(--bv-surface-raised)",
+          borderColor: "var(--bv-border)",
+          color: "var(--bv-text-3)",
+        }}
       >
         התוכנית הנוכחית
       </button>
@@ -132,12 +137,16 @@ function PricingCard({ plan, currentPlan }: { plan: PlanCard; currentPlan: Plan 
   return (
     <section
       className={`relative flex h-full flex-col rounded-2xl border p-6 transition-all ${
-        isCurrent
-          ? "border-blue-500 bg-blue-500/5"
-          : isPro
-            ? "border-purple-500/40 bg-[var(--bv-surface)]/70 shadow-[0_0_40px_rgba(168,85,247,0.12)]"
-            : "border-[var(--bv-border)] bg-[var(--bv-surface)]/50"
+        isPro ? "shadow-[0_0_40px_rgba(168,85,247,0.12)]" : ""
       }`}
+      style={{
+        backgroundColor: isCurrent ? "rgba(59, 130, 246, 0.08)" : "var(--bv-surface)",
+        borderColor: isCurrent
+          ? "rgb(59 130 246)"
+          : isPro
+            ? "rgba(168, 85, 247, 0.45)"
+            : "var(--bv-border)",
+      }}
     >
       <div className="mb-5 flex min-h-8 flex-wrap items-center gap-2">
         {isCurrent && (
@@ -160,8 +169,17 @@ function PricingCard({ plan, currentPlan }: { plan: PlanCard; currentPlan: Plan 
                 ? "border-purple-500/25 bg-purple-500/10 text-purple-300"
                 : plan.id === "business"
                   ? "border-green-500/25 bg-green-500/10 text-green-300"
-                  : "border-[var(--bv-border-subtle)] bg-[var(--bv-surface-raised)] text-[var(--bv-text-3)]"
+                  : ""
             }`}
+            style={
+              plan.id === "free"
+                ? {
+                    backgroundColor: "var(--bv-surface-raised)",
+                    borderColor: "var(--bv-border)",
+                    color: "var(--bv-text-3)",
+                  }
+                : undefined
+            }
           >
             {plan.id === "business" ? (
               <Crown className="size-5" aria-hidden="true" />
@@ -171,14 +189,22 @@ function PricingCard({ plan, currentPlan }: { plan: PlanCard; currentPlan: Plan 
               <Lock className="size-5" aria-hidden="true" />
             )}
           </div>
-          <h2 className="text-2xl font-extrabold text-white">{plan.name}</h2>
+          <h2 className="text-2xl font-extrabold" style={{ color: "var(--bv-text-1)" }}>
+            {plan.name}
+          </h2>
         </div>
-        <p className="text-3xl font-extrabold text-white">{plan.price}</p>
+        <p className="text-3xl font-extrabold" style={{ color: "var(--bv-text-1)" }}>
+          {plan.price}
+        </p>
       </div>
 
       <ul className="flex-1 space-y-3">
         {plan.features.map((feature) => (
-          <li key={feature} className="flex items-start gap-2 text-sm leading-6 text-[var(--bv-text-2)]">
+          <li
+            key={feature}
+            className="flex items-start gap-2 text-sm leading-6"
+            style={{ color: "var(--bv-text-2)" }}
+          >
             <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-green-400" aria-hidden="true" />
             <span>{feature}</span>
           </li>
@@ -230,15 +256,26 @@ export function BillingClient({
     <div className="mx-auto max-w-6xl px-4 py-10" dir="rtl">
       <div className="mb-8">
         <p className="mb-2 text-sm font-bold text-blue-400">תוכניות</p>
-        <h1 className="text-3xl font-extrabold text-white">בחר את התוכנית שמתאימה לעסק שלך</h1>
-        <p className="mt-2 text-sm text-[var(--bv-muted)]">{userEmail}</p>
+        <h1 className="text-3xl font-extrabold" style={{ color: "var(--bv-text-1)" }}>
+          בחר את התוכנית שמתאימה לעסק שלך
+        </h1>
+        <p className="mt-2 text-sm" style={{ color: "var(--bv-text-3)" }}>
+          {userEmail}
+        </p>
       </div>
 
-      <section className="mb-8 rounded-2xl border border-[var(--bv-border)] bg-[var(--bv-surface)]/50 p-6">
+      <section
+        className="mb-8 rounded-2xl border p-6"
+        style={{ backgroundColor: "var(--bv-surface)", borderColor: "var(--bv-border)" }}
+      >
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div>
-            <p className="text-sm font-bold text-[var(--bv-muted)]">התוכנית הנוכחית שלך</p>
-            <p className="mt-1 text-2xl font-extrabold text-white">{PLAN_LABELS[currentPlan]}</p>
+            <p className="text-sm font-bold" style={{ color: "var(--bv-text-3)" }}>
+              התוכנית הנוכחית שלך
+            </p>
+            <p className="mt-1 text-2xl font-extrabold" style={{ color: "var(--bv-text-1)" }}>
+              {PLAN_LABELS[currentPlan]}
+            </p>
             {isCancellationPending && (
               <p className="mt-2 text-sm font-medium text-yellow-300">
                 המנוי שלך פעיל עד {formatDate(localEndsAt)}
@@ -246,7 +283,9 @@ export function BillingClient({
             )}
           </div>
           <div className="flex flex-col items-start gap-3 md:items-end">
-            <p className="max-w-xl text-sm font-medium text-[var(--bv-text-2)]">{bannerText(currentPlan)}</p>
+            <p className="max-w-xl text-sm font-medium" style={{ color: "var(--bv-text-2)" }}>
+              {bannerText(currentPlan)}
+            </p>
             {currentPlan !== "free" && !isCancellationPending && (
               <button
                 type="button"
@@ -283,23 +322,35 @@ export function BillingClient({
 
       {cancelModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4">
-          <div className="relative w-full max-w-md rounded-2xl border border-[var(--bv-border)] bg-[var(--bv-bg)] p-6 text-right shadow-2xl">
+          <div
+            className="relative w-full max-w-md rounded-2xl border p-6 text-right shadow-2xl"
+            style={{
+              backgroundColor: "var(--bv-surface)",
+              borderColor: "var(--bv-border)",
+              color: "var(--bv-text-1)",
+            }}
+          >
             <button
               type="button"
               onClick={() => {
                 if (!cancelLoading) setCancelModalOpen(false);
               }}
               disabled={cancelLoading}
-              className="absolute left-3 top-3 inline-flex size-8 items-center justify-center rounded-full text-[var(--bv-muted)] transition-colors hover:bg-[var(--bv-surface)] hover:text-white disabled:pointer-events-none disabled:opacity-50"
+              className="absolute left-3 top-3 inline-flex size-8 items-center justify-center rounded-full transition-colors disabled:pointer-events-none disabled:opacity-50"
+              style={{ color: "var(--bv-text-3)" }}
               aria-label="סגור"
             >
               <X className="size-4" aria-hidden="true" />
             </button>
 
-            <h2 className="text-xl font-extrabold text-white">לבטל את המנוי?</h2>
-            <p className="mt-3 text-sm leading-6 text-[var(--bv-text-3)]">
+            <h2 className="text-xl font-extrabold" style={{ color: "var(--bv-text-1)" }}>
+              לבטל את המנוי?
+            </h2>
+            <p className="mt-3 text-sm leading-6" style={{ color: "var(--bv-text-3)" }}>
               הביטול ייכנס לתוקף בסוף תקופת החיוב הנוכחית. תוכל להמשיך ליהנות מהתוכנית עד{" "}
-              <span className="font-bold text-white">{formatDate(calculatedEndDate)}</span>.
+              <span className="font-bold" style={{ color: "var(--bv-text-1)" }}>
+                {formatDate(calculatedEndDate)}
+              </span>.
             </p>
 
             {cancelError && <p className="mt-4 text-sm font-medium text-red-400">{cancelError}</p>}
@@ -309,7 +360,12 @@ export function BillingClient({
                 type="button"
                 onClick={() => setCancelModalOpen(false)}
                 disabled={cancelLoading}
-                className="h-11 flex-1 rounded-xl border border-[var(--bv-border-subtle)] bg-[var(--bv-surface)] px-4 text-sm font-bold text-[var(--bv-text-2)] transition-colors hover:bg-[var(--bv-surface-raised)] disabled:pointer-events-none disabled:opacity-50"
+                className="h-11 flex-1 rounded-xl border px-4 text-sm font-bold transition-colors disabled:pointer-events-none disabled:opacity-50"
+                style={{
+                  backgroundColor: "var(--bv-surface-raised)",
+                  borderColor: "var(--bv-border)",
+                  color: "var(--bv-text-2)",
+                }}
               >
                 חזור
               </button>
