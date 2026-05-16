@@ -30,7 +30,7 @@ export function Step02_TeamSize({ onNext, onBack }: Props) {
         <section className="space-y-4">
           <div className="flex items-center gap-2">
             <Building2 className="w-4 h-4 text-blue-500" />
-            <p className="text-zinc-300 text-sm font-bold uppercase tracking-wider">
+            <p className="text-[var(--bv-text-2)] text-sm font-bold uppercase tracking-wider">
               {t.step02.businessTypeLabel}
             </p>
           </div>
@@ -46,14 +46,14 @@ export function Step02_TeamSize({ onNext, onBack }: Props) {
                     "flex items-center justify-between p-4 rounded-xl border text-right transition-all group",
                     selected
                       ? "border-blue-500 bg-blue-500/10 text-blue-100 shadow-[0_4px_15px_rgba(77,142,255,0.1)]"
-                      : "border-zinc-800 bg-zinc-900/40 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200"
+                      : "border-[var(--bv-border)] bg-[var(--bv-surface)]/40 text-[var(--bv-text-3)] hover:border-[var(--bv-border-subtle)] hover:text-[var(--bv-text-1)]"
                   )}
                 >
                   <span className="text-sm font-bold leading-snug">{bt.label}</span>
                   <div
                     className={cn(
                       "w-5 h-5 rounded-full border flex items-center justify-center shrink-0 transition-all",
-                      selected ? "bg-blue-600 border-blue-500" : "bg-zinc-800 border-zinc-700 group-hover:border-zinc-600"
+                      selected ? "bg-blue-600 border-blue-500" : "bg-[var(--bv-surface-raised)] border-[var(--bv-border-subtle)] group-hover:border-[var(--bv-muted)]"
                     )}
                   >
                     {selected && <Check className="w-3 h-3 text-white" strokeWidth={3} />}
@@ -68,7 +68,7 @@ export function Step02_TeamSize({ onNext, onBack }: Props) {
         <section className="space-y-4">
           <div className="flex items-center gap-2">
             <Users className="w-4 h-4 text-blue-500" />
-            <p className="text-zinc-300 text-sm font-bold uppercase tracking-wider">
+            <p className="text-[var(--bv-text-2)] text-sm font-bold uppercase tracking-wider">
               {t.step02.employeeRangeLabel}
             </p>
           </div>
@@ -84,7 +84,7 @@ export function Step02_TeamSize({ onNext, onBack }: Props) {
                     "relative py-3 px-4 rounded-xl border text-sm font-bold transition-all overflow-hidden",
                     selected
                       ? "border-blue-500 bg-blue-500/10 text-blue-100 ring-1 ring-blue-500/30 shadow-[0_4px_15px_rgba(77,142,255,0.1)]"
-                      : "border-zinc-800 bg-zinc-900/40 text-zinc-500 hover:border-zinc-700 hover:text-zinc-300"
+                      : "border-[var(--bv-border)] bg-[var(--bv-surface)]/40 text-[var(--bv-muted)] hover:border-[var(--bv-border-subtle)] hover:text-[var(--bv-text-2)]"
                   )}
                 >
                   {er.label}
@@ -101,7 +101,7 @@ export function Step02_TeamSize({ onNext, onBack }: Props) {
         <section className="space-y-4">
           <div className="flex items-center gap-2">
             <Users2 className="w-4 h-4 text-blue-500" />
-            <p className="text-zinc-300 text-sm font-bold uppercase tracking-wider">
+            <p className="text-[var(--bv-text-2)] text-sm font-bold uppercase tracking-wider">
               {t.step02.staffStructureLabel}
             </p>
           </div>
@@ -117,13 +117,13 @@ export function Step02_TeamSize({ onNext, onBack }: Props) {
                     "flex items-center justify-between p-4 rounded-xl border text-right transition-all group",
                     selected
                       ? "border-blue-500 bg-blue-500/10 text-blue-100 shadow-[0_4px_15px_rgba(77,142,255,0.1)]"
-                      : "border-zinc-800 bg-zinc-900/40 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200"
+                      : "border-[var(--bv-border)] bg-[var(--bv-surface)]/40 text-[var(--bv-text-3)] hover:border-[var(--bv-border-subtle)] hover:text-[var(--bv-text-1)]"
                   )}
                 >
                   <span className="text-sm font-bold">{ss.label}</span>
                   <div className={cn(
                     "w-5 h-5 rounded-full border flex items-center justify-center transition-all",
-                    selected ? "bg-blue-600 border-blue-500" : "bg-zinc-800 border-zinc-700 group-hover:border-zinc-600"
+                    selected ? "bg-blue-600 border-blue-500" : "bg-[var(--bv-surface-raised)] border-[var(--bv-border-subtle)] group-hover:border-[var(--bv-muted)]"
                   )}>
                     {selected && <Check className="w-3 h-3 text-white" strokeWidth={3} />}
                   </div>
@@ -137,7 +137,7 @@ export function Step02_TeamSize({ onNext, onBack }: Props) {
         <section className="space-y-4">
            <div className="flex items-center gap-2">
             <div className="w-1 h-4 bg-blue-500 rounded-full" />
-            <p className="text-zinc-300 text-sm font-bold uppercase tracking-wider">
+            <p className="text-[var(--bv-text-2)] text-sm font-bold uppercase tracking-wider">
               {t.step02.hasDeptLabel}
             </p>
           </div>
@@ -153,14 +153,14 @@ export function Step02_TeamSize({ onNext, onBack }: Props) {
                      "flex items-center gap-3 p-4 rounded-xl border transition-all",
                      selected
                        ? "border-blue-500 bg-blue-500/10 text-blue-100"
-                       : "border-zinc-800 bg-zinc-900/40 text-zinc-500 hover:border-zinc-700 hover:text-zinc-300"
+                       : "border-[var(--bv-border)] bg-[var(--bv-surface)]/40 text-[var(--bv-muted)] hover:border-[var(--bv-border-subtle)] hover:text-[var(--bv-text-2)]"
                    )}
                  >
                    <div className={cn(
                      "w-4 h-4 rounded-full border flex items-center justify-center",
-                     selected ? "border-blue-500 bg-blue-500" : "border-zinc-700"
+                     selected ? "border-blue-500 bg-blue-500" : "border-[var(--bv-border-subtle)]"
                    )}>
-                     {selected && <div className="w-1.5 h-1.5 rounded-full bg-zinc-900" />}
+                     {selected && <div className="w-1.5 h-1.5 rounded-full bg-[var(--bv-surface)]" />}
                    </div>
                    <span className="text-sm font-bold">{opt.label}</span>
                  </button>

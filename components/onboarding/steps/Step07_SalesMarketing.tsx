@@ -30,7 +30,7 @@ export function Step07_SalesMarketing({ onNext, onBack }: Props) {
       <div className="space-y-8 mt-4">
         {/* Metric 1: Close Rate */}
         <div className="space-y-2">
-          <label className="block text-sm font-semibold text-zinc-300">
+          <label className="block text-sm font-semibold text-[var(--bv-text-2)]">
             {t.step07.closeRateLabel}
           </label>
           <Input
@@ -38,13 +38,13 @@ export function Step07_SalesMarketing({ onNext, onBack }: Props) {
             value={answers.closeRate}
             onChange={(e) => updateAnswers({ closeRate: e.target.value })}
             placeholder={t.step07.closeRatePlaceholder}
-            className="bg-zinc-800 border-zinc-700 text-zinc-100 placeholder:text-zinc-500 h-11 focus:border-blue-500 focus:ring-blue-500/20"
+            className="bg-[var(--bv-surface-raised)] border-[var(--bv-border-subtle)] text-[var(--bv-text-1)] placeholder:text-[var(--bv-muted)] h-11 focus:border-blue-500 focus:ring-blue-500/20"
           />
         </div>
 
         {/* Metric 2: Avg Deal Size */}
         <div className="space-y-2">
-          <label className="block text-sm font-semibold text-zinc-300">
+          <label className="block text-sm font-semibold text-[var(--bv-text-2)]">
             {t.step07.avgDealSizeLabel}
           </label>
           <Input
@@ -52,13 +52,13 @@ export function Step07_SalesMarketing({ onNext, onBack }: Props) {
             value={answers.avgDealSize}
             onChange={(e) => updateAnswers({ avgDealSize: e.target.value })}
             placeholder={t.step07.avgDealSizePlaceholder}
-            className="bg-zinc-800 border-zinc-700 text-zinc-100 placeholder:text-zinc-500 h-11 focus:border-blue-500 focus:ring-blue-500/20"
+            className="bg-[var(--bv-surface-raised)] border-[var(--bv-border-subtle)] text-[var(--bv-text-1)] placeholder:text-[var(--bv-muted)] h-11 focus:border-blue-500 focus:ring-blue-500/20"
           />
         </div>
 
         {/* Metric 3: Time Spent Comms */}
         <div className="space-y-2">
-          <label className="block text-sm font-semibold text-zinc-300">
+          <label className="block text-sm font-semibold text-[var(--bv-text-2)]">
             {t.step07.timeSpentCommsLabel}
           </label>
           <Input
@@ -66,7 +66,7 @@ export function Step07_SalesMarketing({ onNext, onBack }: Props) {
             value={answers.timeSpentComms}
             onChange={(e) => updateAnswers({ timeSpentComms: e.target.value })}
             placeholder={t.step07.timeSpentCommsPlaceholder}
-            className="bg-zinc-800 border-zinc-700 text-zinc-100 placeholder:text-zinc-500 h-11 focus:border-blue-500 focus:ring-blue-500/20"
+            className="bg-[var(--bv-surface-raised)] border-[var(--bv-border-subtle)] text-[var(--bv-text-1)] placeholder:text-[var(--bv-muted)] h-11 focus:border-blue-500 focus:ring-blue-500/20"
           />
         </div>
       </div>

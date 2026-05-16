@@ -48,7 +48,7 @@ export function Step12_Bottlenecks({ onNext, onBack }: Props) {
                   "w-full flex items-center gap-3 px-4 py-3.5 rounded-xl border text-right transition-all group",
                   selected
                     ? "border-blue-500 bg-blue-500/10 text-blue-100 ring-1 ring-blue-500/30 shadow-[0_4px_20px_rgba(77,142,255,0.1)]"
-                    : "border-zinc-800 bg-zinc-900/40 text-zinc-500 hover:border-zinc-700 hover:text-zinc-300"
+                    : "border-[var(--bv-border)] bg-[var(--bv-surface)]/40 text-[var(--bv-muted)] hover:border-[var(--bv-border-subtle)] hover:text-[var(--bv-text-2)]"
                 )}
               >
                 <div
@@ -56,12 +56,12 @@ export function Step12_Bottlenecks({ onNext, onBack }: Props) {
                     "h-5 w-5 shrink-0 rounded flex items-center justify-center transition-all border",
                     selected
                       ? "border-blue-500 bg-blue-500 shadow-[0_0_8px_rgba(77,142,255,0.6)]"
-                      : "border-zinc-700 bg-zinc-800 group-hover:border-zinc-600"
+                      : "border-[var(--bv-border-subtle)] bg-[var(--bv-surface-raised)] group-hover:border-[var(--bv-muted)]"
                   )}
                 >
                   {selected && <Check className="h-3 w-3 text-zinc-900" strokeWidth={4} />}
                 </div>
-                <span className={cn("text-sm font-semibold", selected ? "text-blue-100" : "text-zinc-400")}>
+                <span className={cn("text-sm font-semibold", selected ? "text-blue-100" : "text-[var(--bv-text-3)]")}>
                     {opt.label}
                 </span>
               </button>
@@ -75,7 +75,7 @@ export function Step12_Bottlenecks({ onNext, onBack }: Props) {
               value={answers.biggestHeadache}
               onChange={(e) => updateAnswers({ biggestHeadache: e.target.value })}
               placeholder={t.step12.otherPlaceholder}
-              className="bg-zinc-800/50 border-zinc-700 text-zinc-100 placeholder:text-zinc-500 focus:border-blue-500 focus:ring-blue-500/20 resize-none min-h-[100px]"
+              className="bg-[var(--bv-surface-raised)]/50 border-[var(--bv-border-subtle)] text-[var(--bv-text-1)] placeholder:text-[var(--bv-muted)] focus:border-blue-500 focus:ring-blue-500/20 resize-none min-h-[100px]"
             />
           </div>
         )}

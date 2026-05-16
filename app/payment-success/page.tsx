@@ -42,10 +42,10 @@ export default function PaymentSuccessPage() {
         </div>
 
         <h1 className="mb-3 text-3xl font-extrabold text-white">התשלום התקבל בהצלחה! 🎉</h1>
-        <p className="mb-2 text-lg font-bold text-zinc-200">ברוכים הבאים ל-BizMap Pro</p>
-        <p className="mb-6 text-sm text-zinc-500">מועבר לדאשבורד שלך תוך 3 שניות...</p>
+        <p className="mb-2 text-lg font-bold text-[var(--bv-text-1)]">ברוכים הבאים ל-BizMap Pro</p>
+        <p className="mb-6 text-sm text-[var(--bv-muted)]">מועבר לדאשבורד שלך תוך 3 שניות...</p>
 
-        <div className="mb-7 h-2 overflow-hidden rounded-full bg-zinc-800">
+        <div className="mb-7 h-2 overflow-hidden rounded-full bg-[var(--bv-surface-raised)]">
           <div
             className="h-full rounded-full bg-green-400 transition-[width] duration-75 ease-linear"
             style={{ width: `${progress}%` }}

@@ -64,7 +64,7 @@ export default async function DepartmentPage({
       {/* Back */}
       <Link
         href="/dashboard"
-        className="flex items-center gap-1 text-zinc-400 hover:text-zinc-100 text-sm mb-6 transition-colors"
+        className="flex items-center gap-1 text-[var(--bv-text-3)] hover:text-[var(--bv-text-1)] text-sm mb-6 transition-colors"
       >
         <ChevronLeft className="w-4 h-4" />
         Back to Business Map
@@ -76,9 +76,9 @@ export default async function DepartmentPage({
           className="w-4 h-4 rounded-full"
           style={{ backgroundColor: dept.color }}
         />
-        <h1 className="text-3xl font-bold text-zinc-100">{dept.name}</h1>
+        <h1 className="text-3xl font-bold text-[var(--bv-text-1)]">{dept.name}</h1>
         {dept.headcount && (
-          <span className="flex items-center gap-1 text-sm text-zinc-400">
+          <span className="flex items-center gap-1 text-sm text-[var(--bv-text-3)]">
             <Users className="w-4 h-4" /> {dept.headcount} people
           </span>
         )}
@@ -112,14 +112,14 @@ export default async function DepartmentPage({
             {processes.map((p: any, i: number) => (
               <div
                 key={i}
-                className="flex items-start justify-between bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-3"
+                className="flex items-start justify-between bg-[var(--bv-surface)] border border-[var(--bv-border)] rounded-lg px-4 py-3"
               >
                 <div>
-                  <p className="text-zinc-100 font-medium">{p.name}</p>
+                  <p className="text-[var(--bv-text-1)] font-medium">{p.name}</p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0 ml-4">
                   {p.frequency && (
-                    <Badge variant="outline" className="text-xs border-zinc-700 text-zinc-400">
+                    <Badge variant="outline" className="text-xs border-[var(--bv-border-subtle)] text-[var(--bv-text-3)]">
                       {p.frequency}
                     </Badge>
                   )}
@@ -150,10 +150,10 @@ export default async function DepartmentPage({
             {painPoints.map((p) => (
               <div
                 key={p.id}
-                className="flex items-start gap-3 bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-3"
+                className="flex items-start gap-3 bg-[var(--bv-surface)] border border-[var(--bv-border)] rounded-lg px-4 py-3"
               >
                 <SeverityDot severity={p.severity} />
-                <p className="text-zinc-300 text-sm">{p.description}</p>
+                <p className="text-[var(--bv-text-2)] text-sm">{p.description}</p>
               </div>
             ))}
           </div>
@@ -169,15 +169,15 @@ export default async function DepartmentPage({
             {aiOpportunities.map((opp: any) => (
               <div
                 key={opp.id}
-                className="bg-zinc-900 border border-zinc-800 rounded-xl p-5"
+                className="bg-[var(--bv-surface)] border border-[var(--bv-border)] rounded-xl p-5"
               >
                 <div className="flex items-center gap-2 mb-2">
                   <ImpactBadge type={opp.impact_type} />
                 </div>
-                <p className="text-zinc-100 font-semibold">{opp.title}</p>
-                <p className="text-zinc-400 text-sm mt-1">{opp.description}</p>
+                <p className="text-[var(--bv-text-1)] font-semibold">{opp.title}</p>
+                <p className="text-[var(--bv-text-3)] text-sm mt-1">{opp.description}</p>
                 {opp.agent_name && (
-                  <div className="mt-3 bg-zinc-800 rounded-lg p-3">
+                  <div className="mt-3 bg-[var(--bv-surface-raised)] rounded-lg p-3">
                     <p className="text-indigo-400 font-medium text-sm">{opp.agent_name}</p>
                   </div>
                 )}
@@ -205,23 +205,23 @@ export default async function DepartmentPage({
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="mb-8">
-      <h2 className="text-lg font-semibold text-zinc-100 mb-3">{title}</h2>
+      <h2 className="text-lg font-semibold text-[var(--bv-text-1)] mb-3">{title}</h2>
       {children}
     </div>
   );
 }
 
 function Empty({ text }: { text: string }) {
-  return <p className="text-zinc-600 text-sm">{text}</p>;
+  return <p className="text-[var(--bv-muted)] text-sm">{text}</p>;
 }
 
 function StatCard({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
-    <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4">
-      <div className="flex items-center gap-2 text-zinc-400 text-xs mb-1">
+    <div className="bg-[var(--bv-surface)] border border-[var(--bv-border)] rounded-xl p-4">
+      <div className="flex items-center gap-2 text-[var(--bv-text-3)] text-xs mb-1">
         {icon} {label}
       </div>
-      <p className="text-2xl font-bold text-zinc-100">{value}</p>
+      <p className="text-2xl font-bold text-[var(--bv-text-1)]">{value}</p>
     </div>
   );
 }

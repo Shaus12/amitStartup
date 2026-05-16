@@ -17,7 +17,7 @@ export default function SubscribeErrorPage() {
           <XCircle className="w-10 h-10 text-red-400" />
         </div>
         <h1 className="text-2xl font-extrabold text-white mb-3">התשלום לא הושלם</h1>
-        <p className="text-zinc-400 text-sm mb-8">
+        <p className="text-[var(--bv-text-3)] text-sm mb-8">
           משהו השתבש בתהליך התשלום. לא חויבת.
         </p>
         <div className="flex gap-3 justify-center">
@@ -29,7 +29,7 @@ export default function SubscribeErrorPage() {
           </button>
           <button
             onClick={() => router.push("/dashboard")}
-            className="px-6 py-2.5 rounded-xl border border-zinc-700 hover:border-zinc-600 text-zinc-400 hover:text-zinc-300 font-bold text-sm transition-all"
+            className="px-6 py-2.5 rounded-xl border border-[var(--bv-border-subtle)] hover:border-zinc-600 text-[var(--bv-text-3)] hover:text-[var(--bv-text-2)] font-bold text-sm transition-all"
           >
             חזור לדשבורד
           </button>

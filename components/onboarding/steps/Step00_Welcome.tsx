@@ -62,7 +62,7 @@ export function Step00_Welcome({ onNext, onBack }: Props) {
       
       <div className="space-y-6 mt-4">
         <div className="space-y-2 relative">
-          <Label htmlFor="businessName" className="text-zinc-300 text-sm font-semibold">
+          <Label htmlFor="businessName" className="text-[var(--bv-text-2)] text-sm font-semibold">
             {t.step00.businessName} <span className="text-blue-400">*</span>
           </Label>
           <div className="relative">
@@ -71,12 +71,12 @@ export function Step00_Welcome({ onNext, onBack }: Props) {
               value={answers.businessName}
               onChange={(e) => updateAnswers({ businessName: e.target.value })}
               placeholder={t.step00.placeholderBusiness}
-              className="bg-zinc-800/50 border-zinc-700/50 text-zinc-100 placeholder:text-zinc-500 focus:border-blue-500 focus:ring-blue-500/20 h-12 text-lg transition-all"
+              className="bg-[var(--bv-surface-raised)]/50 border-[var(--bv-border-subtle)]/50 text-[var(--bv-text-1)] placeholder:text-[var(--bv-muted)] focus:border-blue-500 focus:ring-blue-500/20 h-12 text-lg transition-all"
             />
             {!answers.businessName && (
               <span 
                 className={cn(
-                  "absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-600 italic transition-opacity duration-500",
+                  "absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--bv-muted)] italic transition-opacity duration-500",
                   fade ? "opacity-100" : "opacity-0"
                 )}
                 style={{ direction: 'rtl', right: 'auto', left: '12px' }}
@@ -89,7 +89,7 @@ export function Step00_Welcome({ onNext, onBack }: Props) {
             {!answers.businessName && (
                <div 
                  className={cn(
-                   "absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-500/30 text-base transition-opacity duration-500 pr-10",
+                   "absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--bv-muted)]/30 text-base transition-opacity duration-500 pr-10",
                    fade ? "opacity-100" : "opacity-0"
                  )}
                  style={{ right: 'auto', left: 'auto', paddingRight: '1rem', display: 'flex', alignItems: 'center' }}
@@ -101,7 +101,7 @@ export function Step00_Welcome({ onNext, onBack }: Props) {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="tagline" className="text-zinc-300 text-sm font-semibold">
+          <Label htmlFor="tagline" className="text-[var(--bv-text-2)] text-sm font-semibold">
             {t.step00.tagline} <span className="text-blue-400">*</span>
           </Label>
           <Input
@@ -109,12 +109,12 @@ export function Step00_Welcome({ onNext, onBack }: Props) {
             value={answers.tagline}
             onChange={(e) => updateAnswers({ tagline: e.target.value })}
             placeholder={t.step00.placeholderTagline}
-            className="bg-zinc-800/50 border-zinc-700/50 text-zinc-100 placeholder:text-zinc-500 focus:border-blue-500 focus:ring-blue-500/20 h-12 transition-all"
+            className="bg-[var(--bv-surface-raised)]/50 border-[var(--bv-border-subtle)]/50 text-[var(--bv-text-1)] placeholder:text-[var(--bv-muted)] focus:border-blue-500 focus:ring-blue-500/20 h-12 transition-all"
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="ownerName" className="text-zinc-300 text-sm font-semibold">
+          <Label htmlFor="ownerName" className="text-[var(--bv-text-2)] text-sm font-semibold">
             {t.step00.ownerName} <span className="text-blue-400">*</span>
           </Label>
           <Input
@@ -122,12 +122,12 @@ export function Step00_Welcome({ onNext, onBack }: Props) {
             value={answers.ownerName}
             onChange={(e) => updateAnswers({ ownerName: e.target.value })}
             placeholder={t.step00.placeholderOwner}
-            className="bg-zinc-800/50 border-zinc-700/70 text-zinc-100 placeholder:text-zinc-500 focus:border-blue-500 focus:ring-blue-500/20 h-12 transition-all"
+            className="bg-[var(--bv-surface-raised)]/50 border-[var(--bv-border-subtle)]/70 text-[var(--bv-text-1)] placeholder:text-[var(--bv-muted)] focus:border-blue-500 focus:ring-blue-500/20 h-12 transition-all"
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="phone" className="text-zinc-300 text-sm font-semibold">
+          <Label htmlFor="phone" className="text-[var(--bv-text-2)] text-sm font-semibold">
             טלפון <span className="text-blue-400">*</span>
           </Label>
           <Input
@@ -137,7 +137,7 @@ export function Step00_Welcome({ onNext, onBack }: Props) {
             value={answers.phone ?? ""}
             onChange={(e) => updateAnswers({ phone: e.target.value })}
             placeholder="0500000000"
-            className="bg-zinc-800/50 border-zinc-700/50 text-zinc-100 placeholder:text-zinc-500 focus:border-blue-500 focus:ring-blue-500/20 h-12 transition-all"
+            className="bg-[var(--bv-surface-raised)]/50 border-[var(--bv-border-subtle)]/50 text-[var(--bv-text-1)] placeholder:text-[var(--bv-muted)] focus:border-blue-500 focus:ring-blue-500/20 h-12 transition-all"
             dir="ltr"
           />
         </div>

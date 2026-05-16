@@ -34,11 +34,11 @@ export function Step16_Goals({ onNext, onBack }: Props) {
     >
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-           <p className="text-zinc-400 text-xs font-bold uppercase tracking-widest flex items-center gap-2">
+           <p className="text-[var(--bv-text-3)] text-xs font-bold uppercase tracking-widest flex items-center gap-2">
             <Target className="w-3 h-3" />
             {t.step16.maxSelectLabel}
           </p>
-          <span className="text-xs font-mono text-zinc-500">
+          <span className="text-xs font-mono text-[var(--bv-muted)]">
             {answers.goals.length}/3
           </span>
         </div>
@@ -59,8 +59,8 @@ export function Step16_Goals({ onNext, onBack }: Props) {
                   selected
                     ? "border-blue-500 bg-blue-500/10 text-blue-100 ring-1 ring-blue-500/30 shadow-[0_4px_20px_rgba(77,142,255,0.1)]"
                     : disabled
-                      ? "border-zinc-800/30 bg-zinc-900/10 text-zinc-600 cursor-not-allowed opacity-50"
-                      : "border-zinc-800 bg-zinc-900/40 text-zinc-500 hover:border-zinc-700 hover:text-zinc-300"
+                      ? "border-[var(--bv-border)]/30 bg-[var(--bv-surface)]/10 text-[var(--bv-muted)] cursor-not-allowed opacity-50"
+                      : "border-[var(--bv-border)] bg-[var(--bv-surface)]/40 text-[var(--bv-muted)] hover:border-[var(--bv-border-subtle)] hover:text-[var(--bv-text-2)]"
                 )}
               >
                 <div
@@ -68,12 +68,12 @@ export function Step16_Goals({ onNext, onBack }: Props) {
                     "h-5 w-5 shrink-0 rounded flex items-center justify-center transition-all border",
                     selected
                       ? "border-blue-500 bg-blue-500 shadow-[0_0_8px_rgba(77,142,255,0.6)]"
-                      : "border-zinc-700 bg-zinc-800 group-hover:border-zinc-600"
+                      : "border-[var(--bv-border-subtle)] bg-[var(--bv-surface-raised)] group-hover:border-[var(--bv-muted)]"
                   )}
                 >
                   {selected && <Check className="h-3 w-3 text-zinc-900" strokeWidth={4} />}
                 </div>
-                <span className={cn("text-sm font-semibold", selected ? "text-blue-100" : "text-zinc-400")}>
+                <span className={cn("text-sm font-semibold", selected ? "text-blue-100" : "text-[var(--bv-text-3)]")}>
                     {opt.label}
                 </span>
                 

@@ -64,7 +64,7 @@ function SuccessContent() {
               <Loader2 className="w-10 h-10 text-blue-400 animate-spin" />
             </div>
             <h1 className="text-2xl font-extrabold text-white mb-3">מאמת את התשלום...</h1>
-            <p className="text-zinc-500 text-sm">נא להמתין, מעדכן את המנוי שלך</p>
+            <p className="text-[var(--bv-muted)] text-sm">נא להמתין, מעדכן את המנוי שלך</p>
           </>
         ) : (
           <>
@@ -72,8 +72,8 @@ function SuccessContent() {
               <CheckCircle2 className="w-10 h-10 text-green-400" />
             </div>
             <h1 className="text-2xl font-extrabold text-white mb-3">תשלום התקבל!</h1>
-            <p className="text-zinc-400 text-sm mb-2">המנוי שלך פעיל כעת.</p>
-            <p className="text-zinc-600 text-xs mb-8">תועבר לדשבורד בעוד מספר שניות...</p>
+            <p className="text-[var(--bv-text-3)] text-sm mb-2">המנוי שלך פעיל כעת.</p>
+            <p className="text-[var(--bv-muted)] text-xs mb-8">תועבר לדשבורד בעוד מספר שניות...</p>
             <button
               onClick={() => router.push("/dashboard")}
               className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm transition-all"

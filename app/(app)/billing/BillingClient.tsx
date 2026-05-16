@@ -104,7 +104,7 @@ function PlanAction({ plan, currentPlan }: { plan: Plan; currentPlan: Plan }) {
       <button
         type="button"
         disabled
-        className="mt-6 h-11 w-full rounded-xl border border-zinc-700 bg-zinc-800/70 px-4 text-sm font-bold text-zinc-400"
+        className="mt-6 h-11 w-full rounded-xl border border-[var(--bv-border-subtle)] bg-[var(--bv-surface-raised)]/70 px-4 text-sm font-bold text-[var(--bv-text-3)]"
       >
         התוכנית הנוכחית
       </button>
@@ -135,8 +135,8 @@ function PricingCard({ plan, currentPlan }: { plan: PlanCard; currentPlan: Plan 
         isCurrent
           ? "border-blue-500 bg-blue-500/5"
           : isPro
-            ? "border-purple-500/40 bg-zinc-900/70 shadow-[0_0_40px_rgba(168,85,247,0.12)]"
-            : "border-zinc-800 bg-zinc-900/50"
+            ? "border-purple-500/40 bg-[var(--bv-surface)]/70 shadow-[0_0_40px_rgba(168,85,247,0.12)]"
+            : "border-[var(--bv-border)] bg-[var(--bv-surface)]/50"
       }`}
     >
       <div className="mb-5 flex min-h-8 flex-wrap items-center gap-2">
@@ -160,7 +160,7 @@ function PricingCard({ plan, currentPlan }: { plan: PlanCard; currentPlan: Plan 
                 ? "border-purple-500/25 bg-purple-500/10 text-purple-300"
                 : plan.id === "business"
                   ? "border-green-500/25 bg-green-500/10 text-green-300"
-                  : "border-zinc-700 bg-zinc-800 text-zinc-400"
+                  : "border-[var(--bv-border-subtle)] bg-[var(--bv-surface-raised)] text-[var(--bv-text-3)]"
             }`}
           >
             {plan.id === "business" ? (
@@ -178,7 +178,7 @@ function PricingCard({ plan, currentPlan }: { plan: PlanCard; currentPlan: Plan 
 
       <ul className="flex-1 space-y-3">
         {plan.features.map((feature) => (
-          <li key={feature} className="flex items-start gap-2 text-sm leading-6 text-zinc-300">
+          <li key={feature} className="flex items-start gap-2 text-sm leading-6 text-[var(--bv-text-2)]">
             <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-green-400" aria-hidden="true" />
             <span>{feature}</span>
           </li>
@@ -231,13 +231,13 @@ export function BillingClient({
       <div className="mb-8">
         <p className="mb-2 text-sm font-bold text-blue-400">תוכניות</p>
         <h1 className="text-3xl font-extrabold text-white">בחר את התוכנית שמתאימה לעסק שלך</h1>
-        <p className="mt-2 text-sm text-zinc-500">{userEmail}</p>
+        <p className="mt-2 text-sm text-[var(--bv-muted)]">{userEmail}</p>
       </div>
 
-      <section className="mb-8 rounded-2xl border border-zinc-800 bg-zinc-900/50 p-6">
+      <section className="mb-8 rounded-2xl border border-[var(--bv-border)] bg-[var(--bv-surface)]/50 p-6">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div>
-            <p className="text-sm font-bold text-zinc-500">התוכנית הנוכחית שלך</p>
+            <p className="text-sm font-bold text-[var(--bv-muted)]">התוכנית הנוכחית שלך</p>
             <p className="mt-1 text-2xl font-extrabold text-white">{PLAN_LABELS[currentPlan]}</p>
             {isCancellationPending && (
               <p className="mt-2 text-sm font-medium text-yellow-300">
@@ -246,7 +246,7 @@ export function BillingClient({
             )}
           </div>
           <div className="flex flex-col items-start gap-3 md:items-end">
-            <p className="max-w-xl text-sm font-medium text-zinc-300">{bannerText(currentPlan)}</p>
+            <p className="max-w-xl text-sm font-medium text-[var(--bv-text-2)]">{bannerText(currentPlan)}</p>
             {currentPlan !== "free" && !isCancellationPending && (
               <button
                 type="button"
@@ -283,21 +283,21 @@ export function BillingClient({
 
       {cancelModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4">
-          <div className="relative w-full max-w-md rounded-2xl border border-zinc-800 bg-zinc-950 p-6 text-right shadow-2xl">
+          <div className="relative w-full max-w-md rounded-2xl border border-[var(--bv-border)] bg-[var(--bv-bg)] p-6 text-right shadow-2xl">
             <button
               type="button"
               onClick={() => {
                 if (!cancelLoading) setCancelModalOpen(false);
               }}
               disabled={cancelLoading}
-              className="absolute left-3 top-3 inline-flex size-8 items-center justify-center rounded-full text-zinc-500 transition-colors hover:bg-zinc-900 hover:text-white disabled:pointer-events-none disabled:opacity-50"
+              className="absolute left-3 top-3 inline-flex size-8 items-center justify-center rounded-full text-[var(--bv-muted)] transition-colors hover:bg-[var(--bv-surface)] hover:text-white disabled:pointer-events-none disabled:opacity-50"
               aria-label="סגור"
             >
               <X className="size-4" aria-hidden="true" />
             </button>
 
             <h2 className="text-xl font-extrabold text-white">לבטל את המנוי?</h2>
-            <p className="mt-3 text-sm leading-6 text-zinc-400">
+            <p className="mt-3 text-sm leading-6 text-[var(--bv-text-3)]">
               הביטול ייכנס לתוקף בסוף תקופת החיוב הנוכחית. תוכל להמשיך ליהנות מהתוכנית עד{" "}
               <span className="font-bold text-white">{formatDate(calculatedEndDate)}</span>.
             </p>
@@ -309,7 +309,7 @@ export function BillingClient({
                 type="button"
                 onClick={() => setCancelModalOpen(false)}
                 disabled={cancelLoading}
-                className="h-11 flex-1 rounded-xl border border-zinc-700 bg-zinc-900 px-4 text-sm font-bold text-zinc-300 transition-colors hover:bg-zinc-800 disabled:pointer-events-none disabled:opacity-50"
+                className="h-11 flex-1 rounded-xl border border-[var(--bv-border-subtle)] bg-[var(--bv-surface)] px-4 text-sm font-bold text-[var(--bv-text-2)] transition-colors hover:bg-[var(--bv-surface-raised)] disabled:pointer-events-none disabled:opacity-50"
               >
                 חזור
               </button>

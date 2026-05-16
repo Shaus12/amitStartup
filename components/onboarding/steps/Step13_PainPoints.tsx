@@ -27,7 +27,7 @@ export function Step13_PainPoints({ onNext, onBack }: Props) {
         <div className="space-y-1.5">
           <Label
             htmlFor="painPoint1"
-            className="text-zinc-300 text-sm font-medium"
+            className="text-[var(--bv-text-2)] text-sm font-medium"
           >
             {t.step13.pain1Label}
           </Label>
@@ -37,7 +37,7 @@ export function Step13_PainPoints({ onNext, onBack }: Props) {
             onChange={(e) => updateAnswers({ painPoint1: e.target.value })}
             placeholder={t.step13.pain1Placeholder}
             rows={3}
-            className="bg-zinc-800 border-zinc-700 text-zinc-100 placeholder:text-zinc-500 focus:border-blue-500 focus:ring-blue-500/20 resize-none"
+            className="bg-[var(--bv-surface-raised)] border-[var(--bv-border-subtle)] text-[var(--bv-text-1)] placeholder:text-[var(--bv-muted)] focus:border-blue-500 focus:ring-blue-500/20 resize-none"
           />
         </div>
 
@@ -45,7 +45,7 @@ export function Step13_PainPoints({ onNext, onBack }: Props) {
         <div className="space-y-1.5">
           <Label
             htmlFor="painPoint2"
-            className="text-zinc-300 text-sm font-medium"
+            className="text-[var(--bv-text-2)] text-sm font-medium"
           >
             {t.step13.pain2Label}
           </Label>
@@ -55,7 +55,7 @@ export function Step13_PainPoints({ onNext, onBack }: Props) {
             onChange={(e) => updateAnswers({ painPoint2: e.target.value })}
             placeholder={t.step13.pain2Placeholder}
             rows={3}
-            className="bg-zinc-800 border-zinc-700 text-zinc-100 placeholder:text-zinc-500 focus:border-blue-500 focus:ring-blue-500/20 resize-none"
+            className="bg-[var(--bv-surface-raised)] border-[var(--bv-border-subtle)] text-[var(--bv-text-1)] placeholder:text-[var(--bv-muted)] focus:border-blue-500 focus:ring-blue-500/20 resize-none"
           />
         </div>
 
@@ -63,7 +63,7 @@ export function Step13_PainPoints({ onNext, onBack }: Props) {
         <div className="space-y-1.5">
           <Label
             htmlFor="painPoint3"
-            className="text-zinc-300 text-sm font-medium"
+            className="text-[var(--bv-text-2)] text-sm font-medium"
           >
             {t.step13.pain3Label}
           </Label>
@@ -73,7 +73,7 @@ export function Step13_PainPoints({ onNext, onBack }: Props) {
             onChange={(e) => updateAnswers({ painPoint3: e.target.value })}
             placeholder={t.step13.pain3Placeholder}
             rows={3}
-            className="bg-zinc-800 border-zinc-700 text-zinc-100 placeholder:text-zinc-500 focus:border-blue-500 focus:ring-blue-500/20 resize-none"
+            className="bg-[var(--bv-surface-raised)] border-[var(--bv-border-subtle)] text-[var(--bv-text-1)] placeholder:text-[var(--bv-muted)] focus:border-blue-500 focus:ring-blue-500/20 resize-none"
           />
         </div>
 

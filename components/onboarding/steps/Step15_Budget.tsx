@@ -25,7 +25,7 @@ export function Step15_Budget({ onNext, onBack }: Props) {
       <div className="space-y-7">
         {/* AI Budget */}
         <div>
-          <p className="text-zinc-300 text-sm font-medium mb-3">
+          <p className="text-[var(--bv-text-2)] text-sm font-medium mb-3">
             {t.step15.budgetLabel}
           </p>
           <div className="space-y-2">
@@ -40,13 +40,13 @@ export function Step15_Budget({ onNext, onBack }: Props) {
                     "w-full flex items-start gap-4 p-4 rounded-xl border text-left transition-all",
                     selected
                       ? "border-blue-500 bg-blue-600/10"
-                      : "border-zinc-700 bg-zinc-800/50 hover:border-zinc-600"
+                      : "border-[var(--bv-border-subtle)] bg-[var(--bv-surface-raised)]/50 hover:border-[var(--bv-muted)]"
                   )}
                 >
                   <span
                     className={cn(
                       "mt-0.5 h-8 w-8 shrink-0 rounded-lg flex items-center justify-center",
-                      selected ? "bg-blue-600/20 text-blue-400" : "bg-zinc-700 text-zinc-500"
+                      selected ? "bg-blue-600/20 text-blue-400" : "bg-[var(--bv-surface-elevated)] text-[var(--bv-muted)]"
                     )}
                   >
                     <DollarSign className="h-4 w-4" />
@@ -55,12 +55,12 @@ export function Step15_Budget({ onNext, onBack }: Props) {
                     <span
                       className={cn(
                         "text-sm font-semibold",
-                        selected ? "text-blue-300" : "text-zinc-200"
+                        selected ? "text-blue-300" : "text-[var(--bv-text-1)]"
                       )}
                     >
                       {b.label}
                     </span>
-                    <span className="text-xs text-zinc-500 leading-snug">{b.desc}</span>
+                    <span className="text-xs text-[var(--bv-muted)] leading-snug">{b.desc}</span>
                   </div>
                 </button>
               );
@@ -70,7 +70,7 @@ export function Step15_Budget({ onNext, onBack }: Props) {
 
         {/* Built vs Custom */}
         <div>
-          <p className="text-zinc-300 text-sm font-medium mb-3">
+          <p className="text-[var(--bv-text-2)] text-sm font-medium mb-3">
             {t.step15.builtLabel}
           </p>
           <div className="space-y-2">
@@ -85,18 +85,18 @@ export function Step15_Budget({ onNext, onBack }: Props) {
                     "w-full flex flex-col items-start gap-1 p-4 rounded-xl border text-left transition-all",
                     selected
                       ? "border-blue-500 bg-blue-600/10"
-                      : "border-zinc-700 bg-zinc-800/50 hover:border-zinc-600"
+                      : "border-[var(--bv-border-subtle)] bg-[var(--bv-surface-raised)]/50 hover:border-[var(--bv-muted)]"
                   )}
                 >
                   <span
                     className={cn(
                       "text-sm font-semibold",
-                      selected ? "text-blue-300" : "text-zinc-200"
+                      selected ? "text-blue-300" : "text-[var(--bv-text-1)]"
                     )}
                   >
                     {bvc.label}
                   </span>
-                  <span className="text-xs text-zinc-500 leading-snug">{bvc.desc}</span>
+                  <span className="text-xs text-[var(--bv-muted)] leading-snug">{bvc.desc}</span>
                 </button>
               );
             })}

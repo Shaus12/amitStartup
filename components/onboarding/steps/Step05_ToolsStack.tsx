@@ -38,7 +38,7 @@ export function Step05_ToolsStack({ onNext, onBack }: Props) {
       <div className="space-y-8">
         {questions.map((item) => (
           <div key={item.key} className="space-y-3">
-            <p className="text-zinc-300 text-sm font-semibold">{item.q.label}</p>
+            <p className="text-[var(--bv-text-2)] text-sm font-semibold">{item.q.label}</p>
             <div className="flex flex-wrap gap-2">
               {item.q.options.map((opt: string) => {
                 const selected = answers[item.key] === opt;
@@ -51,7 +51,7 @@ export function Step05_ToolsStack({ onNext, onBack }: Props) {
                       "px-3 py-2 rounded-xl border text-[13px] font-medium transition-all whitespace-nowrap",
                       selected
                         ? "border-blue-500 bg-blue-600/10 text-blue-300"
-                        : "border-zinc-800 bg-zinc-900/40 text-zinc-500 hover:border-zinc-700 hover:text-zinc-300"
+                        : "border-[var(--bv-border)] bg-[var(--bv-surface)]/40 text-[var(--bv-muted)] hover:border-[var(--bv-border-subtle)] hover:text-[var(--bv-text-2)]"
                     )}
                   >
                     {opt}
@@ -63,8 +63,8 @@ export function Step05_ToolsStack({ onNext, onBack }: Props) {
         ))}
 
         {/* Software Spend */}
-        <div className="pt-6 border-t border-zinc-800/50">
-          <p className="text-zinc-100 text-[15px] font-bold mb-4">
+        <div className="pt-6 border-t border-[var(--bv-border)]/50">
+          <p className="text-[var(--bv-text-1)] text-[15px] font-bold mb-4">
             {t.step05.spendLabel}
           </p>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
@@ -79,7 +79,7 @@ export function Step05_ToolsStack({ onNext, onBack }: Props) {
                     "px-4 py-3 rounded-xl border text-sm font-semibold transition-all text-center",
                     selected
                       ? "border-blue-500 bg-blue-600/20 text-blue-300 shadow-[0_0_15px_rgba(77,142,255,0.15)]"
-                      : "border-zinc-800 bg-zinc-900/60 text-zinc-500 hover:border-zinc-700 hover:text-zinc-300"
+                      : "border-[var(--bv-border)] bg-[var(--bv-surface)]/60 text-[var(--bv-muted)] hover:border-[var(--bv-border-subtle)] hover:text-[var(--bv-text-2)]"
                   )}
                 >
                   {sr.label}

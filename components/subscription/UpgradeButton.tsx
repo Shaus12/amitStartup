@@ -84,12 +84,12 @@ export function UpgradeButton({ plan, label }: UpgradeButtonProps) {
 
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4">
-          <div className="relative w-full max-w-sm rounded-2xl border border-zinc-800 bg-zinc-950 p-6 text-right shadow-2xl">
+          <div className="relative w-full max-w-sm rounded-2xl border border-[var(--bv-border)] bg-[var(--bv-bg)] p-6 text-right shadow-2xl">
             <button
               type="button"
               onClick={handleClose}
               disabled={loading}
-              className="absolute left-3 top-3 inline-flex size-8 items-center justify-center rounded-full text-zinc-500 transition-colors hover:bg-zinc-900 hover:text-white disabled:pointer-events-none disabled:opacity-50"
+              className="absolute left-3 top-3 inline-flex size-8 items-center justify-center rounded-full text-[var(--bv-muted)] transition-colors hover:bg-[var(--bv-surface)] hover:text-white disabled:pointer-events-none disabled:opacity-50"
               aria-label="סגור"
             >
               <X className="size-4" aria-hidden="true" />
@@ -97,10 +97,10 @@ export function UpgradeButton({ plan, label }: UpgradeButtonProps) {
 
             <div className="mb-5 pr-1">
               <h2 className="text-xl font-extrabold text-white">רגע אחד לפני התשלום 📱</h2>
-              <p className="mt-2 text-sm text-zinc-400">נדרש מספר טלפון לצורך קבלת חשבונית</p>
+              <p className="mt-2 text-sm text-[var(--bv-text-3)]">נדרש מספר טלפון לצורך קבלת חשבונית</p>
             </div>
 
-            <label className="mb-2 block text-sm font-bold text-zinc-300" htmlFor={`upgrade-phone-${plan}`}>
+            <label className="mb-2 block text-sm font-bold text-[var(--bv-text-2)]" htmlFor={`upgrade-phone-${plan}`}>
               מספר טלפון
             </label>
             <input
@@ -115,7 +115,7 @@ export function UpgradeButton({ plan, label }: UpgradeButtonProps) {
               }}
               onBlur={() => setPhoneTouched(true)}
               placeholder="05X-XXXXXXX"
-              className="h-11 w-full rounded-xl border border-zinc-800 bg-zinc-900 px-4 text-right text-white outline-none transition-colors placeholder:text-zinc-600 focus:border-blue-500"
+              className="h-11 w-full rounded-xl border border-[var(--bv-border)] bg-[var(--bv-surface)] px-4 text-right text-white outline-none transition-colors placeholder:text-[var(--bv-muted)] focus:border-blue-500"
               aria-invalid={showPhoneError}
             />
             {showPhoneError && (
@@ -133,7 +133,7 @@ export function UpgradeButton({ plan, label }: UpgradeButtonProps) {
               {loading ? "מעבד..." : "המשך לתשלום ←"}
             </Button>
 
-            <p className="mt-3 text-center text-xs font-medium text-zinc-500">לא נשלח אליך ספאם 🔒</p>
+            <p className="mt-3 text-center text-xs font-medium text-[var(--bv-muted)]">לא נשלח אליך ספאם 🔒</p>
           </div>
         </div>
       )}

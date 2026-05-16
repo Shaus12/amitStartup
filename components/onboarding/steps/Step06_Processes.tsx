@@ -109,7 +109,7 @@ export function Step06_Processes({ onNext, onBack }: Props) {
       <div className="space-y-6">
         {/* Department Filter Bar */}
         <div className="flex flex-col gap-3">
-          <p className="text-zinc-400 text-xs font-bold uppercase tracking-widest flex items-center gap-2">
+          <p className="text-[var(--bv-text-3)] text-xs font-bold uppercase tracking-widest flex items-center gap-2">
             <Filter className="w-3 h-3" />
             {t.step06.deptFilterLabel}
           </p>
@@ -123,7 +123,7 @@ export function Step06_Processes({ onNext, onBack }: Props) {
                   "px-4 py-2 rounded-xl text-sm font-semibold transition-all border",
                   activeDept === dept.name
                     ? "border-blue-500 bg-blue-500/10 text-blue-300"
-                    : "border-zinc-800 bg-zinc-900/40 text-zinc-500 hover:border-zinc-700"
+                    : "border-[var(--bv-border)] bg-[var(--bv-surface)]/40 text-[var(--bv-muted)] hover:border-[var(--bv-border-subtle)]"
                 )}
               >
                 {dept.name}
@@ -134,9 +134,9 @@ export function Step06_Processes({ onNext, onBack }: Props) {
 
         {/* Action area for active department */}
         {activeDept ? (
-          <div className="p-5 rounded-2xl bg-zinc-900/40 border border-zinc-800/60 shadow-inner space-y-5">
+          <div className="p-5 rounded-2xl bg-[var(--bv-surface)]/40 border border-[var(--bv-border)]/60 shadow-inner space-y-5">
             <div>
-              <p className="text-zinc-300 text-sm font-bold mb-3">
+              <p className="text-[var(--bv-text-2)] text-sm font-bold mb-3">
                 {t.step06.processLabel} ב{activeDept}
               </p>
               <div className="flex flex-wrap gap-2">
@@ -153,7 +153,7 @@ export function Step06_Processes({ onNext, onBack }: Props) {
                         "px-3 py-1.5 rounded-full border text-[13px] font-medium transition-all",
                         added
                           ? "border-blue-500/50 bg-blue-600/10 text-blue-300"
-                          : "border-zinc-800 bg-zinc-800/50 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200"
+                          : "border-[var(--bv-border)] bg-[var(--bv-surface-raised)]/50 text-[var(--bv-text-3)] hover:border-[var(--bv-border-subtle)] hover:text-[var(--bv-text-1)]"
                       )}
                     >
                       {added ? "✓ " : "+ "}
@@ -175,21 +175,21 @@ export function Step06_Processes({ onNext, onBack }: Props) {
                 }
                 onKeyDown={(e) => handleCustomKeyDown(e, activeDept)}
                 placeholder={t.step06.addProcessPlaceholder}
-                className="bg-zinc-900/60 border-zinc-800 text-zinc-100 placeholder:text-zinc-600 text-sm focus:border-blue-500 focus:ring-blue-500/20 h-10"
+                className="bg-[var(--bv-surface)]/60 border-[var(--bv-border)] text-[var(--bv-text-1)] placeholder:text-[var(--bv-muted)] text-sm focus:border-blue-500 focus:ring-blue-500/20 h-10"
                 />
             </div>
 
             {/* Added processes for this dept with configuration */}
             {deptProcs.length > 0 && (
-                <div className="space-y-3 pt-4 border-t border-zinc-800/40">
+                <div className="space-y-3 pt-4 border-t border-[var(--bv-border)]/40">
                     {deptProcs.map((proc) => (
-                        <div key={proc.name} className="flex flex-col gap-3 p-4 rounded-xl bg-zinc-800/30 border border-zinc-800/60">
+                        <div key={proc.name} className="flex flex-col gap-3 p-4 rounded-xl bg-[var(--bv-surface-raised)]/30 border border-[var(--bv-border)]/60">
                             <div className="flex items-center justify-between">
-                                <span className="text-sm font-bold text-zinc-100">{proc.name}</span>
+                                <span className="text-sm font-bold text-[var(--bv-text-1)]">{proc.name}</span>
                                 <button
                                     type="button"
                                     onClick={() => removeProcess(proc.name, activeDept)}
-                                    className="p-1 text-zinc-600 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all"
+                                    className="p-1 text-[var(--bv-muted)] hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all"
                                 >
                                     <X className="h-4 w-4" />
                                 </button>
@@ -197,7 +197,7 @@ export function Step06_Processes({ onNext, onBack }: Props) {
                             
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <p className="text-[10px] uppercase tracking-wider text-zinc-500 font-bold mb-2">{t.step06.frequencyLabel}</p>
+                                    <p className="text-[10px] uppercase tracking-wider text-[var(--bv-muted)] font-bold mb-2">{t.step06.frequencyLabel}</p>
                                     <div className="grid grid-cols-2 gap-1.5">
                                         {t.step06.frequencies.map((f: any) => (
                                             <button
@@ -207,7 +207,7 @@ export function Step06_Processes({ onNext, onBack }: Props) {
                                                     "px-2 py-1.5 rounded-lg border text-[11px] font-bold transition-all",
                                                     proc.frequency === f.value 
                                                         ? "border-blue-500/50 bg-blue-500/10 text-blue-300" 
-                                                        : "border-zinc-800 bg-zinc-900/60 text-zinc-600 hover:border-zinc-700"
+                                                        : "border-[var(--bv-border)] bg-[var(--bv-surface)]/60 text-[var(--bv-muted)] hover:border-[var(--bv-border-subtle)]"
                                                 )}
                                             >
                                                 {f.label}
@@ -216,7 +216,7 @@ export function Step06_Processes({ onNext, onBack }: Props) {
                                     </div>
                                 </div>
                                 <div>
-                                    <p className="text-[10px] uppercase tracking-wider text-zinc-500 font-bold mb-2">{t.step06.typeLabel}</p>
+                                    <p className="text-[10px] uppercase tracking-wider text-[var(--bv-muted)] font-bold mb-2">{t.step06.typeLabel}</p>
                                     <div className="grid grid-cols-1 gap-1.5">
                                         {t.step06.types.map((ty: any) => {
                                             const currentLevel = proc.automationLevel ?? (proc.isManual ? 'manual' : 'semi');
@@ -229,7 +229,7 @@ export function Step06_Processes({ onNext, onBack }: Props) {
                                                         "px-2 py-1.5 rounded-lg border text-[11px] font-bold transition-all text-center",
                                                         isSelected
                                                             ? "border-amber-500/50 bg-amber-500/10 text-amber-300"
-                                                            : "border-zinc-800 bg-zinc-900/60 text-zinc-600 hover:border-zinc-700"
+                                                            : "border-[var(--bv-border)] bg-[var(--bv-surface)]/60 text-[var(--bv-muted)] hover:border-[var(--bv-border-subtle)]"
                                                     )}
                                                 >
                                                     {ty.label}
@@ -245,7 +245,7 @@ export function Step06_Processes({ onNext, onBack }: Props) {
             )}
           </div>
         ) : (
-          <p className="text-zinc-500 text-sm text-center py-10 opacity-50">
+          <p className="text-[var(--bv-muted)] text-sm text-center py-10 opacity-50">
              בחר מחלקה כדי להוסיף תהליכים
           </p>
         )}

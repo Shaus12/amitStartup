@@ -97,7 +97,7 @@ export default function LoginPage() {
           <div className="h-0.5 w-full" style={{ background: "linear-gradient(90deg, #6366f1, #8b5cf6, #ec4899)" }} />
 
           {/* Mode toggle */}
-          <div className="flex border-b border-zinc-800/60">
+          <div className="flex border-b border-[var(--bv-border)]/60">
             {(["signin", "signup"] as const).map((m) => (
               <button
                 key={m}
@@ -188,7 +188,7 @@ export default function LoginPage() {
                         <li key={c.label} className="flex items-center gap-2 text-xs">
                           {c.ok
                             ? <CheckCircle2 className="w-3.5 h-3.5 text-green-400 flex-shrink-0" />
-                            : <XCircle className="w-3.5 h-3.5 text-zinc-600 flex-shrink-0" />}
+                            : <XCircle className="w-3.5 h-3.5 text-[var(--bv-muted)] flex-shrink-0" />}
                           <span style={{ color: c.ok ? "#86efac" : "#6b6f7e" }}>{c.label}</span>
                         </li>
                       ))}

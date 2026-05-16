@@ -102,17 +102,17 @@ export default function SubscribePage() {
         {/* Header */}
         <div className="text-center mb-10">
           <h1 className="text-3xl font-extrabold text-white mb-2">בחר מסלול</h1>
-          <p className="text-zinc-400 text-sm">התחל עכשיו, שדרג בכל עת</p>
+          <p className="text-[var(--bv-text-3)] text-sm">התחל עכשיו, שדרג בכל עת</p>
         </div>
 
         {done ? (
           <div className="rounded-2xl border border-green-500/20 bg-green-500/5 p-10 text-center">
             <div className="text-4xl mb-4">✓</div>
             <p className="text-green-400 font-bold text-xl mb-2">הפרטים נשלחו בהצלחה!</p>
-            <p className="text-zinc-400 text-sm">ניצור איתך קשר בקרוב עם פרטי התשלום.</p>
+            <p className="text-[var(--bv-text-3)] text-sm">ניצור איתך קשר בקרוב עם פרטי התשלום.</p>
             <button
               onClick={() => router.push("/dashboard")}
-              className="mt-6 px-6 py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-sm font-bold transition-all"
+              className="mt-6 px-6 py-2.5 rounded-xl bg-[var(--bv-surface-raised)] hover:bg-[var(--bv-surface-elevated)] text-[var(--bv-text-2)] text-sm font-bold transition-all"
             >
               חזור לדשבורד
             </button>
@@ -134,7 +134,7 @@ export default function SubscribePage() {
                         ? p.color === "purple"
                           ? "border-purple-500 bg-purple-500/10"
                           : "border-blue-500 bg-blue-500/10"
-                        : "border-zinc-800 bg-zinc-900/40 hover:border-zinc-700"
+                        : "border-[var(--bv-border)] bg-[var(--bv-surface)]/40 hover:border-[var(--bv-border-subtle)]"
                     }`}
                   >
                     {"popular" in p && p.popular && (
@@ -148,13 +148,13 @@ export default function SubscribePage() {
                           ? p.color === "purple"
                             ? "text-purple-400"
                             : "text-blue-400"
-                          : "text-zinc-600"
+                          : "text-[var(--bv-muted)]"
                       }`}
                     />
                     <div className="flex items-end gap-1 mb-1">
                       <span className="text-3xl font-extrabold text-white">{p.amount}</span>
                       <span className="text-base font-bold text-white mb-0.5">₪</span>
-                      <span className="text-zinc-500 text-xs mb-1">/ חודש</span>
+                      <span className="text-[var(--bv-muted)] text-xs mb-1">/ חודש</span>
                     </div>
                     <p
                       className={`text-sm font-bold mb-1 ${
@@ -162,16 +162,16 @@ export default function SubscribePage() {
                           ? p.color === "purple"
                             ? "text-purple-300"
                             : "text-blue-300"
-                          : "text-zinc-400"
+                          : "text-[var(--bv-text-3)]"
                       }`}
                     >
                       {p.label}
                     </p>
-                    <p className="text-xs text-zinc-500">{p.description}</p>
+                    <p className="text-xs text-[var(--bv-muted)]">{p.description}</p>
                     <ul className="mt-4 space-y-1.5">
                       {p.features.map((f) => (
-                        <li key={f} className="flex items-center gap-2 text-xs text-zinc-400">
-                          <Check className="w-3 h-3 text-zinc-500 flex-shrink-0" />
+                        <li key={f} className="flex items-center gap-2 text-xs text-[var(--bv-text-3)]">
+                          <Check className="w-3 h-3 text-[var(--bv-muted)] flex-shrink-0" />
                           {f}
                         </li>
                       ))}
@@ -182,11 +182,11 @@ export default function SubscribePage() {
             </div>
 
             {/* Contact fields */}
-            <div className="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6 space-y-4 mb-6">
-              <p className="text-zinc-300 text-sm font-bold">פרטי יצירת קשר</p>
+            <div className="rounded-2xl border border-[var(--bv-border)] bg-[var(--bv-surface)]/40 p-6 space-y-4 mb-6">
+              <p className="text-[var(--bv-text-2)] text-sm font-bold">פרטי יצירת קשר</p>
 
               <div>
-                <label className="block text-xs text-zinc-500 font-bold mb-1.5">
+                <label className="block text-xs text-[var(--bv-muted)] font-bold mb-1.5">
                   שם מלא <span className="text-blue-400">*</span>
                 </label>
                 <input
@@ -194,7 +194,7 @@ export default function SubscribePage() {
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   placeholder="שם פרטי ושם משפחה"
-                  className="w-full rounded-xl bg-zinc-800/60 border border-zinc-700 text-zinc-100 placeholder:text-zinc-600 px-4 py-3 text-sm outline-none focus:border-blue-500 transition-colors"
+                  className="w-full rounded-xl bg-[var(--bv-surface-raised)]/60 border border-[var(--bv-border-subtle)] text-[var(--bv-text-1)] placeholder:text-[var(--bv-muted)] px-4 py-3 text-sm outline-none focus:border-blue-500 transition-colors"
                 />
                 {fullName && fullName.trim().split(" ").filter((w) => w.length >= 2).length < 2 && (
                   <p className="text-xs text-red-400 mt-1">יש להזין שם פרטי ושם משפחה</p>
@@ -202,7 +202,7 @@ export default function SubscribePage() {
               </div>
 
               <div>
-                <label className="block text-xs text-zinc-500 font-bold mb-1.5">
+                <label className="block text-xs text-[var(--bv-muted)] font-bold mb-1.5">
                   טלפון נייד <span className="text-blue-400">*</span>
                 </label>
                 <input
@@ -212,7 +212,7 @@ export default function SubscribePage() {
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="0500000000"
                   dir="ltr"
-                  className="w-full rounded-xl bg-zinc-800/60 border border-zinc-700 text-zinc-100 placeholder:text-zinc-600 px-4 py-3 text-sm outline-none focus:border-blue-500 transition-colors"
+                  className="w-full rounded-xl bg-[var(--bv-surface-raised)]/60 border border-[var(--bv-border-subtle)] text-[var(--bv-text-1)] placeholder:text-[var(--bv-muted)] px-4 py-3 text-sm outline-none focus:border-blue-500 transition-colors"
                 />
                 {phone && !isValidIsraeliPhone(phone) && (
                   <p className="text-xs text-red-400 mt-1">מספר טלפון ישראלי לא תקין (לדוגמה: 0501234567)</p>
@@ -248,7 +248,7 @@ export default function SubscribePage() {
             <div className="text-center mt-4">
               <button
                 onClick={() => router.push("/dashboard")}
-                className="text-zinc-600 hover:text-zinc-400 text-sm transition-colors"
+                className="text-[var(--bv-muted)] hover:text-[var(--bv-text-3)] text-sm transition-colors"
               >
                 חזור לדשבורד
               </button>

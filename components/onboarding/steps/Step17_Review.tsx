@@ -13,8 +13,8 @@ interface Props {
 
 function SummaryCard({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="bg-zinc-900/40 border border-zinc-800/60 rounded-2xl p-4 space-y-3">
-      <h3 className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 border-b border-zinc-800/40 pb-2">
+    <div className="bg-[var(--bv-surface)]/40 border border-[var(--bv-border)]/60 rounded-2xl p-4 space-y-3">
+      <h3 className="text-[10px] font-bold uppercase tracking-widest text-[var(--bv-muted)] border-b border-[var(--bv-border)]/40 pb-2">
         {title}
       </h3>
       <div className="space-y-2">{children}</div>
@@ -26,8 +26,8 @@ function SummaryItem({ label, value }: { label: string; value: string | number |
   if (!value && value !== 0) return null;
   return (
     <div className="flex justify-between items-center text-sm">
-      <span className="text-zinc-500 font-medium">{label}</span>
-      <span className="text-zinc-200 font-bold">{value}</span>
+      <span className="text-[var(--bv-muted)] font-medium">{label}</span>
+      <span className="text-[var(--bv-text-1)] font-bold">{value}</span>
     </div>
   );
 }
@@ -58,7 +58,7 @@ export function Step17_Review({ onBack }: Props) {
           {t.step17.title}
         </div>
         <h2 className="text-4xl font-black text-white tracking-tighter">{t.step17.headline}</h2>
-        <p className="text-zinc-400 text-sm max-w-lg mx-auto leading-relaxed">{t.step17.subtitle}</p>
+        <p className="text-[var(--bv-text-3)] text-sm max-w-lg mx-auto leading-relaxed">{t.step17.subtitle}</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -102,7 +102,7 @@ export function Step17_Review({ onBack }: Props) {
               return (
                 <span
                   key={i}
-                  className="px-3 py-1.5 rounded-lg bg-zinc-800/50 border border-zinc-800 text-[12px] font-medium text-zinc-300"
+                  className="px-3 py-1.5 rounded-lg bg-[var(--bv-surface-raised)]/50 border border-[var(--bv-border)] text-[12px] font-medium text-[var(--bv-text-2)]"
                 >
                   {goalLabel}
                 </span>
@@ -116,7 +116,7 @@ export function Step17_Review({ onBack }: Props) {
         <button
           type="button"
           onClick={onBack}
-          className="flex items-center gap-2 text-zinc-500 hover:text-zinc-200 text-sm font-bold transition-all"
+          className="flex items-center gap-2 text-[var(--bv-muted)] hover:text-[var(--bv-text-1)] text-sm font-bold transition-all"
         >
           {t.step17.backBtn}
         </button>

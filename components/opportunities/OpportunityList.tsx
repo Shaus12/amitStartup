@@ -32,8 +32,8 @@ function OpportunitySection({ title, items, onPin, onDismiss }: SectionProps) {
   return (
     <section className="mb-8">
       <div className="flex items-center gap-2 mb-4">
-        <h2 className="text-base font-semibold text-zinc-200">{title}</h2>
-        <span className="inline-flex items-center rounded-full bg-zinc-700 px-2 py-0.5 text-xs font-medium text-zinc-400">
+        <h2 className="text-base font-semibold text-[var(--bv-text-1)]">{title}</h2>
+        <span className="inline-flex items-center rounded-full bg-[var(--bv-surface-elevated)] px-2 py-0.5 text-xs font-medium text-[var(--bv-text-3)]">
           {items.length}
         </span>
       </div>
@@ -71,8 +71,8 @@ export function OpportunityList({ opportunities, onPin, onDismiss }: Opportunity
       />
       {opportunities.length === 0 && (
         <div className="flex flex-col items-center justify-center py-16 text-center">
-          <p className="text-zinc-400 font-medium mb-1">אין הזדמנויות עדיין</p>
-          <p className="text-sm text-zinc-600">
+          <p className="text-[var(--bv-text-3)] font-medium mb-1">אין הזדמנויות עדיין</p>
+          <p className="text-sm text-[var(--bv-muted)]">
             נסו לשנות מסננים או להריץ מחדש את ניתוח ה-AI.
           </p>
         </div>

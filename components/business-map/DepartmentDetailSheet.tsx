@@ -17,7 +17,7 @@ interface DepartmentDetailSheetProps {
 function FrequencyBadge({ frequency }: { frequency: string | null }) {
   if (!frequency) return null;
   return (
-    <span className="inline-flex items-center rounded-full bg-zinc-700 px-2 py-0.5 text-xs text-zinc-300">
+    <span className="inline-flex items-center rounded-full bg-[var(--bv-surface-elevated)] px-2 py-0.5 text-xs text-[var(--bv-text-2)]">
       {frequency}
     </span>
   );
@@ -45,7 +45,7 @@ function SeverityBadge({ severity }: { severity: string }) {
       );
     default:
       return (
-        <span className="inline-flex items-center rounded-full bg-zinc-700 px-2 py-0.5 text-xs text-zinc-300">
+        <span className="inline-flex items-center rounded-full bg-[var(--bv-surface-elevated)] px-2 py-0.5 text-xs text-[var(--bv-text-2)]">
           {severity}
         </span>
       );
@@ -80,7 +80,7 @@ function ImpactTypeBadge({ impactType }: { impactType: string }) {
       );
     default:
       return (
-        <span className="inline-flex items-center rounded-full bg-zinc-700 px-2 py-0.5 text-xs text-zinc-300">
+        <span className="inline-flex items-center rounded-full bg-[var(--bv-surface-elevated)] px-2 py-0.5 text-xs text-[var(--bv-text-2)]">
           {impactType}
         </span>
       );
@@ -104,7 +104,7 @@ function StatusLabel({ status }: { status: string }) {
     needs_attention: "Needs Attention",
   };
   return (
-    <span className="text-sm text-zinc-400">{labelMap[status] ?? status}</span>
+    <span className="text-sm text-[var(--bv-text-3)]">{labelMap[status] ?? status}</span>
   );
 }
 
@@ -117,13 +117,13 @@ export function DepartmentDetailSheet({
     <Sheet open={open} onOpenChange={(isOpen) => { if (!isOpen) onClose(); }}>
       <SheetContent
         side="right"
-        className="w-full sm:max-w-lg bg-zinc-900 border-zinc-800 overflow-y-auto"
+        className="w-full sm:max-w-lg bg-[var(--bv-surface)] border-[var(--bv-border)] overflow-y-auto"
       >
         {department && (
           <div className="flex flex-col gap-6 py-2">
             {/* Header */}
             <SheetHeader className="gap-2">
-              <SheetTitle className="text-xl font-bold text-zinc-100">
+              <SheetTitle className="text-xl font-bold text-[var(--bv-text-1)]">
                 {department.name}
               </SheetTitle>
               <div className="flex items-center gap-2">
@@ -134,32 +134,32 @@ export function DepartmentDetailSheet({
                 <StatusDot status={department.status} />
                 <StatusLabel status={department.status} />
                 {department.headcount !== null && (
-                  <span className="text-xs text-zinc-500 ml-2">
+                  <span className="text-xs text-[var(--bv-muted)] ml-2">
                     {department.headcount} people
                   </span>
                 )}
               </div>
               {department.description && (
-                <p className="text-sm text-zinc-400">{department.description}</p>
+                <p className="text-sm text-[var(--bv-text-3)]">{department.description}</p>
               )}
             </SheetHeader>
 
             {/* Key Processes */}
             <section>
-              <h3 className="text-sm font-semibold text-zinc-300 uppercase tracking-wider mb-3">
+              <h3 className="text-sm font-semibold text-[var(--bv-text-2)] uppercase tracking-wider mb-3">
                 Key Processes
               </h3>
               {department.processes.length === 0 ? (
-                <p className="text-sm text-zinc-500 italic">None added</p>
+                <p className="text-sm text-[var(--bv-muted)] italic">None added</p>
               ) : (
                 <ul className="space-y-3">
                   {department.processes.map((process) => (
                     <li
                       key={process.id}
-                      className="flex flex-col gap-1.5 rounded-lg bg-zinc-800 px-3 py-2.5"
+                      className="flex flex-col gap-1.5 rounded-lg bg-[var(--bv-surface-raised)] px-3 py-2.5"
                     >
                       <div className="flex items-center justify-between gap-2 flex-wrap">
-                        <span className="text-sm font-medium text-zinc-100">
+                        <span className="text-sm font-medium text-[var(--bv-text-1)]">
                           {process.name}
                         </span>
                         <div className="flex items-center gap-1.5 flex-wrap">
@@ -172,7 +172,7 @@ export function DepartmentDetailSheet({
                         </div>
                       </div>
                       {(process.timeSpentHrsPerWeek ?? 0) > 0 && (
-                          <span className="text-xs text-zinc-500">
+                          <span className="text-xs text-[var(--bv-muted)]">
                             ~{process.timeSpentHrsPerWeek} hrs/week
                           </span>
                         )}
@@ -184,20 +184,20 @@ export function DepartmentDetailSheet({
 
             {/* Pain Points */}
             <section>
-              <h3 className="text-sm font-semibold text-zinc-300 uppercase tracking-wider mb-3">
+              <h3 className="text-sm font-semibold text-[var(--bv-text-2)] uppercase tracking-wider mb-3">
                 Pain Points
               </h3>
               {department.painPoints.length === 0 ? (
-                <p className="text-sm text-zinc-500 italic">None added</p>
+                <p className="text-sm text-[var(--bv-muted)] italic">None added</p>
               ) : (
                 <ul className="space-y-2.5">
                   {department.painPoints.map((pain) => (
                     <li
                       key={pain.id}
-                      className="flex items-start gap-2 rounded-lg bg-zinc-800 px-3 py-2.5"
+                      className="flex items-start gap-2 rounded-lg bg-[var(--bv-surface-raised)] px-3 py-2.5"
                     >
                       <SeverityBadge severity={pain.severity} />
-                      <span className="text-sm text-zinc-300 leading-snug">
+                      <span className="text-sm text-[var(--bv-text-2)] leading-snug">
                         {pain.description}
                       </span>
                     </li>
@@ -208,20 +208,20 @@ export function DepartmentDetailSheet({
 
             {/* AI Opportunities */}
             <section>
-              <h3 className="text-sm font-semibold text-zinc-300 uppercase tracking-wider mb-3">
+              <h3 className="text-sm font-semibold text-[var(--bv-text-2)] uppercase tracking-wider mb-3">
                 AI Opportunities
               </h3>
               {department.aiOpportunities.length === 0 ? (
-                <p className="text-sm text-zinc-500 italic">None added</p>
+                <p className="text-sm text-[var(--bv-muted)] italic">None added</p>
               ) : (
                 <ul className="space-y-2.5">
                   {department.aiOpportunities.map((opp) => (
                     <li
                       key={opp.id}
-                      className="flex items-start gap-2 rounded-lg bg-zinc-800 px-3 py-2.5"
+                      className="flex items-start gap-2 rounded-lg bg-[var(--bv-surface-raised)] px-3 py-2.5"
                     >
                       <ImpactTypeBadge impactType={opp.impactType} />
-                      <span className="text-sm text-zinc-100 font-medium leading-snug">
+                      <span className="text-sm text-[var(--bv-text-1)] font-medium leading-snug">
                         {opp.title}
                       </span>
                     </li>

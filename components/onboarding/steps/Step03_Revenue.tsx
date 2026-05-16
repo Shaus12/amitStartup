@@ -28,7 +28,7 @@ export function Step03_Revenue({ onNext, onBack }: Props) {
         <section className="space-y-4">
           <div className="flex items-center gap-2">
             <DollarSign className="w-4 h-4 text-emerald-500" />
-            <p className="text-zinc-300 text-sm font-bold uppercase tracking-wider">
+            <p className="text-[var(--bv-text-2)] text-sm font-bold uppercase tracking-wider">
               {t.step03.revenueLabel}
             </p>
           </div>
@@ -44,13 +44,13 @@ export function Step03_Revenue({ onNext, onBack }: Props) {
                     "flex items-center justify-between p-4 rounded-xl border transition-all text-right group",
                     selected
                       ? "border-emerald-500 bg-emerald-500/10 text-emerald-100 shadow-[0_4px_15px_rgba(16,185,129,0.1)]"
-                      : "border-zinc-800 bg-zinc-900/40 text-zinc-500 hover:border-zinc-700 hover:text-zinc-300"
+                      : "border-[var(--bv-border)] bg-[var(--bv-surface)]/40 text-[var(--bv-muted)] hover:border-[var(--bv-border-subtle)] hover:text-[var(--bv-text-2)]"
                   )}
                 >
                   <span className="text-sm font-bold">{r.label}</span>
                   <div className={cn(
                     "w-4 h-4 rounded-full border flex items-center justify-center transition-all",
-                    selected ? "bg-emerald-600 border-emerald-500" : "bg-zinc-800 border-zinc-700 group-hover:border-zinc-600"
+                    selected ? "bg-emerald-600 border-emerald-500" : "bg-[var(--bv-surface-raised)] border-[var(--bv-border-subtle)] group-hover:border-[var(--bv-muted)]"
                   )}>
                     {selected && <Check className="w-2.5 h-2.5 text-white" strokeWidth={4} />}
                   </div>
@@ -64,7 +64,7 @@ export function Step03_Revenue({ onNext, onBack }: Props) {
         <section className="space-y-4">
           <div className="flex items-center gap-2">
             <Calendar className="w-4 h-4 text-blue-500" />
-            <p className="text-zinc-300 text-sm font-bold uppercase tracking-wider">
+            <p className="text-[var(--bv-text-2)] text-sm font-bold uppercase tracking-wider">
               {t.step03.businessAgeLabel}
             </p>
           </div>
@@ -80,7 +80,7 @@ export function Step03_Revenue({ onNext, onBack }: Props) {
                     "py-2.5 px-2 rounded-xl border text-xs font-bold text-center transition-all relative overflow-hidden",
                     selected
                       ? "border-blue-500 bg-blue-500/10 text-blue-100"
-                      : "border-zinc-800 bg-zinc-900/40 text-zinc-500 hover:border-zinc-700 hover:text-zinc-300"
+                      : "border-[var(--bv-border)] bg-[var(--bv-surface)]/40 text-[var(--bv-muted)] hover:border-[var(--bv-border-subtle)] hover:text-[var(--bv-text-2)]"
                   )}
                 >
                   {ba.label}
@@ -97,7 +97,7 @@ export function Step03_Revenue({ onNext, onBack }: Props) {
         <section className="space-y-4">
           <div className="flex items-center gap-2">
             <Rocket className="w-4 h-4 text-purple-500" />
-            <p className="text-zinc-300 text-sm font-bold uppercase tracking-wider">
+            <p className="text-[var(--bv-text-2)] text-sm font-bold uppercase tracking-wider">
               {t.step03.growthLabel}
             </p>
           </div>
@@ -113,7 +113,7 @@ export function Step03_Revenue({ onNext, onBack }: Props) {
                     "py-3 px-4 rounded-xl border text-sm font-bold text-center transition-all",
                     selected
                       ? "border-purple-500 bg-purple-500/10 text-purple-100 shadow-[0_4px_15px_rgba(168,85,247,0.1)]"
-                      : "border-zinc-800 bg-zinc-900/40 text-zinc-500 hover:border-zinc-700 hover:text-zinc-300"
+                      : "border-[var(--bv-border)] bg-[var(--bv-surface)]/40 text-[var(--bv-muted)] hover:border-[var(--bv-border-subtle)] hover:text-[var(--bv-text-2)]"
                   )}
                 >
                   {go.label}

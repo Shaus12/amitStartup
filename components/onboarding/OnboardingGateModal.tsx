@@ -131,7 +131,7 @@ export function OnboardingGateModal({ open, onClose, onboardingPayload }: Props)
               setLoading(false);
               onClose();
             }}
-            className="absolute top-3 right-3 p-2 rounded-lg text-zinc-500 hover:text-zinc-200 transition-colors"
+            className="absolute top-3 right-3 p-2 rounded-lg text-[var(--bv-muted)] hover:text-[var(--bv-text-1)] transition-colors"
             aria-label="סגור"
           >
             <X className="w-4 h-4" />
@@ -158,7 +158,7 @@ export function OnboardingGateModal({ open, onClose, onboardingPayload }: Props)
         <button
           type="button"
           onClick={onClose}
-          className="absolute top-3 right-3 z-10 p-2 rounded-lg text-zinc-500 hover:text-zinc-200 transition-colors"
+          className="absolute top-3 right-3 z-10 p-2 rounded-lg text-[var(--bv-muted)] hover:text-[var(--bv-text-1)] transition-colors"
           aria-label="חזרה לסיכום"
         >
           <X className="w-4 h-4" />
@@ -258,11 +258,11 @@ export function OnboardingGateModal({ open, onClose, onboardingPayload }: Props)
                 />
                 <span>
                   אני מסכים/ה ל
-                  <Link href="/terms" target="_blank" className="underline text-zinc-300 mx-1">
+                  <Link href="/terms" target="_blank" className="underline text-[var(--bv-text-2)] mx-1">
                     תנאי השימוש
                   </Link>
                   ול
-                  <Link href="/privacy" target="_blank" className="underline text-zinc-300 mx-1">
+                  <Link href="/privacy" target="_blank" className="underline text-[var(--bv-text-2)] mx-1">
                     מדיניות הפרטיות
                   </Link>
                 </span>
@@ -299,7 +299,7 @@ export function OnboardingGateModal({ open, onClose, onboardingPayload }: Props)
                 כבר יש לך חשבון?{" "}
                 <button
                   type="button"
-                  className="underline text-zinc-400 hover:text-zinc-200"
+                  className="underline text-[var(--bv-text-3)] hover:text-[var(--bv-text-1)]"
                   onClick={() => {
                     setMode("login");
                     setError("");
@@ -313,7 +313,7 @@ export function OnboardingGateModal({ open, onClose, onboardingPayload }: Props)
                 אין לך חשבון?{" "}
                 <button
                   type="button"
-                  className="underline text-zinc-400 hover:text-zinc-200"
+                  className="underline text-[var(--bv-text-3)] hover:text-[var(--bv-text-1)]"
                   onClick={() => {
                     setMode("signup");
                     setError("");

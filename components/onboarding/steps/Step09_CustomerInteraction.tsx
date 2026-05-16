@@ -27,7 +27,7 @@ export function Step09_CustomerInteraction({ onNext, onBack }: Props) {
       <div className="space-y-7">
         {/* Primary Contact */}
         <div>
-          <p className="text-zinc-300 text-sm font-medium mb-3">
+          <p className="text-[var(--bv-text-2)] text-sm font-medium mb-3">
             {t.step09.primaryContactLabel}
           </p>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
@@ -43,7 +43,7 @@ export function Step09_CustomerInteraction({ onNext, onBack }: Props) {
                     "flex flex-col items-center gap-2 p-3 rounded-xl border text-center transition-all",
                     selected
                       ? "border-blue-500 bg-blue-600/10 text-blue-300"
-                      : "border-zinc-700 bg-zinc-800/50 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200"
+                      : "border-[var(--bv-border-subtle)] bg-[var(--bv-surface-raised)]/50 text-[var(--bv-text-3)] hover:border-[var(--bv-muted)] hover:text-[var(--bv-text-1)]"
                   )}
                 >
                   <Icon className="h-5 w-5 shrink-0" />
@@ -56,7 +56,7 @@ export function Step09_CustomerInteraction({ onNext, onBack }: Props) {
 
         {/* Inquiry Volume */}
         <div>
-          <p className="text-zinc-300 text-sm font-medium mb-3">
+          <p className="text-[var(--bv-text-2)] text-sm font-medium mb-3">
             {t.step09.inquiryVolumeLabel}
           </p>
           <div className="flex flex-wrap gap-2">
@@ -71,7 +71,7 @@ export function Step09_CustomerInteraction({ onNext, onBack }: Props) {
                     "px-4 py-2 rounded-lg border text-sm font-medium transition-all",
                     selected
                       ? "border-blue-500 bg-blue-600/10 text-blue-300"
-                      : "border-zinc-700 bg-zinc-800/50 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200"
+                      : "border-[var(--bv-border-subtle)] bg-[var(--bv-surface-raised)]/50 text-[var(--bv-text-3)] hover:border-[var(--bv-muted)] hover:text-[var(--bv-text-1)]"
                   )}
                 >
                   {iv.label}
@@ -83,7 +83,7 @@ export function Step09_CustomerInteraction({ onNext, onBack }: Props) {
 
         {/* Knowledge Base */}
         <div>
-          <p className="text-zinc-300 text-sm font-medium mb-3">
+          <p className="text-[var(--bv-text-2)] text-sm font-medium mb-3">
             {t.step09.knowledgeBaseLabel}
           </p>
           <div className="flex flex-wrap gap-2">
@@ -98,7 +98,7 @@ export function Step09_CustomerInteraction({ onNext, onBack }: Props) {
                     "px-4 py-2 rounded-lg border text-sm font-medium transition-all",
                     selected
                       ? "border-blue-500 bg-blue-600/10 text-blue-300"
-                      : "border-zinc-700 bg-zinc-800/50 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200"
+                      : "border-[var(--bv-border-subtle)] bg-[var(--bv-surface-raised)]/50 text-[var(--bv-text-3)] hover:border-[var(--bv-muted)] hover:text-[var(--bv-text-1)]"
                   )}
                 >
                   {kbo.label}
@@ -110,7 +110,7 @@ export function Step09_CustomerInteraction({ onNext, onBack }: Props) {
 
         {/* Avg Response Time */}
         <div>
-          <p className="text-zinc-300 text-sm font-medium mb-3">
+          <p className="text-[var(--bv-text-2)] text-sm font-medium mb-3">
             {t.step09.responseTimeLabel}
           </p>
           <div className="flex flex-wrap gap-2">
@@ -125,7 +125,7 @@ export function Step09_CustomerInteraction({ onNext, onBack }: Props) {
                     "px-4 py-2 rounded-lg border text-sm font-medium transition-all",
                     selected
                       ? "border-blue-500 bg-blue-600/10 text-blue-300"
-                      : "border-zinc-700 bg-zinc-800/50 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200"
+                      : "border-[var(--bv-border-subtle)] bg-[var(--bv-surface-raised)]/50 text-[var(--bv-text-3)] hover:border-[var(--bv-muted)] hover:text-[var(--bv-text-1)]"
                   )}
                 >
                   {rt.label}
@@ -137,7 +137,7 @@ export function Step09_CustomerInteraction({ onNext, onBack }: Props) {
 
         {/* Sales Process */}
         <div>
-          <p className="text-zinc-300 text-sm font-medium mb-3">
+          <p className="text-[var(--bv-text-2)] text-sm font-medium mb-3">
             {t.step09.salesProcessLabel}
           </p>
           <div className="flex flex-wrap gap-2">
@@ -152,7 +152,7 @@ export function Step09_CustomerInteraction({ onNext, onBack }: Props) {
                     "px-4 py-2 rounded-lg border text-sm font-medium transition-all",
                     selected
                       ? "border-blue-500 bg-blue-600/10 text-blue-300"
-                      : "border-zinc-700 bg-zinc-800/50 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200"
+                      : "border-[var(--bv-border-subtle)] bg-[var(--bv-surface-raised)]/50 text-[var(--bv-text-3)] hover:border-[var(--bv-muted)] hover:text-[var(--bv-text-1)]"
                   )}
                 >
                   {sp.label}

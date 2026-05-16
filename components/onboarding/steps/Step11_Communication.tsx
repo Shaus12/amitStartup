@@ -24,7 +24,7 @@ export function Step11_Communication({ onNext, onBack }: Props) {
       <div className="space-y-7">
         {/* Internal Comms */}
         <div>
-          <p className="text-zinc-300 text-sm font-medium mb-3">
+          <p className="text-[var(--bv-text-2)] text-sm font-medium mb-3">
             {t.step11.internalCommsLabel}
           </p>
           <div className="flex flex-wrap gap-2">
@@ -39,7 +39,7 @@ export function Step11_Communication({ onNext, onBack }: Props) {
                     "px-4 py-2 rounded-lg border text-sm font-medium transition-all",
                     selected
                       ? "border-blue-500 bg-blue-600/10 text-blue-300"
-                      : "border-zinc-700 bg-zinc-800/50 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200"
+                      : "border-[var(--bv-border-subtle)] bg-[var(--bv-surface-raised)]/50 text-[var(--bv-text-3)] hover:border-[var(--bv-muted)] hover:text-[var(--bv-text-1)]"
                   )}
                 >
                   {ic.label}
@@ -51,7 +51,7 @@ export function Step11_Communication({ onNext, onBack }: Props) {
 
         {/* Meeting Hours */}
         <div>
-          <p className="text-zinc-300 text-sm font-medium mb-3">
+          <p className="text-[var(--bv-text-2)] text-sm font-medium mb-3">
             {t.step11.meetingHoursLabel}
           </p>
           <div className="grid grid-cols-2 gap-3">
@@ -66,18 +66,18 @@ export function Step11_Communication({ onNext, onBack }: Props) {
                     "flex flex-col items-start gap-1 p-4 rounded-xl border text-left transition-all",
                     selected
                       ? "border-blue-500 bg-blue-600/10"
-                      : "border-zinc-700 bg-zinc-800/50 hover:border-zinc-600"
+                      : "border-[var(--bv-border-subtle)] bg-[var(--bv-surface-raised)]/50 hover:border-[var(--bv-muted)]"
                   )}
                 >
                   <span
                     className={cn(
                       "text-sm font-semibold",
-                      selected ? "text-blue-300" : "text-zinc-200"
+                      selected ? "text-blue-300" : "text-[var(--bv-text-1)]"
                     )}
                   >
                     {mh.label}
                   </span>
-                  <span className="text-xs text-zinc-500 leading-snug">
+                  <span className="text-xs text-[var(--bv-muted)] leading-snug">
                     {mh.desc}
                   </span>
                 </button>
@@ -88,7 +88,7 @@ export function Step11_Communication({ onNext, onBack }: Props) {
 
         {/* Documented SOPs */}
         <div>
-          <p className="text-zinc-300 text-sm font-medium mb-3">
+          <p className="text-[var(--bv-text-2)] text-sm font-medium mb-3">
             {t.step11.sopLabel}
           </p>
           <div className="space-y-2">
@@ -103,18 +103,18 @@ export function Step11_Communication({ onNext, onBack }: Props) {
                     "w-full flex flex-col items-start gap-1 p-4 rounded-xl border text-left transition-all",
                     selected
                       ? "border-blue-500 bg-blue-600/10"
-                      : "border-zinc-700 bg-zinc-800/50 hover:border-zinc-600"
+                      : "border-[var(--bv-border-subtle)] bg-[var(--bv-surface-raised)]/50 hover:border-[var(--bv-muted)]"
                   )}
                 >
                   <span
                     className={cn(
                       "text-sm font-semibold",
-                      selected ? "text-blue-300" : "text-zinc-200"
+                      selected ? "text-blue-300" : "text-[var(--bv-text-1)]"
                     )}
                   >
                     {sop.label}
                   </span>
-                  <span className="text-xs text-zinc-500 leading-snug">
+                  <span className="text-xs text-[var(--bv-muted)] leading-snug">
                     {sop.desc}
                   </span>
                 </button>

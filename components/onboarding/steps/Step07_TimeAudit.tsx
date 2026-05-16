@@ -112,7 +112,7 @@ export function Step07_TimeAudit({ onNext, onBack }: Props) {
     >
       <div className="space-y-6">
         {displayEntries.length === 0 ? (
-          <p className="text-zinc-500 text-sm">
+          <p className="text-[var(--bv-muted)] text-sm">
             {t.step07.noProcesses}
           </p>
         ) : (
@@ -132,10 +132,10 @@ export function Step07_TimeAudit({ onNext, onBack }: Props) {
                   }}
                 >
                   <div className="flex items-start gap-2">
-                    <span className="inline-block px-2 py-0.5 rounded-full bg-zinc-700 text-zinc-400 text-xs shrink-0">
+                    <span className="inline-block px-2 py-0.5 rounded-full bg-[var(--bv-surface-elevated)] text-[var(--bv-text-3)] text-xs shrink-0">
                       {item.departmentName}
                     </span>
-                    <span className="text-zinc-200 text-sm font-medium leading-tight flex-1">
+                    <span className="text-[var(--bv-text-1)] text-sm font-medium leading-tight flex-1">
                       {item.processName}
                     </span>
                     {isCritical && (
@@ -153,7 +153,7 @@ export function Step07_TimeAudit({ onNext, onBack }: Props) {
                   {/* Hours per week slider */}
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between">
-                      <label className="text-zinc-400 text-xs">{t.step07.hoursLabel}</label>
+                      <label className="text-[var(--bv-text-3)] text-xs">{t.step07.hoursLabel}</label>
                       <span className="text-blue-300 text-xs font-semibold">
                         {entry.hoursPerWeek}h
                       </span>
@@ -182,7 +182,7 @@ export function Step07_TimeAudit({ onNext, onBack }: Props) {
                         ⚡ עומס גבוה — עסקים דומים חסכו כאן 60-80% מהזמן עם AI
                       </p>
                     )}
-                    <div className="flex justify-between text-zinc-600 text-xs">
+                    <div className="flex justify-between text-[var(--bv-muted)] text-xs">
                       <span>0h</span>
                       <span>40h</span>
                     </div>
@@ -190,7 +190,7 @@ export function Step07_TimeAudit({ onNext, onBack }: Props) {
 
                   {/* People involved */}
                   <div className="flex items-center gap-3">
-                    <label className="text-zinc-400 text-xs shrink-0">
+                    <label className="text-[var(--bv-text-3)] text-xs shrink-0">
                       {t.step07.peopleLabel}
                     </label>
                     <Input
@@ -206,9 +206,9 @@ export function Step07_TimeAudit({ onNext, onBack }: Props) {
                           });
                         }
                       }}
-                      className="w-20 h-8 bg-zinc-700/50 border-zinc-600 text-zinc-200 text-sm focus:border-blue-500 focus:ring-blue-500/20"
+                      className="w-20 h-8 bg-[var(--bv-surface-elevated)]/50 border-[var(--bv-muted)] text-[var(--bv-text-1)] text-sm focus:border-blue-500 focus:ring-blue-500/20"
                     />
-                    <span className="text-zinc-500 text-xs">
+                    <span className="text-[var(--bv-muted)] text-xs">
                       {t.step07.totalWk((entry.hoursPerWeek * entry.peopleInvolved).toFixed(1))}
                     </span>
                   </div>

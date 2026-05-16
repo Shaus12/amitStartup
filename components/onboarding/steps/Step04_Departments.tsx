@@ -78,7 +78,7 @@ export function Step04_Departments({ onNext, onBack }: Props) {
       <div className="space-y-8">
         {/* Predefined departments with descriptions */}
         <div>
-          <p className="text-zinc-300 text-sm font-semibold mb-3">{t.step04.suggestedLabel}</p>
+          <p className="text-[var(--bv-text-2)] text-sm font-semibold mb-3">{t.step04.suggestedLabel}</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {t.step04.departments.map((dept: { name: string, desc: string }) => {
               const selected = deptNames.includes(dept.name);
@@ -91,11 +91,11 @@ export function Step04_Departments({ onNext, onBack }: Props) {
                     "flex flex-col items-start p-4 rounded-xl border text-right transition-all group relative overflow-hidden",
                     selected
                       ? "border-blue-500 bg-blue-600/10 text-blue-300 ring-1 ring-blue-500/50"
-                      : "border-zinc-800 bg-zinc-900/40 text-zinc-400 hover:border-zinc-700 hover:bg-zinc-800/60"
+                      : "border-[var(--bv-border)] bg-[var(--bv-surface)]/40 text-[var(--bv-text-3)] hover:border-[var(--bv-border-subtle)] hover:bg-[var(--bv-surface-raised)]/60"
                   )}
                 >
                     <div className="flex items-center justify-between w-full mb-1">
-                        <span className={cn("text-sm font-bold", selected ? "text-blue-300" : "text-zinc-200")}>
+                        <span className={cn("text-sm font-bold", selected ? "text-blue-300" : "text-[var(--bv-text-1)]")}>
                             {dept.name}
                         </span>
                         {selected && <div className="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(77,142,255,0.8)]" />}
@@ -111,18 +111,18 @@ export function Step04_Departments({ onNext, onBack }: Props) {
 
         {/* Custom input */}
         <div>
-          <p className="text-zinc-300 text-sm font-semibold mb-2">{t.step04.customLabel}</p>
+          <p className="text-[var(--bv-text-2)] text-sm font-semibold mb-2">{t.step04.customLabel}</p>
           <div className="flex gap-2">
             <Input
                 value={customInput}
                 onChange={(e) => setCustomInput(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder={t.step04.customPlaceholder}
-                className="bg-zinc-800/50 border-zinc-700 text-zinc-100 placeholder:text-zinc-500 focus:border-blue-500 focus:ring-blue-500/20 h-11"
+                className="bg-[var(--bv-surface-raised)]/50 border-[var(--bv-border-subtle)] text-[var(--bv-text-1)] placeholder:text-[var(--bv-muted)] focus:border-blue-500 focus:ring-blue-500/20 h-11"
             />
             <button 
                 onClick={addCustom}
-                className="px-4 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-sm text-zinc-300 hover:bg-zinc-700 transition-colors"
+                className="px-4 py-2 bg-[var(--bv-surface-raised)] border border-[var(--bv-border-subtle)] rounded-lg text-sm text-[var(--bv-text-2)] hover:bg-[var(--bv-surface-elevated)] transition-colors"
             >
                 הוסף
             </button>
@@ -131,12 +131,12 @@ export function Step04_Departments({ onNext, onBack }: Props) {
 
         {/* Headcount question */}
         {answers.departments.length > 0 && (
-          <div className="pt-6 border-t border-zinc-800/50">
+          <div className="pt-6 border-t border-[var(--bv-border)]/50">
             <div className="mb-4">
-                <p className="text-zinc-300 text-sm font-semibold">
+                <p className="text-[var(--bv-text-2)] text-sm font-semibold">
                 {t.step04.headcountLabel}
                 </p>
-                <p className="text-zinc-500 text-[11px] italic mt-1 leading-relaxed">
+                <p className="text-[var(--bv-muted)] text-[11px] italic mt-1 leading-relaxed">
                 {t.step04.headcountHelper}
                 </p>
             </div>
@@ -145,9 +145,9 @@ export function Step04_Departments({ onNext, onBack }: Props) {
               {answers.departments.map((dept: DepartmentInput) => (
                 <div
                   key={dept.name}
-                  className="flex items-center gap-3 bg-zinc-900/40 border border-zinc-800 rounded-xl px-4 py-3 transition-colors hover:border-zinc-700"
+                  className="flex items-center gap-3 bg-[var(--bv-surface)]/40 border border-[var(--bv-border)] rounded-xl px-4 py-3 transition-colors hover:border-[var(--bv-border-subtle)]"
                 >
-                  <span className="flex-1 text-sm text-zinc-200 font-semibold">
+                  <span className="flex-1 text-sm text-[var(--bv-text-1)] font-semibold">
                     {dept.name}
                   </span>
                   <div className="flex items-center gap-2">
@@ -168,12 +168,12 @@ export function Step04_Departments({ onNext, onBack }: Props) {
                         );
                         }}
                         placeholder={t.step04.peoplePlaceholder}
-                        className="w-16 h-9 bg-zinc-800 border-zinc-700 text-zinc-100 text-center font-bold focus:border-blue-500 focus:ring-blue-500/20"
+                        className="w-16 h-9 bg-[var(--bv-surface-raised)] border-[var(--bv-border-subtle)] text-[var(--bv-text-1)] text-center font-bold focus:border-blue-500 focus:ring-blue-500/20"
                     />
                     <button
                         type="button"
                         onClick={() => removeDept(dept.name)}
-                        className="p-1.5 text-zinc-600 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all"
+                        className="p-1.5 text-[var(--bv-muted)] hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all"
                     >
                         <X className="h-4 w-4" />
                     </button>
