@@ -25,7 +25,7 @@ export async function getEffectivePlan(
   userId: string
 ): Promise<SubscriptionPlan> {
   const { data } = await supabase
-    .from("profiles")
+    .from("users")
     .select("subscription_plan, subscription_ends_at")
     .eq("id", userId)
     .single();

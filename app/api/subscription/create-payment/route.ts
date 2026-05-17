@@ -6,8 +6,8 @@ export const dynamic = "force-dynamic";
 
 type Plan = "pro" | "business";
 
-const PLAN_DETAILS: Record<Plan, { price: 1 | 149; name: "Pro" | "Business" }> = {
-  pro: { price: 1, name: "Pro" },
+const PLAN_DETAILS: Record<Plan, { price: 79 | 149; name: "Pro" | "Business" }> = {
+  pro: { price: 79, name: "Pro" },
   business: { price: 149, name: "Business" },
 };
 
