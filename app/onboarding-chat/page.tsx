@@ -129,7 +129,7 @@ const StreamingMessage = ({ content, onComplete }: { content: string; onComplete
 const stages = [
   { id: 1, title: "מכירים את העסק", icon: "🏢" },
   { id: 2, title: "מוצאים את הכאב", icon: "🎯" },
-  { id: 3, title: "בונים את הניתוח", icon: "✨" },
+  { id: 3, title: "מגבשים פרופיל", icon: "✨" },
 ];
 
 export default function OnboardingChatPage() {
@@ -150,10 +150,18 @@ export default function OnboardingChatPage() {
 
   // ... (keep messagesEndRef and useEffects intact)
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isLoading, isStreaming]);
+
+  // Focus input when ready for user input
+  useEffect(() => {
+    if (!isLoading && !isStreaming && !isComplete && !isInitializing) {
+      inputRef.current?.focus();
+    }
+  }, [isLoading, isStreaming, isComplete, isInitializing]);
 
   // Handle final submission
   const handleFinalize = async () => {
@@ -302,8 +310,8 @@ export default function OnboardingChatPage() {
         }
         setCurrentStage(newStage);
         
-        // Hide overlay after 2.5s
-        setTimeout(() => setStageOverlay(null), 2500);
+        // Hide overlay after 4.5s
+        setTimeout(() => setStageOverlay(null), 4500);
       }
 
       // Handle completion
@@ -404,20 +412,20 @@ export default function OnboardingChatPage() {
         </div>
         
         {/* Progress Bar */}
-        <div className="h-14 flex items-center justify-center px-4">
-          <div className="flex items-center w-full max-w-2xl justify-between relative">
+        <div className="h-14 flex items-center justify-center px-4 mt-2">
+          <div className="flex items-center w-full max-w-lg justify-between relative">
             {/* Connecting lines */}
-            <div className="absolute left-[10%] right-[10%] h-[2px] bg-white/10 top-1/2 -translate-y-1/2 z-0" />
+            <div className="absolute left-4 right-4 h-[2px] bg-white/10 top-4 z-0" />
             <div 
-              className="absolute right-[10%] h-[2px] bg-indigo-500 top-1/2 -translate-y-1/2 z-0 transition-all duration-700 ease-out" 
-              style={{ width: currentStage === 1 ? '0%' : currentStage === 2 ? '40%' : '80%' }}
+              className="absolute right-4 h-[2px] bg-indigo-500 top-4 z-0 transition-all duration-700 ease-out" 
+              style={{ width: currentStage === 1 ? '0%' : currentStage === 2 ? '50%' : '100%' }}
             />
             
             {stages.map((stage) => {
               const isActive = currentStage === stage.id;
               const isCompleted = currentStage > stage.id || isComplete;
               return (
-                <div key={stage.id} className="relative z-10 flex flex-col items-center gap-1">
+                <div key={stage.id} className="relative z-10 flex flex-col items-center gap-2">
                   <div 
                     className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-500 ${
                       isActive ? 'bg-indigo-600 shadow-[0_0_15px_rgba(79,70,229,0.6)] text-white' : 
@@ -427,7 +435,7 @@ export default function OnboardingChatPage() {
                   >
                     {isCompleted ? <Check className="w-4 h-4 text-indigo-300" /> : <span className="text-sm">{stage.icon}</span>}
                   </div>
-                  <span className={`text-[10px] font-medium absolute -bottom-5 w-24 text-center transition-colors ${
+                  <span className={`text-[10px] font-medium absolute top-10 w-24 text-center transition-colors ${
                     isActive ? 'text-indigo-200' : isCompleted ? 'text-indigo-400/70' : 'text-gray-600'
                   }`}>
                     {stage.title}
@@ -437,6 +445,24 @@ export default function OnboardingChatPage() {
             })}
           </div>
         </div>
+      </div>
+
+      {/* Floating Stage Overlay Notification */}
+      <div className="absolute top-[140px] left-0 right-0 z-50 flex justify-center pointer-events-none px-4">
+        <AnimatePresence>
+          {stageOverlay && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: -20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: -10 }}
+              className="flex justify-center"
+            >
+              <div className="glass-card px-6 py-3 rounded-full border-indigo-500/30 text-indigo-200 text-sm font-medium shadow-[0_0_20px_rgba(79,70,229,0.3)]">
+                {stageOverlay}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* Chat Area */}
@@ -497,22 +523,6 @@ export default function OnboardingChatPage() {
             </motion.div>
           )}
 
-          {/* Stage Overlay Notification */}
-          <AnimatePresence>
-            {stageOverlay && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.9, y: -20 }}
-                className="my-6 flex justify-center w-full"
-              >
-                <div className="glass-card px-6 py-3 rounded-full border-indigo-500/30 text-indigo-200 text-sm font-medium shadow-[0_0_20px_rgba(79,70,229,0.2)]">
-                  {stageOverlay}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
           {/* Completion Card */}
           {isComplete && !isStreaming && (
             <motion.div
@@ -532,10 +542,10 @@ export default function OnboardingChatPage() {
                 </div>
                 
                 <h3 className="text-2xl font-bold mb-2 text-white" style={{ fontFamily: "var(--font-manrope)" }}>
-                  הניתוח שלך מוכן! 🎉
+                  הפרופיל שלך מוכן! 🎉
                 </h3>
-                <p className="text-sm mb-8 text-indigo-200/80" style={{ fontFamily: "var(--font-inter)" }}>
-                  בנינו פרופיל מלא של העסק שלך
+                <p className="text-sm mb-8 text-indigo-200/80 leading-relaxed max-w-sm" style={{ fontFamily: "var(--font-inter)" }}>
+                  אספנו את כל המידע. עכשיו BizMap מוכנה לנתח את העסק שלך ולמצוא את ההזדמנויות הגדולות ביותר.
                 </p>
                 
                 <div className="flex justify-between w-full mb-8 bg-black/20 rounded-xl p-4 border border-white/5">
@@ -546,12 +556,12 @@ export default function OnboardingChatPage() {
                   <div className="w-px h-10 bg-white/10" />
                   <div className="flex flex-col items-center gap-1">
                     <span className="text-lg font-bold text-white">8</span>
-                    <span className="text-[10px] text-white/50">נושאים נותחו</span>
+                    <span className="text-[10px] text-white/50">נושאים קוטלגו</span>
                   </div>
                   <div className="w-px h-10 bg-white/10" />
                   <div className="flex flex-col items-center gap-1">
-                    <span className="text-lg font-bold text-emerald-400">98%</span>
-                    <span className="text-[10px] text-emerald-400/70">מוכנות לניתוח</span>
+                    <span className="text-lg font-bold text-emerald-400">100%</span>
+                    <span className="text-[10px] text-emerald-400/70">מוכנות לניתוח AI</span>
                   </div>
                 </div>
 
@@ -564,7 +574,7 @@ export default function OnboardingChatPage() {
                   {isFinalizing ? (
                     <Loader2 className="w-5 h-5 animate-spin" />
                   ) : (
-                    <>ראה את הניתוח שלי <Send size={16} className="rotate-180" /></>
+                    <>התחל ניתוח מקיף לעסק <Send size={16} className="rotate-180" /></>
                   )}
                 </button>
               </div>
@@ -580,6 +590,7 @@ export default function OnboardingChatPage() {
         <div className="shrink-0 p-4 z-20">
           <div className="max-w-3xl mx-auto flex items-center gap-3">
             <input
+              ref={inputRef}
               type="text"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
