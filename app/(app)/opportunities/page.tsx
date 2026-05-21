@@ -23,7 +23,7 @@ export default async function OpportunitiesPage() {
     .maybeSingle();
 
   if (!business) {
-    redirect("/onboarding");
+    redirect("/onboarding-chat");
   }
 
   return <OpportunitiesClient businessId={business.id} businessName={business.name} />;

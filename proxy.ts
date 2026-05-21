@@ -14,7 +14,8 @@ export async function proxy(request: NextRequest) {
       pathname === "/loading" ||
       pathname.startsWith("/tasks") ||
       pathname.startsWith("/opportunities") ||
-      pathname.startsWith("/roadmap")
+      pathname.startsWith("/roadmap") ||
+      pathname.startsWith("/onboarding-chat")
     ) {
       const url = request.nextUrl.clone();
       url.pathname = "/login";
@@ -53,10 +54,11 @@ export async function proxy(request: NextRequest) {
   const isTasks = pathname.startsWith("/tasks");
   const isOpportunities = pathname.startsWith("/opportunities");
   const isRoadmap = pathname.startsWith("/roadmap");
+  const isOnboardingChat = pathname.startsWith("/onboarding-chat");
 
-  // Protect /dashboard, /loading, /tasks, /opportunities, /roadmap — must be signed in
+  // Protect /dashboard, /loading, /tasks, /opportunities, /roadmap, /onboarding-chat — must be signed in
   if (
-    (isDashboard || isLoadingAnalysis || isTasks || isOpportunities || isRoadmap) &&
+    (isDashboard || isLoadingAnalysis || isTasks || isOpportunities || isRoadmap || isOnboardingChat) &&
     !user
   ) {
     const url = request.nextUrl.clone();
@@ -82,5 +84,6 @@ export const config = {
     "/tasks/:path*",
     "/opportunities/:path*",
     "/roadmap/:path*",
+    "/onboarding-chat/:path*",
   ],
 };

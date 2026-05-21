@@ -54,14 +54,20 @@ export default function LoginPage() {
       router.push("/dashboard");
       router.refresh();
     } else {
-      const { error: signUpError } = await supabase.auth.signUp({ email, password });
+      const { data, error: signUpError } = await supabase.auth.signUp({ email, password });
       if (signUpError) {
         setError(signUpError.message);
         setLoading(false);
         return;
       }
-      setSignedUp(true);
-      setLoading(false);
+      
+      if (data.session) {
+        router.push("/dashboard");
+        router.refresh();
+      } else {
+        setSignedUp(true);
+        setLoading(false);
+      }
     }
   }
 

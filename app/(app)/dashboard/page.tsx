@@ -24,7 +24,7 @@ export default async function DashboardPage() {
     .maybeSingle();
 
   if (!business) {
-    redirect("/onboarding");
+    redirect("/onboarding-chat");
   }
 
   return (

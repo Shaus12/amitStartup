@@ -19,7 +19,7 @@ export default async function BrainPage() {
     .limit(1)
     .single();
 
-  if (!business) redirect("/onboarding");
+  if (!business) redirect("/onboarding-chat");
 
   const { data: departments } = await supabaseAdmin
     .from("departments")

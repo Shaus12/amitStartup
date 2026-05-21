@@ -25,7 +25,7 @@ export default async function ReportPage() {
   // Fetch business
   const { data: business } = await businessQuery.single();
 
-  if (!business) redirect("/onboarding");
+  if (!business) redirect("/onboarding-chat");
 
   // Fetch supporting data in parallel
   const [

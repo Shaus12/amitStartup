@@ -437,7 +437,7 @@ function Nav() {
           >{t.nav.signIn}</Link>
 
           <Link
-            href="/onboarding"
+            href="/onboarding-chat"
             className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-200 active:scale-[0.97]"
             style={{
               ...IF,
@@ -527,7 +527,7 @@ function Hero() {
         {/* CTA */}
         <motion.div variants={fadeUp} className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-8">
           <Link
-            href="/onboarding"
+            href="/onboarding-chat"
             className="inline-flex items-center gap-2 px-10 py-4 rounded-xl text-sm font-bold transition-all duration-250 active:scale-[0.97] w-full sm:w-auto justify-center"
             style={{
               ...IF,
@@ -942,7 +942,7 @@ function FeatureHowItWorks() {
         
         <div className="mt-20 text-center">
            <Link
-              href="/onboarding"
+              href="/onboarding-chat"
               className="inline-flex items-center gap-2 px-8 py-4 rounded-xl text-sm font-bold transition-all duration-200"
               style={{
                 ...IF,
@@ -1062,7 +1062,7 @@ function PricingSection() {
                 ))}
               </ul>
               <Link
-                href="/onboarding"
+                href="/onboarding-chat"
                 className="w-full py-4 rounded-xl text-center font-bold text-sm transition-all duration-200"
                 style={{
                   background: box.primary ? `linear-gradient(135deg, ${C.blue}, ${C.purple}90)` : "rgba(255,255,255,0.05)",
@@ -1101,7 +1101,7 @@ function NoConsultantSection() {
           </p>
         </div>
         <Link
-          href="/onboarding"
+          href="/onboarding-chat"
           className="inline-flex items-center gap-2 px-10 py-5 rounded-2xl text-base font-bold transition-all duration-200"
           style={{
             background: `linear-gradient(135deg, ${C.blue}, ${C.purple}90)`,
@@ -1193,7 +1193,7 @@ function FinalCTA() {
           <h2 className="text-3xl md:text-5xl font-extrabold mb-6" style={{ ...MF, color: C.text }}>{f.title}</h2>
           <p className="text-lg leading-relaxed mb-10 max-w-2xl mx-auto" style={{ ...IF, color: C.muted }}>{f.subtitle}</p>
           <Link
-            href="/onboarding"
+            href="/onboarding-chat"
             className="inline-flex items-center gap-2 px-10 py-4 rounded-xl text-sm font-bold transition-all duration-200"
             style={{
               background: `linear-gradient(135deg, ${C.blue}, ${C.purple}90)`,
@@ -1320,7 +1320,7 @@ function StickyMobileCTA() {
       }}
     >
       <Link
-        href="/onboarding"
+        href="/onboarding-chat"
         className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl text-sm font-bold"
         style={{
           background: `linear-gradient(135deg, ${C.blue}, ${C.purple}90)`,

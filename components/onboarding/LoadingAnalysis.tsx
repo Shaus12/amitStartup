@@ -99,7 +99,7 @@ export function LoadingAnalysis() {
 
   useEffect(() => {
     if (!businessId) {
-      router.replace("/onboarding");
+      router.replace("/onboarding-chat");
       return;
     }
 

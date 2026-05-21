@@ -15,7 +15,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "",
     "/landing",
     "/login",
-    "/onboarding",
+    "/onboarding-chat",
     "/privacy",
     "/terms",
   ];

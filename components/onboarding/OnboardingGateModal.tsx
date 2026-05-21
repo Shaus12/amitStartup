@@ -36,22 +36,7 @@ export function OnboardingGateModal({ open, onClose, onboardingPayload }: Props)
 
   if (!open) return null;
 
-  async function saveOnboardingAndGo() {
-    const res = await fetch("/api/onboarding", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(onboardingPayload),
-    });
-    const body = await res.json().catch(() => ({}));
-    if (!res.ok) {
-      throw new Error(body.details || body.message || body.error || "שמירת הנתונים נכשלה");
-    }
-    const businessId = body.businessId as string;
-    // Navigate before resetting the wizard store, otherwise the persisted step jumps to 0
-    // for a frame under the gate modal (visible flash of onboarding start).
-    router.push(`/loading?businessId=${encodeURIComponent(businessId)}`);
-    router.refresh();
-  }
+
 
   async function handleSignup(e: React.FormEvent) {
     e.preventDefault();
@@ -77,7 +62,8 @@ export function OnboardingGateModal({ open, onClose, onboardingPayload }: Props)
         return;
       }
 
-      await saveOnboardingAndGo();
+      router.push("/onboarding-chat");
+      router.refresh();
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "משהו השתבש. נסה שוב.";
       setError(msg);
@@ -105,7 +91,8 @@ export function OnboardingGateModal({ open, onClose, onboardingPayload }: Props)
         return;
       }
 
-      await saveOnboardingAndGo();
+      router.push("/onboarding-chat");
+      router.refresh();
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "ההתחברות נכשלה.";
       setError(msg);

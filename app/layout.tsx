@@ -40,6 +40,7 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${manrope.variable} ${inter.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />

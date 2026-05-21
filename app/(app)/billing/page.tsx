@@ -23,7 +23,7 @@ export default async function BillingPage() {
     .limit(1)
     .maybeSingle();
 
-  if (!business) redirect("/onboarding");
+  if (!business) redirect("/onboarding-chat");
 
   const { data: userProfile } = await supabaseAdmin
     .from("users")

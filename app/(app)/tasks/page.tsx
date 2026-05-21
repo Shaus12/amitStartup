@@ -23,7 +23,7 @@ export default async function TasksPage() {
     .maybeSingle();
 
   if (!business) {
-    redirect("/onboarding");
+    redirect("/onboarding-chat");
   }
 
   // Fetch user_points for XP header
