@@ -140,6 +140,8 @@ export default function OnboardingChatPage() {
   const [isInitializing, setIsInitializing] = useState(true);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [isComplete, setIsComplete] = useState(false);
+  // Track whether completion happened in this page session (not from a resumed completed session)
+  const [completedThisSession, setCompletedThisSession] = useState(false);
 
   // New states for redesign
   const [isStreaming, setIsStreaming] = useState(false);
@@ -162,6 +164,42 @@ export default function OnboardingChatPage() {
       inputRef.current?.focus();
     }
   }, [isLoading, isStreaming, isComplete, isInitializing]);
+
+  const [isGeneratingReport, setIsGeneratingReport] = useState(false);
+  const [generationError, setGenerationError] = useState<string | null>(null);
+
+  const generateReport = async (sId: string | null) => {
+    if (!sId) return;
+    setIsGeneratingReport(true);
+    setGenerationError(null);
+    try {
+      const res = await fetch("/api/analysis-report/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId: sId }),
+      });
+      if (!res.ok) {
+        throw new Error("שגיאה ביצירת הניתוח. אנא נסה שוב.");
+      }
+      const data = await res.json();
+      if (data.reportId) {
+        router.push(`/analysis/${data.reportId}`);
+      } else {
+        throw new Error("שגיאה ביצירת הניתוח. אנא נסה שוב.");
+      }
+    } catch (err: any) {
+      console.error(err);
+      setGenerationError(err.message || "שגיאה בתקשורת עם השרת. אנא נסה שוב.");
+    } finally {
+      setIsGeneratingReport(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isComplete && completedThisSession && !isStreaming && !isGeneratingReport && !generationError && sessionId) {
+      generateReport(sessionId);
+    }
+  }, [isComplete, completedThisSession, isStreaming, sessionId, isGeneratingReport, generationError]);
 
   // Handle final submission
   const handleFinalize = async () => {
@@ -221,14 +259,24 @@ export default function OnboardingChatPage() {
             const data = await res.json();
             if (data.messages && data.messages.length > 0) {
               setMessages(data.messages);
+            } else {
+              startNewChat();
             }
             if (data.stage) setCurrentStage(data.stage);
-            if (data.isComplete) setIsComplete(true);
+            if (data.isComplete) {
+              setIsComplete(true);
+              // Don't set completedThisSession — this was already done before; don't re-generate
+            }
           } else {
+            // Session not found or unauthorized — clear stale id and start fresh
+            localStorage.removeItem("onboarding_chat_session_id");
+            setSessionId(null);
             startNewChat();
           }
         } catch (error) {
           console.error("Failed to fetch session", error);
+          setSessionId(null);
+          localStorage.removeItem("onboarding_chat_session_id");
           startNewChat();
         }
       } else {
@@ -250,11 +298,11 @@ export default function OnboardingChatPage() {
     checkAuthAndInitialize();
   }, [router]);
 
-  const handleSendMessage = async () => {
-    if (!inputValue.trim() || isLoading || isComplete || isStreaming) return;
+  const handleSendMessage = async (forceMsg?: string) => {
+    const userMsg = typeof forceMsg === "string" ? forceMsg : inputValue.trim();
+    if (!userMsg || isLoading || isComplete) return;
 
-    const userMsg = inputValue.trim();
-    setInputValue("");
+    if (typeof forceMsg !== "string") setInputValue("");
     
     setMessages(prev => [...prev, { role: "user", content: userMsg }]);
     setIsLoading(true);
@@ -280,7 +328,7 @@ export default function OnboardingChatPage() {
 
       const data = await res.json();
       
-      if (data.sessionId && !sessionId) {
+      if (data.sessionId && data.sessionId !== sessionId) {
         setSessionId(data.sessionId);
         localStorage.setItem("onboarding_chat_session_id", data.sessionId);
       }
@@ -335,6 +383,7 @@ export default function OnboardingChatPage() {
         }
         
         setIsComplete(true);
+        setCompletedThisSession(true);
       }
 
       if (aiContent) {
@@ -395,6 +444,12 @@ export default function OnboardingChatPage() {
             </span>
           </div>
           <div className="flex items-center gap-4">
+            <button 
+              onClick={() => handleSendMessage("DEBUG_SKIP")}
+              className="text-xs px-3 py-1.5 rounded-md bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 transition-colors border border-amber-500/30 font-bold"
+            >
+              Debug Skip
+            </button>
             <div className="text-sm font-medium hidden sm:block text-indigo-200" style={{ fontFamily: "var(--font-inter)" }}>
               BizMap מנתחת את העסק שלך
             </div>
@@ -412,13 +467,13 @@ export default function OnboardingChatPage() {
         </div>
         
         {/* Progress Bar */}
-        <div className="h-14 flex items-center justify-center px-4 mt-2">
+        <div className="h-20 flex items-center justify-center px-4 mt-2 pb-2">
           <div className="flex items-center w-full max-w-lg justify-between relative">
             {/* Connecting lines */}
-            <div className="absolute left-4 right-4 h-[2px] bg-white/10 top-4 z-0" />
+            <div className="absolute left-4 right-4 h-[2px] bg-white/10 top-1/2 -translate-y-1/2 z-0" />
             <div 
-              className="absolute right-4 h-[2px] bg-indigo-500 top-4 z-0 transition-all duration-700 ease-out" 
-              style={{ width: currentStage === 1 ? '0%' : currentStage === 2 ? '50%' : '100%' }}
+              className="absolute right-4 h-[2px] bg-indigo-500 top-1/2 -translate-y-1/2 z-0 transition-all duration-700 ease-out" 
+              style={{ width: (isComplete || currentStage >= 3) ? 'calc(100% - 32px)' : currentStage === 2 ? 'calc(50% - 16px)' : '0%' }}
             />
             
             {stages.map((stage) => {
@@ -429,13 +484,17 @@ export default function OnboardingChatPage() {
                   <div 
                     className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-500 ${
                       isActive ? 'bg-indigo-600 shadow-[0_0_15px_rgba(79,70,229,0.6)] text-white' : 
-                      isCompleted ? 'bg-indigo-900/80 border border-indigo-500/50 text-indigo-300' : 
+                      isCompleted ? 'bg-indigo-900 border border-indigo-500/50 text-indigo-300' : 
                       'bg-[#1a1c25] border border-white/10 text-gray-500'
                     }`}
                   >
                     {isCompleted ? <Check className="w-4 h-4 text-indigo-300" /> : <span className="text-sm">{stage.icon}</span>}
                   </div>
-                  <span className={`text-[10px] font-medium absolute top-10 w-24 text-center transition-colors ${
+                  <span className={`text-[10px] font-medium absolute top-10 w-24 transition-colors ${
+                    stage.id === 1 ? 'right-0 text-right' :
+                    stage.id === 3 ? 'left-0 text-left' :
+                    'left-1/2 -translate-x-1/2 text-center'
+                  } ${
                     isActive ? 'text-indigo-200' : isCompleted ? 'text-indigo-400/70' : 'text-gray-600'
                   }`}>
                     {stage.title}
@@ -448,7 +507,7 @@ export default function OnboardingChatPage() {
       </div>
 
       {/* Floating Stage Overlay Notification */}
-      <div className="absolute top-[140px] left-0 right-0 z-50 flex justify-center pointer-events-none px-4">
+      <div className="absolute top-[164px] left-0 right-0 z-50 flex justify-center pointer-events-none px-4">
         <AnimatePresence>
           {stageOverlay && (
             <motion.div
@@ -534,49 +593,41 @@ export default function OnboardingChatPage() {
               <div className="w-full max-w-md rounded-3xl p-8 text-center flex flex-col items-center glass-card border-t-white/20 relative overflow-hidden">
                 <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-indigo-400 to-transparent opacity-50" />
                 
-                {/* SVG Checkmark */}
-                <div className="w-20 h-20 rounded-full mb-6 flex items-center justify-center bg-indigo-500/20 border border-indigo-400/30 shadow-[0_0_30px_rgba(79,70,229,0.3)]">
-                  <svg className="w-10 h-10 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" className="check-stroke" />
-                  </svg>
-                </div>
-                
-                <h3 className="text-2xl font-bold mb-2 text-white" style={{ fontFamily: "var(--font-manrope)" }}>
-                  הפרופיל שלך מוכן! 🎉
-                </h3>
-                <p className="text-sm mb-8 text-indigo-200/80 leading-relaxed max-w-sm" style={{ fontFamily: "var(--font-inter)" }}>
-                  אספנו את כל המידע. עכשיו BizMap מוכנה לנתח את העסק שלך ולמצוא את ההזדמנויות הגדולות ביותר.
-                </p>
-                
-                <div className="flex justify-between w-full mb-8 bg-black/20 rounded-xl p-4 border border-white/5">
-                  <div className="flex flex-col items-center gap-1">
-                    <span className="text-lg font-bold text-white">{userMessagesCount}</span>
-                    <span className="text-[10px] text-white/50">תובנות נאספו</span>
-                  </div>
-                  <div className="w-px h-10 bg-white/10" />
-                  <div className="flex flex-col items-center gap-1">
-                    <span className="text-lg font-bold text-white">8</span>
-                    <span className="text-[10px] text-white/50">נושאים קוטלגו</span>
-                  </div>
-                  <div className="w-px h-10 bg-white/10" />
-                  <div className="flex flex-col items-center gap-1">
-                    <span className="text-lg font-bold text-emerald-400">100%</span>
-                    <span className="text-[10px] text-emerald-400/70">מוכנות לניתוח AI</span>
-                  </div>
-                </div>
-
-                <button
-                  onClick={handleFinalize}
-                  disabled={isFinalizing}
-                  className="shimmer-btn w-full py-4 rounded-xl text-sm font-bold transition-all hover:opacity-90 active:scale-[0.98] flex items-center justify-center gap-2 text-white shadow-[0_4px_20px_rgba(79,70,229,0.4)] hover:shadow-[0_4px_25px_rgba(79,70,229,0.6)] disabled:opacity-50 disabled:cursor-not-allowed"
-                  style={{ background: "linear-gradient(135deg, #4f46e5, #0ea5e9)", fontFamily: "var(--font-inter)" }}
-                >
-                  {isFinalizing ? (
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                  ) : (
-                    <>התחל ניתוח מקיף לעסק <Send size={16} className="rotate-180" /></>
-                  )}
-                </button>
+                {generationError ? (
+                  <>
+                    <div className="w-20 h-20 rounded-full mb-6 flex items-center justify-center bg-rose-500/20 border border-rose-400/30 shadow-[0_0_30px_rgba(244,63,94,0.3)]">
+                      <span className="text-2xl text-rose-400">⚠️</span>
+                    </div>
+                    
+                    <h3 className="text-2xl font-bold mb-2 text-white" style={{ fontFamily: "var(--font-manrope)" }}>
+                      שגיאה ביצירת הניתוח
+                    </h3>
+                    <p className="text-sm mb-8 text-rose-200/80 leading-relaxed max-w-sm" style={{ fontFamily: "var(--font-inter)" }}>
+                      {generationError}
+                    </p>
+                    
+                    <button
+                      onClick={() => generateReport(sessionId)}
+                      className="shimmer-btn w-full py-4 rounded-xl text-sm font-bold transition-all hover:opacity-90 active:scale-[0.98] flex items-center justify-center gap-2 text-white shadow-[0_4px_20px_rgba(79,70,229,0.4)] hover:shadow-[0_4px_25px_rgba(79,70,229,0.6)]"
+                      style={{ background: "linear-gradient(135deg, #4f46e5, #0ea5e9)", fontFamily: "var(--font-inter)" }}
+                    >
+                      נסה שוב
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <div className="w-20 h-20 rounded-full mb-6 flex items-center justify-center bg-indigo-500/20 border border-indigo-400/30 shadow-[0_0_30px_rgba(79,70,229,0.3)]">
+                      <Loader2 className="w-10 h-10 animate-spin text-indigo-400" />
+                    </div>
+                    
+                    <h3 className="text-xl font-bold mb-2 text-white" style={{ fontFamily: "var(--font-manrope)" }}>
+                      מייצר את הניתוח המלא שלך... ⚡
+                    </h3>
+                    <p className="text-sm text-indigo-200/80 leading-relaxed max-w-sm" style={{ fontFamily: "var(--font-inter)" }}>
+                      אנא המתן בזמן שאנו מנתחים את נתוני העסק שלך. זה עשוי לקחת מספר שניות.
+                    </p>
+                  </>
+                )}
               </div>
             </motion.div>
           )}
@@ -595,7 +646,7 @@ export default function OnboardingChatPage() {
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={handleKeyDown}
-              disabled={isLoading || isComplete || isStreaming}
+              disabled={isLoading || isComplete}
               placeholder="כתוב את תשובתך..."
               className="flex-1 h-14 px-5 rounded-2xl text-sm outline-none transition-all disabled:opacity-50 glass-card text-white focus:border-indigo-500 focus:shadow-[0_0_15px_rgba(79,70,229,0.2)] placeholder-white/30"
               style={{ fontFamily: "var(--font-inter)" }}
@@ -603,11 +654,11 @@ export default function OnboardingChatPage() {
             />
             <button
               onClick={handleSendMessage}
-              disabled={!inputValue.trim() || isLoading || isComplete || isStreaming}
+              disabled={!inputValue.trim() || isLoading || isComplete}
               className="h-14 px-6 rounded-2xl flex items-center gap-2 text-sm font-bold transition-all shrink-0"
               style={{ 
-                background: (!inputValue.trim() || isLoading || isComplete || isStreaming) ? "rgba(255,255,255,0.1)" : "linear-gradient(135deg, #4f46e5, #0ea5e9)", 
-                color: (!inputValue.trim() || isLoading || isComplete || isStreaming) ? "rgba(255,255,255,0.3)" : "white", 
+                background: (!inputValue.trim() || isLoading || isComplete) ? "rgba(255,255,255,0.1)" : "linear-gradient(135deg, #4f46e5, #0ea5e9)", 
+                color: (!inputValue.trim() || isLoading || isComplete) ? "rgba(255,255,255,0.3)" : "white", 
                 fontFamily: "var(--font-inter)",
                 border: "1px solid rgba(255,255,255,0.05)"
               }}
