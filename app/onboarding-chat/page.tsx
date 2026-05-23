@@ -653,7 +653,7 @@ export default function OnboardingChatPage() {
               autoFocus
             />
             <button
-              onClick={handleSendMessage}
+              onClick={() => handleSendMessage()}
               disabled={!inputValue.trim() || isLoading || isComplete}
               className="h-14 px-6 rounded-2xl flex items-center gap-2 text-sm font-bold transition-all shrink-0"
               style={{ 
