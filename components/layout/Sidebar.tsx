@@ -48,7 +48,7 @@ export function Sidebar() {
     >
       {/* Logo */}
       <div className="px-5 h-14 flex items-center" style={{ borderBottom: "1px solid var(--bv-border)" }}>
-        <div className="flex items-center gap-2.5">
+        <Link href="/" className="flex items-center gap-2.5 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--bv-primary)] focus:ring-offset-2 focus:ring-offset-[var(--bv-surface-raised)]">
           <img src="/logo.png" alt="BizMap Logo" className="w-8 h-8 object-contain" />
           <div>
             <p className="text-sm font-bold tracking-tight leading-none" style={{ fontFamily: "var(--font-manrope)", color: "var(--bv-text-1)" }}>
@@ -58,7 +58,7 @@ export function Sidebar() {
               {t.sidebar.intelligence}
             </p>
           </div>
-        </div>
+        </Link>
       </div>
 
       {/* Section label */}

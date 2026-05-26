@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Send, Loader2, Check } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -437,12 +438,12 @@ export default function OnboardingChatPage() {
       {/* Top Bar */}
       <div className="shrink-0 glass-card border-b-0 border-white/5 flex flex-col z-20">
         <div className="h-16 flex items-center justify-between px-6 border-b border-white/10">
-          <div className="flex items-center gap-3">
+          <Link href="/" className="flex items-center gap-3 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:ring-offset-2 focus:ring-offset-[#050510]">
             <img src="/logo.png" alt="BizMap" className="w-8 h-8 object-contain" />
             <span className="font-bold tracking-tight text-lg text-white" style={{ fontFamily: "var(--font-manrope)" }}>
               BizMap
             </span>
-          </div>
+          </Link>
           <div className="flex items-center gap-4">
             <button 
               onClick={() => handleSendMessage("DEBUG_SKIP")}
