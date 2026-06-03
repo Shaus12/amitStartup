@@ -397,7 +397,7 @@ function ProblemSection() {
             </p>
             <p>{"כל עסק עם כמה עובדים או ספקים מכיל בתוכו לפחות 2-3 תהליכים שאפשר להפוך אותם לכפול עשר עם AI."}<br />
               {"לא בעזרת תקציב ענק. לא בעזרת ידע טכנולוגי."}<br />
-              <strong style={{ color: C.text }}>{"רק בעזרת הבנה מדויקת של איפה להתחיל ומה בדיוק לעשות."}</strong>
+              <strong style={{ color: C.blue, fontSize: "1.2em" }}>{"רק בעזרת הבנה מדויקת של איפה להתחיל ומה בדיוק לעשות."}</strong>
             </p>
           </div>
         </div>
@@ -480,10 +480,14 @@ function ProductReveal() {
         </div>
 
         {/* Mockup placeholder */}
-        <div className="bv-reveal mb-6">
+        <div className="bv-reveal mb-6 relative">
           <div
-            className="rounded-2xl overflow-hidden mx-auto max-w-[800px]"
-            style={{ ...glassCard, boxShadow: `0 40px 100px rgba(0,0,0,0.8), 0 0 80px ${C.blue}10` }}
+            className="absolute -inset-4 rounded-3xl blur-2xl opacity-30"
+            style={{ background: `linear-gradient(135deg, ${C.blue}40, ${C.purple}30, ${C.blue}20)` }}
+          />
+          <div
+            className="relative rounded-2xl overflow-hidden mx-auto max-w-[800px]"
+            style={{ ...glassCard, boxShadow: `0 40px 100px rgba(0,0,0,0.8), 0 0 80px ${C.blue}20, 0 0 120px ${C.purple}10`, border: `1px solid ${C.blue}25` }}
           >
             <HeroBrowserMockup />
           </div>
@@ -613,8 +617,8 @@ function HeroBrowserMockup() {
                   style={{
                     left: dept.x, top: dept.y + 8, width: 180,
                     backgroundColor: "rgba(16,20,34,0.9)",
-                    border: "1px solid rgba(255,255,255,0.07)",
-                    boxShadow: "0 4px 20px rgba(0,0,0,0.5)",
+                    border: `1px solid ${dept.color}25`,
+                    boxShadow: `0 4px 20px rgba(0,0,0,0.5), 0 0 20px ${dept.color}10`,
                   }}
                 >
                   <div className="h-[2px]" style={{ background: `linear-gradient(90deg, ${dept.color}, ${dept.color}50)` }} />
@@ -698,13 +702,13 @@ function WhatYouGet() {
       <div className="max-w-[900px] mx-auto relative">
         <Orb color={C.blue} x="0%" y="50%" size={500} opacity={0.05} />
 
-        <div className="text-center mb-16 bv-reveal">
-          <h2 className="text-4xl md:text-6xl font-black mb-4 leading-tight" style={{ ...MF, color: C.text }}>
+        <div className="text-center mb-10 bv-reveal">
+          <h2 className="text-4xl md:text-6xl font-black mb-3 leading-tight" style={{ ...MF, color: C.text }}>
             {"מה מקבלים בתוך BizMap:"}
           </h2>
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-4">
           {deliverables.map((d, i) => (
             <motion.div
               key={i}
@@ -763,23 +767,31 @@ function GuaranteeSection() {
           className="rounded-3xl p-10 md:p-14"
           style={{
             ...glassCard,
-            border: `1px solid ${C.green}30`,
-            boxShadow: `0 0 60px ${C.green}10, 0 20px 60px rgba(0,0,0,0.5)`,
+            border: `2px solid ${C.green}50`,
+            boxShadow: `0 0 80px ${C.green}20, 0 0 120px ${C.green}10, 0 20px 60px rgba(0,0,0,0.5)`,
           }}
         >
           <div
-            className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6"
-            style={{ backgroundColor: `${C.green}15`, border: `2px solid ${C.green}40` }}
+            className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 relative"
+            style={{
+              backgroundColor: `${C.green}20`,
+              border: `3px solid ${C.green}70`,
+              boxShadow: `0 0 40px ${C.green}30, 0 0 80px ${C.green}15, inset 0 0 30px ${C.green}10`,
+            }}
           >
-            <Shield className="w-8 h-8" style={{ color: C.green }} />
+            <Shield className="w-12 h-12" style={{ color: C.green }} />
+            <div
+              className="absolute -inset-2 rounded-full animate-ping"
+              style={{ border: `2px solid ${C.green}30`, opacity: 0.4 }}
+            />
           </div>
-          <h3 className="text-3xl md:text-4xl font-black mb-4" style={{ ...MF, color: C.text }}>
+          <h3 className="text-4xl md:text-5xl font-black mb-5" style={{ ...MF, color: C.green }}>
             {"אחריות 100% החזר כספי"}
           </h3>
           <p className="text-lg md:text-xl leading-relaxed font-medium" style={{ ...IF, color: C.sub }}>
             {"אם נכנסתם, מילאתם את המיפוי, ולא קיבלתם ערך \u2014 אתם מקבלים את הכסף בחזרה. 100%. בלי שאלות מיותרות."}
           </p>
-          <p className="text-sm font-bold mt-4" style={{ ...IF, color: C.green }}>
+          <p className="text-base font-extrabold mt-5" style={{ ...IF, color: C.green }}>
             {"כי אני בטוח שמה שיש פה שווה פי 10 מזה לפחות."}
           </p>
         </motion.div>
@@ -915,11 +927,11 @@ function PricingSection() {
               ))}
             </div>
 
-            <div className="mt-6 pt-6" style={{ borderTop: `2px solid ${C.blue}30` }}>
+            <div className="mt-6 pt-6" style={{ borderTop: `2px solid ${C.red}40` }}>
               <p className="text-base font-bold mb-2" style={{ ...IF, color: C.muted }}>{"שווי כולל כולל מע\u0022מ:"}</p>
               <p
-                className="text-5xl md:text-6xl font-black line-through"
-                style={{ ...MF, color: C.muted, opacity: 0.5 }}
+                className="text-6xl md:text-8xl font-black line-through"
+                style={{ ...MF, color: C.red, opacity: 0.85, textDecorationColor: C.red, textDecorationThickness: "4px" }}
               >
                 {"23,942 ₪"}
               </p>
@@ -949,19 +961,16 @@ function PricingSection() {
 
             <div className="flex items-baseline justify-center gap-2 mb-4">
               <span
-                className="text-7xl md:text-9xl font-black"
+                className="text-8xl md:text-[10rem] font-black"
                 style={{
                   ...MF,
-                  background: `linear-gradient(135deg, ${C.blue}, ${C.glow})`,
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  backgroundClip: "text",
-                  filter: `drop-shadow(0 0 30px ${C.blue}40)`,
+                  color: C.green,
+                  textShadow: `0 0 40px ${C.green}50, 0 0 80px ${C.green}25`,
                 }}
               >
                 497
               </span>
-              <span className="text-2xl font-bold" style={{ color: C.text }}>{"₪"}</span>
+              <span className="text-3xl font-bold" style={{ color: C.green }}>{"₪"}</span>
             </div>
 
             <p className="text-lg font-extrabold mb-2" style={{ ...MF, color: C.text }}>
