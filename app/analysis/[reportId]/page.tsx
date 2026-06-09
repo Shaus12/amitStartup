@@ -138,12 +138,12 @@ export default function AnalysisReportPage({ params }: { params: Promise<{ repor
       const secondOk = await attemptActivate();
       if (!secondOk) {
         console.error("[analysis] trial/activate failed after retry — redirecting with trial_error=1");
-        router.push("/dashboard?trial_error=1");
+        router.push("/dashboard?fromAnalysis=1&trial_error=1");
         return;
       }
     }
 
-    router.push("/dashboard");
+    router.push("/dashboard?fromAnalysis=1");
   };
 
   useEffect(() => {
