@@ -55,10 +55,31 @@ export async function GET(
       businessId = business?.id ?? null;
     }
 
+    const { data: profile, error: profileError } = await supabaseAdmin
+      .from("users")
+      .select("trial_ends_at, subscription_plan, subscription_ends_at")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    if (profileError) {
+      console.error("Error fetching report user profile:", profileError);
+    }
+
+    const now = new Date();
+    const trialStarted = Boolean(profile?.trial_ends_at);
+    const trialActive = Boolean(profile?.trial_ends_at && new Date(profile.trial_ends_at) > now);
+    const subscriptionActive =
+      (profile?.subscription_plan === "pro" || profile?.subscription_plan === "business") &&
+      (!profile.subscription_ends_at || new Date(profile.subscription_ends_at) > now);
+
     return NextResponse.json({
       ...report,
       business_id: businessId,
       businessId,
+      trialStarted,
+      trialActive,
+      subscriptionActive,
+      hasDashboardAccess: trialActive || subscriptionActive,
     });
   } catch (err: any) {
     console.error("GET analysis-report error:", err);

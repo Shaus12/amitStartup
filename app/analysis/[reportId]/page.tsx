@@ -116,9 +116,17 @@ export default function AnalysisReportPage({ params }: { params: Promise<{ repor
   const [activatingTrial, setActivatingTrial] = useState(false);
   const [contactOpen, setContactOpen] = useState(false);
   const [businessId, setBusinessId] = useState<string | null>(null);
+  const [trialStarted, setTrialStarted] = useState(false);
+  const [hasDashboardAccess, setHasDashboardAccess] = useState(false);
 
   const handleEnterDashboard = async () => {
     setActivatingTrial(true);
+
+    if (trialStarted || hasDashboardAccess) {
+      router.push("/dashboard");
+      return;
+    }
+
     try {
       localStorage.setItem("bizmap:lastAnalysisReportId", reportId);
     } catch {
@@ -189,6 +197,8 @@ export default function AnalysisReportPage({ params }: { params: Promise<{ repor
         const data = await res.json();
         setReport(data.content);
         setBusinessId(data.businessId ?? data.business_id ?? null);
+        setTrialStarted(Boolean(data.trialStarted));
+        setHasDashboardAccess(Boolean(data.hasDashboardAccess));
       } catch (err) {
         console.error("Failed to load report", err);
         router.push("/dashboard");
@@ -599,7 +609,9 @@ export default function AnalysisReportPage({ params }: { params: Promise<{ repor
             <div className="relative z-10 max-w-2xl mx-auto space-y-8">
               <h2 className="text-4xl md:text-5xl font-bold">קיבלת את הניתוח שלך 🎉</h2>
               <p className="text-xl text-gray-300">
-                עכשיו הגיע הזמן ליישם — קבל שבוע חינם במערכת המלאה
+                {trialStarted || hasDashboardAccess
+                  ? "המערכת המלאה מחכה לך עם המפה, המשימות וההזדמנויות שלך"
+                  : "עכשיו הגיע הזמן ליישם — קבל שבוע חינם במערכת המלאה"}
               </p>
               
               <div className="flex flex-col items-center gap-3 text-lg text-gray-200">
@@ -621,10 +633,12 @@ export default function AnalysisReportPage({ params }: { params: Promise<{ repor
                       מפעילים את השבוע החינמי...
                     </span>
                   ) : (
-                    "כנס למערכת — שבוע חינם ←"
+                    trialStarted || hasDashboardAccess ? "עבור לדאשבורד ←" : "כנס למערכת — שבוע חינם ←"
                   )}
                 </button>
-                <p className="text-sm text-gray-500 mt-6">ללא כרטיס אשראי · ללא התחייבות · ביטול בכל עת</p>
+                {!trialStarted && !hasDashboardAccess && (
+                  <p className="text-sm text-gray-500 mt-6">ללא כרטיס אשראי · ללא התחייבות · ביטול בכל עת</p>
+                )}
               </div>
             </div>
           </section>
