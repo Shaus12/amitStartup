@@ -78,6 +78,8 @@ export default async function CheckoutPage() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+  const checkoutHref = user ? "/checkout/payment" : "/signup?from=checkout";
+  const checkoutCtaText = user ? "המשך לתשלום" : "המשך להרשמה";
 
   if (user) {
     const route = await getUserRoute(supabaseAdmin, user.id);
@@ -188,10 +190,10 @@ export default async function CheckoutPage() {
           </p>
 
           <Link
-            href="/signup?from=checkout"
+            href={checkoutHref}
             className="checkout-cta mt-7 inline-flex min-h-14 w-full items-center justify-center rounded-lg bg-gradient-to-l from-indigo-500 via-violet-500 to-sky-500 px-7 py-4 text-lg font-black text-white shadow-[0_18px_48px_rgba(79,70,229,0.38)] transition duration-200 hover:scale-[1.01] hover:shadow-[0_22px_58px_rgba(79,70,229,0.48)] focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:ring-offset-2 focus:ring-offset-[#050510] sm:w-auto sm:min-w-[360px]"
           >
-            המשך להרשמה
+            {checkoutCtaText}
           </Link>
 
           <p className="mt-5 text-sm font-medium leading-6 text-white/58 sm:text-base">

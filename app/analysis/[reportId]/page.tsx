@@ -597,6 +597,16 @@ export default function AnalysisReportPage({ params }: { params: Promise<{ repor
           </section>
         </FadeIn>
 
+        <div className="mx-auto mt-8 max-w-2xl border-t border-white/10 pt-5 text-center text-xs leading-6 text-gray-500">
+          שילמת ולא קיבלת ערך? אנחנו עומדים מאחורי ההבטחה שלנו — החזר כספי מלא ללא שאלות. פנה אלינו:{" "}
+          <a
+            href="mailto:support@bizmapai.com"
+            className="text-gray-400 underline underline-offset-4 transition-colors hover:text-gray-200"
+          >
+            support@bizmapai.com
+          </a>
+        </div>
+
       </div>
     </div>
   );
