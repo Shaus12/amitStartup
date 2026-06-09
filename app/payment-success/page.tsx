@@ -89,13 +89,9 @@ function PaymentSuccessContent() {
 
   const progress = Math.min((elapsedMs / (REDIRECT_SECONDS * 1000)) * 100, 100);
   const exhaustedRetries = retryCount >= MAX_RETRIES;
-  const successTitle = isAnalysisPayment
-    ? "התשלום התקבל בהצלחה! מעבירים אותך לשאלון..."
-    : "התשלום התקבל בהצלחה! מעבירים אותך לדשבורד...";
-  const redirectMessage = isAnalysisPayment
-    ? "מועבר לשאלון תוך 3 שניות..."
-    : "מועבר לדשבורד תוך 3 שניות...";
-  const ctaLabel = isAnalysisPayment ? "עבור לשאלון עכשיו" : "עבור לדשבורד עכשיו";
+  const successTitle = "התשלום התקבל בהצלחה! מעבירים אותך לאונבורדינג...";
+  const redirectMessage = "מועבר לאונבורדינג תוך 3 שניות...";
+  const ctaLabel = "עבור לאונבורדינג עכשיו";
 
   // ── Error state (mark-paid failed) ──────────────────────────────────────────
   if (markPaidError) {

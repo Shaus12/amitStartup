@@ -13,7 +13,7 @@ import { HealthScore } from "@/components/dashboard/HealthScore";
 import { KnowledgeRequestPopup } from "@/components/dashboard/KnowledgeRequestPopup";
 import { DashboardStats } from "@/components/dashboard/DashboardStats";
 import { createClient } from "@/lib/supabase/client";
-import { AnalysisRevealModal, revealStorageKey } from "@/components/dashboard/AnalysisRevealModal";
+import { AnalysisRevealModal } from "@/components/dashboard/AnalysisRevealModal";
 import { GiftModal } from "@/components/dashboard/GiftModal";
 
 interface DashboardClientProps {
@@ -354,10 +354,6 @@ export function DashboardClient({ businessId, businessName, showTrialErrorBanner
       const body = await r.json();
       return Array.isArray(body) ? body : (body.opportunities ?? []);
     },
-    refetchInterval: (query) => {
-      const opportunities = query.state.data ?? [];
-      return opportunities.length === 0 ? 10_000 : false;
-    },
   });
 
   const { data: giftData } = useQuery<{ gift: DashboardGift | null }>({
@@ -417,21 +413,6 @@ export function DashboardClient({ businessId, businessName, showTrialErrorBanner
   });
   const isWaitingForAiOpportunities =
     Boolean(data && data.departments.length > 0 && opportunitiesSummary.length === 0);
-
-  // Open the analysis reveal before paint so tour logic never sees revealOpen=false on the same
-  // tick as "first visit from analysis" (otherwise the dashboard tour starts under the modal).
-  useLayoutEffect(() => {
-    if (!data) return;
-    if (!fromAnalysis) return;
-
-    let shown = false;
-    try {
-      shown = localStorage.getItem(revealStorageKey(businessId)) === "1";
-    } catch {
-      /* ignore */
-    }
-    if (!shown) setRevealOpen(true);
-  }, [data, fromAnalysis, businessId]);
 
   useLayoutEffect(() => {
     if (arrivedFromAnalysis) {

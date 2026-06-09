@@ -35,7 +35,31 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized access to report" }, { status: 403 });
     }
 
-    return NextResponse.json(report);
+    const existingBusinessId = typeof report.business_id === "string" ? report.business_id : null;
+    let businessId = existingBusinessId;
+
+    if (!businessId) {
+      const { data: business, error: businessError } = await supabaseAdmin
+        .from("businesses")
+        .select("id")
+        .eq("user_id", user.id)
+        .eq("onboarding_completed", true)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (businessError) {
+        console.error("Error fetching report business:", businessError);
+      }
+
+      businessId = business?.id ?? null;
+    }
+
+    return NextResponse.json({
+      ...report,
+      business_id: businessId,
+      businessId,
+    });
   } catch (err: any) {
     console.error("GET analysis-report error:", err);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });

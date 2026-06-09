@@ -13,6 +13,13 @@ const STAGES = [
   "מסיים ניתוח...",
 ];
 
+const ANALYSIS_DASHBOARD_STAGES = [
+  "מכין את הדאשבורד שלך...",
+  "מחשב הזדמנויות AI...",
+  "בונה מפת הזדמנויות...",
+  "מסיים הכנה...",
+];
+
 function stageIndexForProgress(p: number) {
   if (p >= 95) return STAGES.length - 1;
   if (p >= 70) return 2;
@@ -41,6 +48,8 @@ export function LoadingAnalysis() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const businessId = searchParams.get("businessId");
+  const fromAnalysis = searchParams.get("from") === "analysis";
+  const hasTrialError = searchParams.get("trial_error") === "1";
   const [progress, setProgress] = useState(0);
   const [analysisFailed, setAnalysisFailed] = useState(false);
   const [retryTick, setRetryTick] = useState(0);
@@ -90,11 +99,11 @@ export function LoadingAnalysis() {
         setProgress(100);
         await new Promise((r) => setTimeout(r, 550));
         if (signal.aborted) return;
-        router.replace("/dashboard?fromAnalysis=1");
+        router.replace(fromAnalysis ? `/dashboard${hasTrialError ? "?trial_error=1" : ""}` : "/dashboard?fromAnalysis=1");
         router.refresh();
       })();
     },
-    [businessId, clearProgressInterval, router]
+    [businessId, clearProgressInterval, fromAnalysis, hasTrialError, router]
   );
 
   useEffect(() => {
@@ -137,6 +146,7 @@ export function LoadingAnalysis() {
 
   const displayProgress = Math.min(100, Math.round(progress));
   const stageIdx = stageIndexForProgress(displayProgress);
+  const stages = fromAnalysis ? ANALYSIS_DASHBOARD_STAGES : STAGES;
   const done = displayProgress >= 100;
 
   if (analysisFailed) {
@@ -263,10 +273,12 @@ export function LoadingAnalysis() {
             className="mt-4 text-2xl font-black tracking-tight text-white sm:text-[1.65rem]"
             style={{ fontFamily: "var(--font-manrope), system-ui, sans-serif" }}
           >
-            בונים את מפת ההזדמנויות
+            {fromAnalysis ? "מכין את הדאשבורד שלך..." : "בונים את מפת ההזדמנויות"}
           </h1>
           <p className="mt-2 text-sm leading-relaxed" style={{ color: "#6b7280" }}>
-            מודל העומק שלך על העסק — רגע אחד של קסם, כמה שניות של חישובים.
+            {fromAnalysis
+              ? "אנחנו מסדרים את הנתונים וההזדמנויות לפני הכניסה למערכת."
+              : "מודל העומק שלך על העסק — רגע אחד של קסם, כמה שניות של חישובים."}
           </p>
 
           <p
@@ -274,7 +286,7 @@ export function LoadingAnalysis() {
             className="la-loading-stage mt-8 min-h-[1.75rem] text-[15px] font-semibold leading-snug"
             style={{ color: "#a5b4fc" }}
           >
-            {STAGES[stageIdx]}
+            {stages[stageIdx]}
           </p>
 
           <div className="mt-6 flex items-end justify-between gap-3 text-xs">
@@ -317,7 +329,7 @@ export function LoadingAnalysis() {
           </div>
 
           <div className="mt-5 flex justify-center gap-1.5">
-            {STAGES.map((_, i) => (
+            {stages.map((_, i) => (
               <span
                 key={i}
                 className="h-1.5 rounded-full transition-all duration-500"

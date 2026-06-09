@@ -115,6 +115,7 @@ export default function AnalysisReportPage({ params }: { params: Promise<{ repor
   const [expandedOpp, setExpandedOpp] = useState<number | null>(null);
   const [activatingTrial, setActivatingTrial] = useState(false);
   const [contactOpen, setContactOpen] = useState(false);
+  const [businessId, setBusinessId] = useState<string | null>(null);
 
   const handleEnterDashboard = async () => {
     setActivatingTrial(true);
@@ -123,6 +124,35 @@ export default function AnalysisReportPage({ params }: { params: Promise<{ repor
     } catch {
       // localStorage not critical
     }
+
+    let targetBusinessId = businessId;
+    if (!targetBusinessId) {
+      try {
+        const res = await fetch(`/api/analysis-report/${reportId}`);
+        if (res.ok) {
+          const data = await res.json();
+          targetBusinessId = data.businessId ?? data.business_id ?? null;
+          setBusinessId(targetBusinessId);
+        }
+      } catch (err) {
+        console.error("[analysis] failed to fetch businessId before loading redirect:", err);
+      }
+    }
+
+    if (!targetBusinessId) {
+      console.error("[analysis] missing businessId — redirecting to onboarding-chat");
+      router.push("/onboarding-chat");
+      return;
+    }
+
+    const pushLoading = (trialError = false) => {
+      const params = new URLSearchParams({
+        businessId: targetBusinessId,
+        from: "analysis",
+      });
+      if (trialError) params.set("trial_error", "1");
+      router.push(`/loading?${params.toString()}`);
+    };
 
     const attemptActivate = async (): Promise<boolean> => {
       try {
@@ -139,13 +169,13 @@ export default function AnalysisReportPage({ params }: { params: Promise<{ repor
       console.warn("[analysis] trial/activate first attempt failed, retrying once…");
       const secondOk = await attemptActivate();
       if (!secondOk) {
-        console.error("[analysis] trial/activate failed after retry — redirecting with trial_error=1");
-        router.push("/dashboard?fromAnalysis=1&trial_error=1");
+        console.error("[analysis] trial/activate failed after retry — continuing through loading with trial_error=1");
+        pushLoading(true);
         return;
       }
     }
 
-    router.push("/dashboard?fromAnalysis=1");
+    pushLoading();
   };
 
   useEffect(() => {
@@ -158,6 +188,7 @@ export default function AnalysisReportPage({ params }: { params: Promise<{ repor
         }
         const data = await res.json();
         setReport(data.content);
+        setBusinessId(data.businessId ?? data.business_id ?? null);
       } catch (err) {
         console.error("Failed to load report", err);
         router.push("/dashboard");
