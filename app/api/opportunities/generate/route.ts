@@ -61,14 +61,23 @@ export async function POST(req: NextRequest) {
 
     console.log("[generate] Starting for business:", businessId);
 
-    const authClient = await createClient();
-    const { data: { user } } = await authClient.auth.getUser();
+    const expectedInternalSecret = process.env.WEBHOOK_SECRET;
+    const isInternalRequest =
+      Boolean(expectedInternalSecret) &&
+      req.headers.get("x-internal-secret") === expectedInternalSecret;
 
-    const owned = await verifyBusinessAccess(supabase, businessId, user);
-    if (!owned) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    const rateLimit = checkRateLimit(req, `opportunities-generate:${user?.id ?? "anon"}`, 10, 60_000);
-    if (!rateLimit.allowed) {
-      return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+    let userId: string | null = null;
+    if (!isInternalRequest) {
+      const authClient = await createClient();
+      const { data: { user } } = await authClient.auth.getUser();
+      userId = user?.id ?? null;
+
+      const owned = await verifyBusinessAccess(supabase, businessId, user);
+      if (!owned) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      const rateLimit = checkRateLimit(req, `opportunities-generate:${user?.id ?? "anon"}`, 10, 60_000);
+      if (!rateLimit.allowed) {
+        return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+      }
     }
 
     // ── 1. Fetch departments + knowledge + latest onboarding snapshot ─────
@@ -138,7 +147,7 @@ export async function POST(req: NextRequest) {
 
     const result = await analyzeBusinessData(limitedKnowledgeRows, departmentNames, {
       businessId,
-      userId: user?.id ?? null,
+      userId,
     });
 
     console.log("[generate] Claude returned", result.opportunities?.length ?? 0, "opportunities across", result.departments?.length ?? 0, "departments");

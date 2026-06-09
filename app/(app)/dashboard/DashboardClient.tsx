@@ -2,7 +2,7 @@
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { RotateCcw, Network, FileText, LogOut } from "lucide-react";
+import { RotateCcw, Network, FileText, LogOut, Loader2 } from "lucide-react";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -354,6 +354,10 @@ export function DashboardClient({ businessId, businessName, showTrialErrorBanner
       const body = await r.json();
       return Array.isArray(body) ? body : (body.opportunities ?? []);
     },
+    refetchInterval: (query) => {
+      const opportunities = query.state.data ?? [];
+      return opportunities.length === 0 ? 10_000 : false;
+    },
   });
 
   const { data: giftData } = useQuery<{ gift: DashboardGift | null }>({
@@ -411,6 +415,8 @@ export function DashboardClient({ businessId, businessName, showTrialErrorBanner
       return res.json();
     },
   });
+  const isWaitingForAiOpportunities =
+    Boolean(data && data.departments.length > 0 && opportunitiesSummary.length === 0);
 
   // Open the analysis reveal before paint so tour logic never sees revealOpen=false on the same
   // tick as "first visit from analysis" (otherwise the dashboard tour starts under the modal).
@@ -898,6 +904,22 @@ export function DashboardClient({ businessId, businessName, showTrialErrorBanner
       </header>
 
       <DashboardStats businessId={businessId} />
+
+      {isWaitingForAiOpportunities && (
+        <div
+          className="mx-4 mt-4 flex items-center justify-center gap-2 rounded-lg border px-4 py-3 text-sm font-semibold md:mx-6"
+          style={{
+            borderColor: "rgba(99,102,241,0.22)",
+            background: "linear-gradient(135deg, rgba(99,102,241,0.10), rgba(14,165,233,0.07))",
+            color: "var(--bv-text-2)",
+            fontFamily: "var(--font-inter)",
+          }}
+          dir="rtl"
+        >
+          <Loader2 className="h-4 w-4 animate-spin text-indigo-300" aria-hidden="true" />
+          <span>⚡ הדאשבורד שלך מוכן — טוען הזדמנויות AI...</span>
+        </div>
+      )}
 
       {/* Map / loading / error */}
       <div className="flex-1 relative overflow-hidden">

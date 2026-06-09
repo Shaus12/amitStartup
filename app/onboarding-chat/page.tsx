@@ -133,6 +133,24 @@ const stages = [
   { id: 3, title: "מגבשים פרופיל", icon: "✨" },
 ];
 
+type AnalysisGenerateErrorBody = {
+  error?: string;
+  message?: string;
+};
+
+function fallbackAnalysisErrorMessage(status?: number) {
+  if (status === 401) {
+    return "החיבור לחשבון התנתק. התחבר מחדש ואז נסה ליצור את הניתוח שוב.";
+  }
+  if (status === 429) {
+    return "מערכת ה-AI עמוסה כרגע. המתן דקה ולחץ על ״נסה שוב״.";
+  }
+  if (status && status >= 500) {
+    return "שירות יצירת הניתוח לא זמין כרגע. הפרטים שלך נשמרו — לחץ על ״נסה שוב״ בעוד רגע.";
+  }
+  return "לא הצלחנו ליצור את הניתוח כרגע. הפרטים שלך נשמרו — לחץ על ״נסה שוב״.";
+}
+
 export default function OnboardingChatPage() {
   const router = useRouter();
   const [messages, setMessages] = useState<Message[]>([]);
@@ -179,18 +197,25 @@ export default function OnboardingChatPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ sessionId: sId }),
       });
+      const data = await res.json().catch(() => null) as
+        | (AnalysisGenerateErrorBody & { reportId?: string })
+        | null;
       if (!res.ok) {
-        throw new Error("שגיאה ביצירת הניתוח. אנא נסה שוב.");
+        throw new Error(data?.message || fallbackAnalysisErrorMessage(res.status));
       }
-      const data = await res.json();
-      if (data.reportId) {
+      if (data?.reportId) {
         router.push(`/analysis/${data.reportId}`);
       } else {
-        throw new Error("שגיאה ביצירת הניתוח. אנא נסה שוב.");
+        throw new Error("השרת סיים את הפעולה אבל לא החזיר מזהה ניתוח. לחץ על ״נסה שוב״.");
       }
     } catch (err: any) {
       console.error(err);
-      setGenerationError(err.message || "שגיאה בתקשורת עם השרת. אנא נסה שוב.");
+      const isNetworkError = err instanceof TypeError;
+      setGenerationError(
+        isNetworkError
+          ? "נראה שיש בעיית תקשורת רגעית. בדוק את החיבור לאינטרנט ולחץ על ״נסה שוב״."
+          : err.message || "לא הצלחנו ליצור את הניתוח כרגע. הפרטים שלך נשמרו — לחץ על ״נסה שוב״."
+      );
     } finally {
       setIsGeneratingReport(false);
     }
@@ -609,6 +634,9 @@ export default function OnboardingChatPage() {
                     </h3>
                     <p className="text-sm mb-8 text-rose-200/80 leading-relaxed max-w-sm" style={{ fontFamily: "var(--font-inter)" }}>
                       {generationError}
+                    </p>
+                    <p className="-mt-5 mb-7 text-xs leading-5 text-white/45 max-w-sm" style={{ fontFamily: "var(--font-inter)" }}>
+                      אין צורך להתחיל מחדש — שיחת האונבורדינג נשמרה.
                     </p>
                     
                     <button

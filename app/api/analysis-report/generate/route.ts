@@ -4,6 +4,14 @@ import { createClient } from "@/lib/supabase/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { finalizeChatOnboarding } from "@/lib/onboarding/finalizeChatOnboarding";
 
+function analysisError(
+  code: string,
+  message: string,
+  status = 500
+) {
+  return NextResponse.json({ error: code, message }, { status });
+}
+
 const SYSTEM_PROMPT = `
 אתה מנתח עסקי בכיר של BizMap — פלטפורמת ניתוח עסקי מבוססת AI.
 תפקידך לייצר ניתוח עסקי מעמיק, אישי ומרשים על בסיס המידע שנאסף בשיחה.
@@ -109,14 +117,22 @@ export async function POST(req: Request) {
     const { data: { user } } = await authClient.auth.getUser();
 
     if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return analysisError(
+        "unauthorized",
+        "החיבור לחשבון התנתק. התחבר מחדש ואז נסה ליצור את הניתוח שוב.",
+        401
+      );
     }
 
     const body = await req.json();
     const { sessionId } = body;
 
     if (!sessionId) {
-      return NextResponse.json({ error: "Missing sessionId" }, { status: 400 });
+      return analysisError(
+        "missing_session",
+        "לא מצאנו את שיחת האונבורדינג שממנה יוצרים את הניתוח. רענן את העמוד ונסה שוב.",
+        400
+      );
     }
 
     // Fetch the onboarding_chat_sessions row
@@ -129,12 +145,20 @@ export async function POST(req: Request) {
 
     if (sessionError || !session) {
       console.error("Error fetching session:", sessionError);
-      return NextResponse.json({ error: "Session not found" }, { status: 404 });
+      return analysisError(
+        "session_not_found",
+        "לא הצלחנו למצוא את שיחת האונבורדינג שלך. אם רעננת או עברת חשבון, חזור לשאלון ונסה שוב.",
+        404
+      );
     }
 
     const collectedData = session.collected_data;
     if (!collectedData) {
-      return NextResponse.json({ error: "No collected data found in session" }, { status: 400 });
+      return analysisError(
+        "missing_collected_data",
+        "השיחה הסתיימה, אבל חסרים לנו פרטי העסק ליצירת הניתוח. חזור לשאלון ושלח תשובה נוספת כדי להשלים את האיסוף.",
+        400
+      );
     }
 
     // Call Anthropic Claude
@@ -175,7 +199,11 @@ ${JSON.stringify(collectedData, null, 2)}
     } catch (parseError) {
       console.error("Failed to parse analysis report JSON:", parseError);
       console.error("Raw reply:", aiReply);
-      return NextResponse.json({ error: "Failed to parse analysis report" }, { status: 500 });
+      return analysisError(
+        "invalid_ai_response",
+        "הניתוח נוצר בפורמט לא תקין. זה קורה לפעמים בגלל עומס או תשובה לא צפויה מה-AI. לחץ על ״נסה שוב״ וניצור אותו מחדש.",
+        502
+      );
     }
 
     // Save to analysis_reports table
@@ -190,14 +218,23 @@ ${JSON.stringify(collectedData, null, 2)}
 
     if (reportError) {
       console.error("Error saving analysis report:", reportError);
-      return NextResponse.json({ error: "Failed to save analysis report" }, { status: 500 });
+      return analysisError(
+        "save_failed",
+        "הניתוח נוצר, אבל לא הצלחנו לשמור אותו. נסה שוב בעוד רגע.",
+        500
+      );
     }
 
+    let businessId: string;
     try {
-      await finalizeChatOnboarding(supabaseAdmin, user, collectedData);
+      businessId = await finalizeChatOnboarding(supabaseAdmin, user, collectedData);
     } catch (finalizeError) {
       console.error("Error finalizing onboarding business:", finalizeError);
-      return NextResponse.json({ error: "Failed to finalize onboarding" }, { status: 500 });
+      return analysisError(
+        "finalize_failed",
+        "הניתוח נשמר, אבל לא הצלחנו להכין את סביבת העבודה שלך. נסה שוב בעוד רגע.",
+        500
+      );
     }
 
     const { error: userUpdateError } = await supabaseAdmin
@@ -207,8 +244,24 @@ ${JSON.stringify(collectedData, null, 2)}
 
     if (userUpdateError) {
       console.error("Error marking onboarding completed:", userUpdateError);
-      return NextResponse.json({ error: "Failed to update user onboarding status" }, { status: 500 });
+      return analysisError(
+        "status_update_failed",
+        "הניתוח נשמר, אבל לא הצלחנו לעדכן את סטטוס האונבורדינג. נסה שוב בעוד רגע.",
+        500
+      );
     }
+
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+    fetch(`${baseUrl}/api/opportunities/generate`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-internal-secret": process.env.WEBHOOK_SECRET ?? "",
+      },
+      body: JSON.stringify({ businessId }),
+    }).catch((err) => {
+      console.error("Failed to trigger opportunity generation:", err);
+    });
 
     return NextResponse.json({
       reportId: report.id,
@@ -216,6 +269,25 @@ ${JSON.stringify(collectedData, null, 2)}
     });
   } catch (err: any) {
     console.error("POST analysis-report/generate error:", err);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    const status = typeof err?.status === "number" ? err.status : 500;
+    if (status === 429) {
+      return analysisError(
+        "ai_rate_limited",
+        "מערכת ה-AI עמוסה כרגע. המתן דקה ולחץ על ״נסה שוב״.",
+        429
+      );
+    }
+    if (status >= 500) {
+      return analysisError(
+        "ai_unavailable",
+        "שירות ה-AI לא זמין כרגע או החזיר שגיאה זמנית. הפרטים שלך נשמרו — לחץ על ״נסה שוב״ בעוד רגע.",
+        502
+      );
+    }
+    return analysisError(
+      "unexpected_error",
+      "אירעה שגיאה לא צפויה ביצירת הניתוח. הפרטים שלך נשמרו — נסה שוב בעוד רגע.",
+      500
+    );
   }
 }

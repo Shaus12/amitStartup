@@ -89,6 +89,13 @@ function PaymentSuccessContent() {
 
   const progress = Math.min((elapsedMs / (REDIRECT_SECONDS * 1000)) * 100, 100);
   const exhaustedRetries = retryCount >= MAX_RETRIES;
+  const successTitle = isAnalysisPayment
+    ? "התשלום התקבל בהצלחה! מעבירים אותך לשאלון..."
+    : "התשלום התקבל בהצלחה! מעבירים אותך לדשבורד...";
+  const redirectMessage = isAnalysisPayment
+    ? "מועבר לשאלון תוך 3 שניות..."
+    : "מועבר לדשבורד תוך 3 שניות...";
+  const ctaLabel = isAnalysisPayment ? "עבור לשאלון עכשיו" : "עבור לדשבורד עכשיו";
 
   // ── Error state (mark-paid failed) ──────────────────────────────────────────
   if (markPaidError) {
@@ -160,10 +167,10 @@ function PaymentSuccessContent() {
 
         <h1 className="mb-3 text-3xl font-extrabold text-white">התשלום התקבל בהצלחה! 🎉</h1>
         <p className="mb-2 text-lg font-bold text-[var(--bv-text-1)]">
-          הניתוח שלך מוכן! מעביר אותך לשאלון...
+          {successTitle}
         </p>
         <p className="mb-6 text-sm text-[var(--bv-muted)]">
-          מועבר לשאלון תוך 3 שניות...
+          {redirectMessage}
         </p>
 
         <div className="mb-7 h-2 overflow-hidden rounded-full bg-[var(--bv-surface-raised)]">
@@ -178,7 +185,7 @@ function PaymentSuccessContent() {
           onClick={() => void goToRedirectPath()}
           className="inline-flex h-11 items-center justify-center rounded-xl bg-blue-600 px-6 text-sm font-bold text-white transition-colors hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-[var(--bv-bg)]"
         >
-          עבור לשאלון עכשיו
+          {ctaLabel}
         </button>
       </div>
     </main>
