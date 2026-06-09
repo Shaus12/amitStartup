@@ -335,7 +335,7 @@ export async function POST(req: Request) {
       try {
         extractedData = JSON.parse(jsonString);
       } catch (e) {
-        console.error("Failed to parse Claude JSON", e, jsonString);
+        console.error('[onboarding-chat] Parse failed, session:', currentSessionId);
       }
     }
 

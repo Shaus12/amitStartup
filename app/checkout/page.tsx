@@ -184,7 +184,7 @@ export default async function CheckoutPage() {
         </div>
 
         <section className="mt-10 flex w-full flex-col items-center text-center">
-          <div className="text-6xl font-black leading-none text-white sm:text-7xl">₪300</div>
+          <div className="text-6xl font-black leading-none text-white sm:text-7xl">₪497</div>
           <p className="mt-3 text-base font-medium text-indigo-100/78 sm:text-lg">
             תשלום חד פעמי · כולל שבוע ניסיון במערכת
           </p>

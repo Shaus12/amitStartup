@@ -16,7 +16,7 @@ function isPlan(value: unknown): value is Plan {
 }
 
 function appUrl() {
-  return (process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000").replace(/\/$/, "");
+  return (process.env.NEXT_PUBLIC_APP_URL ?? "https://bizmapai.com").replace(/\/$/, "");
 }
 
 function extractPaymentUrl(rawText: string): string | null {

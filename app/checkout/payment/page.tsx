@@ -112,7 +112,7 @@ export default async function CheckoutPaymentPage() {
         <p className="mt-4 text-base leading-7 text-indigo-100/78 sm:text-lg">
           עוד רגע אחד ונעבור לשיחה הדינמית שתבנה את הניתוח שלך.
         </p>
-        <div className="mt-7 text-5xl font-black leading-none text-white">₪300</div>
+        <div className="mt-7 text-5xl font-black leading-none text-white">₪497</div>
         <p className="mt-2 text-sm font-medium text-white/55">תשלום חד פעמי · כולל שבוע ניסיון במערכת</p>
 
         <CheckoutPaymentForm skipPayment={skipPayment} />

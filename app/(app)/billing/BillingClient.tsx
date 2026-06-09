@@ -22,7 +22,7 @@ type PlanCard = {
 };
 
 const PLAN_LABELS: Record<Plan, string> = {
-  free: "חינמי",
+  free: "Free Trial",
   pro: "Pro",
   business: "Business",
 };
@@ -30,14 +30,14 @@ const PLAN_LABELS: Record<Plan, string> = {
 const PLAN_CARDS: Record<Plan, PlanCard> = {
   free: {
     id: "free",
-    name: "חינמי",
-    price: "₪0 לחודש",
+    name: "Free Trial",
+    price: "שבוע ניסיון חינם",
     features: [
-      "2 מחלקות עם ניתוח מלא",
-      "2 הזדמנויות פעילות במקביל",
-      "2 תוצרים מותאמים אישית",
-      "יועץ עסקי מבוסס AI - עד 10 הודעות ביום",
-      "רענון ניתוח אחת לחודש",
+      "גישה להתחלת העבודה במערכת",
+      "מפת עסק ראשונית",
+      "הזדמנויות AI ראשונות",
+      "יועץ עסקי מבוסס AI לתקופת הניסיון",
+      "ללא התחייבות בזמן הניסיון",
     ],
   },
   pro: {

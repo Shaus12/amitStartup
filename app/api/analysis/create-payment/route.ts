@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 export const dynamic = "force-dynamic";
 
 function appUrl() {
-  return (process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000").replace(/\/$/, "");
+  return (process.env.NEXT_PUBLIC_APP_URL ?? "https://bizmapai.com").replace(/\/$/, "");
 }
 
 function extractPaymentUrl(rawText: string): string | null {
@@ -96,7 +96,7 @@ export async function POST(req: NextRequest) {
       success_url: `${appUrl()}/payment-success?type=analysis`,
     };
 
-    console.log("[analysis/create-payment] Make payload:", makePayload);
+    console.log('[create-payment] user:', user.id);
 
     const makeRes = await fetch(makeWebhookUrl, {
       method: "POST",

@@ -22,6 +22,17 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const { data: business } = await supabase
+      .from('businesses')
+      .select('id')
+      .eq('id', businessId)
+      .eq('user_id', user.id)
+      .single()
+      
+    if (!business) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
     const { data, error } = await supabase
       .from("ai_opportunities")
       .select("id, title, description, estimated_hours_saved, notification_hook")

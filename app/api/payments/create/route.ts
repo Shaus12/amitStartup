@@ -23,8 +23,14 @@ export async function POST(req: NextRequest) {
       .limit(1)
       .maybeSingle();
 
+    const makeWebhookUrl = process.env.MAKE_PAYMENT_WEBHOOK_URL;
+    if (!makeWebhookUrl) {
+      console.error("[payments/create] Missing MAKE_PAYMENT_WEBHOOK_URL");
+      return NextResponse.json({ error: "Payment provider not configured" }, { status: 500 });
+    }
+
     // Send to Make.com and wait for response (may contain a payment redirect URL)
-    const makeRes = await fetch("https://hook.eu2.make.com/j3o4pi8wr4vbga6lufprk92qrjraqi9k", {
+    const makeRes = await fetch(makeWebhookUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

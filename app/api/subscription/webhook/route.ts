@@ -17,7 +17,7 @@ function isPaymentStatus(value: unknown): value is PaymentStatus {
 export async function POST(req: NextRequest) {
   try {
     const webhookSecret = process.env.WEBHOOK_SECRET;
-    if (!webhookSecret) {
+    if (!webhookSecret || webhookSecret === "") {
       console.error("[subscription/webhook] Missing WEBHOOK_SECRET");
       return NextResponse.json({ error: "Webhook is not configured" }, { status: 500 });
     }

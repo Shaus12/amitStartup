@@ -198,7 +198,7 @@ ${JSON.stringify(collectedData, null, 2)}
       parsedContent = JSON.parse(cleaned.slice(start, end + 1));
     } catch (parseError) {
       console.error("Failed to parse analysis report JSON:", parseError);
-      console.error("Raw reply:", aiReply);
+      console.error('[generate] Parse failed, length:', aiReply?.length);
       return analysisError(
         "invalid_ai_response",
         "הניתוח נוצר בפורמט לא תקין. זה קורה לפעמים בגלל עומס או תשובה לא צפויה מה-AI. לחץ על ״נסה שוב״ וניצור אותו מחדש.",
@@ -251,7 +251,7 @@ ${JSON.stringify(collectedData, null, 2)}
       );
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://bizmapai.com";
     fetch(`${baseUrl}/api/opportunities/generate`, {
       method: "POST",
       headers: {
