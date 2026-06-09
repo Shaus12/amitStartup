@@ -7,6 +7,79 @@ type AuthUser = {
   email?: string | null;
 };
 
+type NormalizedDepartment = {
+  name: string;
+  headcount?: number;
+};
+
+function parseDepartments(value: unknown): unknown[] {
+  if (Array.isArray(value)) return value;
+  if (typeof value !== "string") return [];
+
+  try {
+    const parsed = JSON.parse(value);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function departmentFallbackName(chatData: any): string {
+  return (
+    String(chatData.businessType || chatData.industry || "").trim() ||
+    "תפעול כללי"
+  );
+}
+
+function normalizeDepartments(chatData: any): NormalizedDepartment[] {
+  const departments: NormalizedDepartment[] = [];
+
+  for (const d of parseDepartments(chatData.departments)) {
+    if (!d || typeof d !== "object") continue;
+    const raw = d as { name?: unknown; headcount?: unknown };
+    const name = String(raw.name || "").trim();
+    if (!name) continue;
+    const headcount = Number(raw.headcount);
+    const normalized: NormalizedDepartment = { name };
+    if (Number.isFinite(headcount) && headcount > 0) {
+      normalized.headcount = headcount;
+    }
+    departments.push(normalized);
+  }
+
+  if (departments.length > 0) return departments;
+
+  return [{ name: departmentFallbackName(chatData), headcount: 1 }];
+}
+
+async function ensureBusinessHasDepartment(
+  supabase: SupabaseClient,
+  businessId: string,
+  businessName: string | null | undefined
+) {
+  const { count, error: countError } = await supabase
+    .from("departments")
+    .select("id", { count: "exact", head: true })
+    .eq("business_id", businessId);
+
+  if (countError) {
+    throw new Error(`Failed to count departments: ${countError.message}`);
+  }
+
+  if ((count ?? 0) > 0) return;
+
+  const { error: fallbackError } = await supabase.from("departments").insert({
+    business_id: businessId,
+    name: String(businessName || "").trim() || "כללי",
+    headcount: 1,
+    color: "#6366f1",
+  });
+
+  if (fallbackError) {
+    throw new Error(`Default department insert error: ${fallbackError.message}`);
+  }
+}
+
 async function rollbackOnboardingBusiness(
   supabase: SupabaseClient,
   businessId: string
@@ -46,7 +119,14 @@ export async function finalizeChatOnboarding(
   if (existingBusinessError) {
     throw new Error(`Failed to check existing business: ${existingBusinessError.message}`);
   }
-  if (existingBusiness?.id) return existingBusiness.id;
+  if (existingBusiness?.id) {
+    await ensureBusinessHasDepartment(
+      supabase,
+      existingBusiness.id,
+      chatData.businessName || chatData.businessType || chatData.industry
+    );
+    return existingBusiness.id;
+  }
 
   const mappedAnswers = { ...EMPTY_ANSWERS };
 
@@ -61,10 +141,7 @@ export async function finalizeChatOnboarding(
   mappedAnswers.businessAge = String(chatData.businessAge || "");
   mappedAnswers.growthTrajectory = chatData.growthTrajectory || "";
 
-  mappedAnswers.departments = (chatData.departments || []).map((d: any) => ({
-    name: d.name || "כללי",
-    headcount: typeof d.headcount === "number" ? d.headcount : undefined,
-  }));
+  mappedAnswers.departments = normalizeDepartments(chatData);
   mappedAnswers.tools = (chatData.tools || []).map((t: any) => ({
     name: t.name || "",
     category: t.category || "כללי",
@@ -161,6 +238,29 @@ export async function finalizeChatOnboarding(
       throw new Error(`Department insert error: ${deptError.message}`);
     }
     for (const d of insertedDepts ?? []) {
+      deptNameToId[d.name] = d.id;
+    }
+  }
+
+  try {
+    await ensureBusinessHasDepartment(supabase, bizId, mappedAnswers.businessName);
+  } catch (err) {
+    await rollbackOnboardingBusiness(supabase, bizId);
+    throw err;
+  }
+
+  if (Object.keys(deptNameToId).length === 0) {
+    const { data: fallbackDepts, error: fallbackFetchError } = await supabase
+      .from("departments")
+      .select("id, name")
+      .eq("business_id", bizId);
+
+    if (fallbackFetchError) {
+      await rollbackOnboardingBusiness(supabase, bizId);
+      throw new Error(`Failed to fetch fallback departments: ${fallbackFetchError.message}`);
+    }
+
+    for (const d of fallbackDepts ?? []) {
       deptNameToId[d.name] = d.id;
     }
   }

@@ -121,6 +121,8 @@ Write your natural closing message, then on a new line:
 }
 [/ANALYSIS_READY]
 [META]{"stage":3,"stageComplete":true}[/META]
+
+departments: always include at least one department. For solo businesses use [{"name": "תפעול כללי", "headcount": 1}]
 `;
 
 export async function GET(req: Request) {
@@ -195,6 +197,7 @@ export async function POST(req: Request) {
         businessName: "חנות הפרחים של דוד",
         ownerName: "דוד",
         industry: "קמעונאות",
+        departments: [{ name: "תפעול כללי", headcount: 1 }],
         currentChallenges: "בזבוז זמן על ניהול באקסל, אין אוטומציה של הצעות מחיר, קשה לעקוב אחרי לקוחות.",
         painPoints: "לקוחות שוכחים לשלם, אין מערכת מסודרת להזמנות",
         goals: "להכפיל מכירות, אוטומציה"
