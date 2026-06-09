@@ -1,13 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { CheckCircle2, AlertCircle, RefreshCw } from "lucide-react";
 
 const REDIRECT_SECONDS = 3;
 const MAX_RETRIES = 3;
 
-export default function PaymentSuccessPage() {
+function PaymentSuccessContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [elapsedMs, setElapsedMs] = useState(0);
@@ -182,5 +182,31 @@ export default function PaymentSuccessPage() {
         </button>
       </div>
     </main>
+  );
+}
+
+function PaymentSuccessFallback() {
+  return (
+    <main
+      className="flex min-h-screen items-center justify-center px-4"
+      style={{ backgroundColor: "var(--bv-bg)" }}
+      dir="rtl"
+    >
+      <div className="w-full max-w-md text-center">
+        <div className="mb-7 inline-flex size-24 animate-pulse items-center justify-center rounded-full border border-green-500/25 bg-green-500/10 shadow-[0_0_48px_rgba(34,197,94,0.18)]">
+          <CheckCircle2 className="size-12 text-green-400" aria-hidden="true" />
+        </div>
+        <h1 className="mb-3 text-3xl font-extrabold text-white">התשלום התקבל בהצלחה!</h1>
+        <p className="text-sm text-[var(--bv-muted)]">טוען...</p>
+      </div>
+    </main>
+  );
+}
+
+export default function PaymentSuccessPage() {
+  return (
+    <Suspense fallback={<PaymentSuccessFallback />}>
+      <PaymentSuccessContent />
+    </Suspense>
   );
 }

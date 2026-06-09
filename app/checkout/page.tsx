@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Check, Gift } from "lucide-react";
+import { Check, Gift, Home } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { getUserRoute } from "@/lib/user-routing";
@@ -116,6 +116,14 @@ export default async function CheckoutPage() {
           }}
         />
       </div>
+
+      <Link
+        href="/"
+        className="relative z-20 inline-flex min-h-10 items-center gap-2 rounded-lg border border-white/12 bg-white/[0.055] px-4 py-2 text-sm font-bold text-white/78 backdrop-blur-xl transition hover:bg-white/[0.09] hover:text-white focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:ring-offset-2 focus:ring-offset-[#050510]"
+      >
+        <Home className="h-4 w-4" aria-hidden="true" />
+        חזרה לדף הבית
+      </Link>
 
       <section className="relative z-10 mx-auto flex w-full max-w-3xl flex-col items-center">
         <header className="flex w-full flex-col items-center text-center">
