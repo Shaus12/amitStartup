@@ -1,6 +1,10 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Check, Gift } from "lucide-react";
+import { createClient } from "@/lib/supabase/server";
+import { supabaseAdmin } from "@/lib/supabase-admin";
+import { getUserRoute } from "@/lib/user-routing";
+import { redirect } from "next/navigation";
 
 const includedItems = [
   "ניתוח עסקי מלא ומותאם אישית בדיוק לעסק שלך",
@@ -69,7 +73,19 @@ const pageStyles = `
   }
 `;
 
-export default function CheckoutPage() {
+export default async function CheckoutPage() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (user) {
+    const route = await getUserRoute(supabaseAdmin, user.id);
+    if (route !== "/checkout") {
+      redirect(route);
+    }
+  }
+
   return (
     <main
       dir="rtl"
@@ -167,7 +183,7 @@ export default function CheckoutPage() {
             href="/signup?from=checkout"
             className="checkout-cta mt-7 inline-flex min-h-14 w-full items-center justify-center rounded-lg bg-gradient-to-l from-indigo-500 via-violet-500 to-sky-500 px-7 py-4 text-lg font-black text-white shadow-[0_18px_48px_rgba(79,70,229,0.38)] transition duration-200 hover:scale-[1.01] hover:shadow-[0_22px_58px_rgba(79,70,229,0.48)] focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:ring-offset-2 focus:ring-offset-[#050510] sm:w-auto sm:min-w-[360px]"
           >
-            המשך להרשמה ולתשלום ←
+            המשך להרשמה
           </Link>
 
           <p className="mt-5 text-sm font-medium leading-6 text-white/58 sm:text-base">

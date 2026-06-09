@@ -180,7 +180,7 @@ function Nav() {
 
         <div className="flex items-center gap-3">
           <Link
-            href="/login"
+            href="/login?auth=1"
             className="hidden sm:block text-xs font-medium transition-colors duration-200"
             style={{ ...IF, color: C.muted }}
             onMouseEnter={e => (e.currentTarget.style.color = C.sub)}

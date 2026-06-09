@@ -50,6 +50,7 @@ export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const isDashboard = pathname.startsWith("/dashboard");
   const isLogin = pathname === "/login";
+  const wantsAuthPage = request.nextUrl.searchParams.get("auth") === "1";
   const isLoadingAnalysis = pathname === "/loading";
   const isTasks = pathname.startsWith("/tasks");
   const isOpportunities = pathname.startsWith("/opportunities");
@@ -67,7 +68,7 @@ export async function proxy(request: NextRequest) {
   }
 
   // Redirect /login → /dashboard when already signed in
-  if (isLogin && user) {
+  if (isLogin && user && !wantsAuthPage) {
     const url = request.nextUrl.clone();
     url.pathname = "/dashboard";
     return NextResponse.redirect(url);

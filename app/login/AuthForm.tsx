@@ -52,7 +52,8 @@ export function AuthForm({ initialMode = "signin" }: { initialMode?: "signin" | 
         setLoading(false);
         return;
       }
-      router.push("/dashboard");
+      const fromCheckout = new URLSearchParams(window.location.search).get("from") === "checkout";
+      router.push(fromCheckout ? "/checkout/payment?from=signup" : "/dashboard");
       router.refresh();
     } else {
       const { data, error: signUpError } = await supabase.auth.signUp({ email, password });
@@ -65,7 +66,7 @@ export function AuthForm({ initialMode = "signin" }: { initialMode?: "signin" | 
       const fromCheckout = new URLSearchParams(window.location.search).get("from") === "checkout";
 
       if (fromCheckout) {
-        router.push("/payment-simulation");
+        router.push("/checkout/payment?from=signup");
         router.refresh();
       } else if (data.session) {
         router.push("/dashboard");

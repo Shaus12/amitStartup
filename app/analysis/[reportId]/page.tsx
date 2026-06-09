@@ -112,6 +112,39 @@ export default function AnalysisReportPage({ params }: { params: Promise<{ repor
   const [report, setReport] = useState<AnalysisReport | null>(null);
   const [loading, setLoading] = useState(true);
   const [expandedOpp, setExpandedOpp] = useState<number | null>(null);
+  const [activatingTrial, setActivatingTrial] = useState(false);
+
+  const handleEnterDashboard = async () => {
+    setActivatingTrial(true);
+    try {
+      localStorage.setItem("bizmap:lastAnalysisReportId", reportId);
+    } catch {
+      // localStorage not critical
+    }
+
+    const attemptActivate = async (): Promise<boolean> => {
+      try {
+        const res = await fetch("/api/trial/activate", { method: "POST" });
+        return res.ok;
+      } catch (err) {
+        console.error("[analysis] trial/activate attempt failed:", err);
+        return false;
+      }
+    };
+
+    const firstOk = await attemptActivate();
+    if (!firstOk) {
+      console.warn("[analysis] trial/activate first attempt failed, retrying once…");
+      const secondOk = await attemptActivate();
+      if (!secondOk) {
+        console.error("[analysis] trial/activate failed after retry — redirecting with trial_error=1");
+        router.push("/dashboard?trial_error=1");
+        return;
+      }
+    }
+
+    router.push("/dashboard");
+  };
 
   useEffect(() => {
     const fetchReport = async () => {
@@ -543,11 +576,20 @@ export default function AnalysisReportPage({ params }: { params: Promise<{ repor
               </div>
               
               <div className="pt-8">
-                <button 
-                  onClick={() => router.push("/dashboard")}
+                <button
+                  type="button"
+                  onClick={handleEnterDashboard}
+                  disabled={activatingTrial}
                   className="px-10 py-5 bg-white text-black font-bold text-xl rounded-full hover:scale-105 transition-transform shadow-[0_0_30px_rgba(255,255,255,0.3)]"
                 >
-                  כנס למערכת — שבוע חינם ←
+                  {activatingTrial ? (
+                    <span className="inline-flex items-center gap-2">
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                      מפעילים את השבוע החינמי...
+                    </span>
+                  ) : (
+                    "כנס למערכת — שבוע חינם ←"
+                  )}
                 </button>
                 <p className="text-sm text-gray-500 mt-6">ללא כרטיס אשראי · ללא התחייבות · ביטול בכל עת</p>
               </div>

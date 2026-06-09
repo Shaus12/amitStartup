@@ -62,7 +62,7 @@ export function OnboardingGateModal({ open, onClose, onboardingPayload }: Props)
         return;
       }
 
-      router.push("/onboarding-chat");
+      router.push("/checkout");
       router.refresh();
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "משהו השתבש. נסה שוב.";
@@ -91,7 +91,7 @@ export function OnboardingGateModal({ open, onClose, onboardingPayload }: Props)
         return;
       }
 
-      router.push("/onboarding-chat");
+      router.push("/checkout");
       router.refresh();
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "ההתחברות נכשלה.";

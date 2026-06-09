@@ -19,6 +19,7 @@ import { GiftModal } from "@/components/dashboard/GiftModal";
 interface DashboardClientProps {
   businessId: string;
   businessName: string;
+  showTrialErrorBanner?: boolean;
 }
 
 type DashboardGift = {
@@ -321,7 +322,7 @@ function formatNextRefreshHebrew(nextRefreshAtIso: string): string {
   return `הניתוח הבא זמין ב-${day} ${monthName}`;
 }
 
-export function DashboardClient({ businessId, businessName }: DashboardClientProps) {
+export function DashboardClient({ businessId, businessName, showTrialErrorBanner = false }: DashboardClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const fromAnalysis = searchParams.get("fromAnalysis") === "1";
@@ -702,6 +703,27 @@ export function DashboardClient({ businessId, businessName }: DashboardClientPro
 
   return (
     <div className="flex flex-col h-full" style={{ backgroundColor: "var(--bv-bg)" }}>
+      {/* Trial activation error banner */}
+      {showTrialErrorBanner && (
+        <div
+          role="alert"
+          dir="rtl"
+          className="shrink-0 flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium"
+          style={{ backgroundColor: "rgba(239,68,68,0.12)", borderBottom: "1px solid rgba(239,68,68,0.25)", color: "#fca5a5" }}
+        >
+          <span>⚠️</span>
+          <span>
+            אירעה שגיאה בהפעלת הניסיון. אם הבעיה נמשכת, פנה אלינו:{" "}
+            <a
+              href="mailto:support@bizmapai.com"
+              className="underline hover:opacity-80"
+              style={{ color: "#fca5a5" }}
+            >
+              support@bizmapai.com
+            </a>
+          </span>
+        </div>
+      )}
       {/* Header */}
       <header
         className="shrink-0"

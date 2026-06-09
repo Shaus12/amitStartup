@@ -192,6 +192,16 @@ ${JSON.stringify(collectedData, null, 2)}
       return NextResponse.json({ error: "Failed to save analysis report" }, { status: 500 });
     }
 
+    const { error: userUpdateError } = await supabaseAdmin
+      .from("users")
+      .update({ onboarding_completed: true })
+      .eq("id", user.id);
+
+    if (userUpdateError) {
+      console.error("Error marking onboarding completed:", userUpdateError);
+      return NextResponse.json({ error: "Failed to update user onboarding status" }, { status: 500 });
+    }
+
     return NextResponse.json({
       reportId: report.id,
       content: parsedContent,

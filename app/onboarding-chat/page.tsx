@@ -243,9 +243,12 @@ export default function OnboardingChatPage() {
   useEffect(() => {
     const checkAuthAndInitialize = async () => {
       const supabase = createClient();
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
+      // Use getUser() (server-validated) instead of getSession() (local cache only).
+      // getSession() can transiently return null right after a redirect before the
+      // client has re-hydrated the cookie, causing a false /login redirect.
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (!user) {
         router.push("/login?next=/onboarding-chat");
         return;
       }
@@ -298,6 +301,7 @@ export default function OnboardingChatPage() {
 
     checkAuthAndInitialize();
   }, [router]);
+
 
   const handleSendMessage = async (forceMsg?: string) => {
     const userMsg = typeof forceMsg === "string" ? forceMsg : inputValue.trim();

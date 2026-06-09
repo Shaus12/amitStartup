@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { supabaseAdmin } from "@/lib/supabase-admin";
+import { getUserRoute } from "@/lib/user-routing";
 import { redirect } from "next/navigation";
 
 export default async function OnboardingChatLayout({
@@ -12,18 +13,19 @@ export default async function OnboardingChatLayout({
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (user) {
-    const { data: business } = await supabaseAdmin
-      .from("businesses")
-      .select("id")
-      .eq("user_id", user.id)
-      .eq("onboarding_completed", true)
-      .limit(1)
-      .maybeSingle();
+  if (!user) {
+    redirect("/checkout");
+  }
 
-    if (business) {
-      redirect("/dashboard");
-    }
+  const route = await getUserRoute(supabaseAdmin, user.id);
+  if (route === "/checkout") {
+    redirect("/checkout");
+  }
+  if (route === "/subscription-expired") {
+    redirect("/subscription-expired");
+  }
+  if (route === "/dashboard") {
+    redirect("/dashboard");
   }
 
   return children;

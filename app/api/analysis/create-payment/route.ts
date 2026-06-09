@@ -1,19 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { supabaseAdmin } from "@/lib/supabase-admin";
 
 export const dynamic = "force-dynamic";
-
-type Plan = "pro" | "business";
-
-const PLAN_DETAILS: Record<Plan, { price: 79 | 149; name: "Pro" | "Business" }> = {
-  pro: { price: 79, name: "Pro" },
-  business: { price: 149, name: "Business" },
-};
-
-function isPlan(value: unknown): value is Plan {
-  return value === "pro" || value === "business";
-}
 
 function appUrl() {
   return (process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000").replace(/\/$/, "");
@@ -52,7 +40,7 @@ function ensureTwoWordName(value: unknown): string {
   const words = name.split(/\s+/).filter(Boolean);
 
   if (words.length >= 2) {
-    return words.join(" ");
+    return words.slice(0, 2).join(" ");
   }
 
   const fallbackWords = ["לקוח", "משתמש", "Bizmap", "AI"];
@@ -78,53 +66,47 @@ export async function POST(req: NextRequest) {
     }
 
     const body: unknown = await req.json();
-    const { plan, userId, phone } = body as { plan?: unknown; userId?: unknown; phone?: unknown };
+    const { phone, fullName } = body as { phone?: unknown; fullName?: unknown };
+    const normalizedPhone = normalizePhone(phone);
+    const normalizedFullName = ensureTwoWordName(fullName);
 
-    if (!isPlan(plan) || typeof userId !== "string" || !userId) {
-      return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+    if (!/^05\d{8}$/.test(normalizedPhone)) {
+      return NextResponse.json({ error: "Invalid phone" }, { status: 400 });
     }
 
-    if (userId !== user.id) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    if (typeof fullName !== "string" || !fullName.trim()) {
+      return NextResponse.json({ error: "Invalid full name" }, { status: 400 });
     }
 
     const makeWebhookUrl = process.env.MAKE_SUBSCRIPTION_WEBHOOK_URL;
     if (!makeWebhookUrl) {
-      console.error("[subscription/create-payment] Missing MAKE_SUBSCRIPTION_WEBHOOK_URL");
+      console.error("[analysis/create-payment] Missing MAKE_SUBSCRIPTION_WEBHOOK_URL");
       return NextResponse.json({ error: "Payment provider is not configured" }, { status: 500 });
     }
 
-    const planDetails = PLAN_DETAILS[plan];
-    const normalizedPhone = normalizePhone(phone);
-    const { data: userProfile, error: userProfileError } = await supabaseAdmin
-      .from("users")
-      .select("full_name")
-      .eq("id", user.id)
-      .maybeSingle();
+    const makePayload = {
+      user_id: user.id,
+      user_email: user.email ?? "",
+      user_name: normalizedFullName,
+      phone: normalizedPhone,
+      payment_type: "analysis",
+      plan: "analysis",
+      plan_name: "ניתוח עסקי מלא",
+      plan_price: 1,
+      success_url: `${appUrl()}/payment-success?type=analysis`,
+    };
 
-    if (userProfileError) {
-      console.error("[subscription/create-payment] Failed to fetch user profile:", userProfileError);
-    }
+    console.log("[analysis/create-payment] Make payload:", makePayload);
 
     const makeRes = await fetch(makeWebhookUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        user_id: user.id,
-        user_email: user.email ?? "",
-        user_name: ensureTwoWordName(userProfile?.full_name),
-        phone: normalizedPhone,
-        payment_type: "subscription",
-        plan,
-        plan_price: planDetails.price,
-        plan_name: planDetails.name,
-        callback_url: `${appUrl()}/api/subscription/webhook`,
-      }),
+      body: JSON.stringify(makePayload),
     });
 
     if (!makeRes.ok) {
       const errorText = await makeRes.text().catch(() => "");
-      console.error("[subscription/create-payment] Make.com request failed", {
+      console.error("[analysis/create-payment] Make.com request failed", {
         status: makeRes.status,
         statusText: makeRes.statusText,
         body: errorText.slice(0, 500),
@@ -136,7 +118,7 @@ export async function POST(req: NextRequest) {
     const paymentUrl = extractPaymentUrl(rawText);
 
     if (!paymentUrl) {
-      console.error("[subscription/create-payment] Missing payment_url in Make.com response", {
+      console.error("[analysis/create-payment] Missing payment_url in Make.com response", {
         body: rawText.slice(0, 500),
       });
       return NextResponse.json({ error: "Payment URL missing" }, { status: 502 });
@@ -144,7 +126,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ payment_url: paymentUrl });
   } catch (err) {
-    console.error("[subscription/create-payment] error:", err);
+    console.error("[analysis/create-payment] error:", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
