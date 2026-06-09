@@ -474,12 +474,7 @@ export default function OnboardingChatPage() {
             </span>
           </Link>
           <div className="flex items-center gap-4">
-            <button 
-              onClick={() => handleSendMessage("DEBUG_SKIP")}
-              className="text-xs px-3 py-1.5 rounded-md bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 transition-colors border border-amber-500/30 font-bold"
-            >
-              Debug Skip
-            </button>
+
             <div className="text-sm font-medium hidden sm:block text-indigo-200" style={{ fontFamily: "var(--font-inter)" }}>
               BizMap מנתחת את העסק שלך
             </div>

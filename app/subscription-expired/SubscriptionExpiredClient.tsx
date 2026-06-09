@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Check, Loader2 } from "lucide-react";
 
+import { createClient } from "@/lib/supabase/client";
+
 const pageStyles = `
   @keyframes expiredBlob1 {
     0% { transform: translate(0, 0) scale(1); }
@@ -46,6 +48,12 @@ export function SubscriptionExpiredClient() {
   const router = useRouter();
   const [loadingReport, setLoadingReport] = useState(false);
   const [reportError, setReportError] = useState("");
+
+  const handleSignOut = async () => {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/");
+  };
 
   const openLatestReport = async () => {
     if (loadingReport) return;
@@ -101,7 +109,16 @@ export function SubscriptionExpiredClient() {
         />
       </div>
 
-      <section className="relative z-10 mx-auto flex min-h-[calc(100vh-5rem)] w-full max-w-5xl flex-col justify-center">
+      <div className="relative z-20 mb-4 flex justify-end max-w-5xl mx-auto w-full">
+        <button
+          onClick={handleSignOut}
+          className="text-sm font-medium text-white/60 hover:text-white transition"
+        >
+          התנתק מן המערכת
+        </button>
+      </div>
+
+      <section className="relative z-10 mx-auto flex min-h-[calc(100vh-8rem)] w-full max-w-5xl flex-col justify-center">
         <header className="mx-auto max-w-3xl text-center">
           <div className="text-6xl">⏰</div>
           <h1 className="mt-5 text-3xl font-black leading-tight text-white sm:text-5xl">
