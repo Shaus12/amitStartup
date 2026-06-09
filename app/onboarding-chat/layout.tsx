@@ -27,6 +27,9 @@ export default async function OnboardingChatLayout({
   if (route === "/dashboard") {
     redirect("/dashboard");
   }
+  if (route === "/analysis-latest") {
+    redirect("/analysis-latest");
+  }
 
   return children;
 }

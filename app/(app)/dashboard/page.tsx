@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { DashboardClient } from "./DashboardClient";
 import { getEffectivePlan } from "@/lib/subscription";
 import { getUserRoute } from "@/lib/user-routing";
+import { finalizeChatOnboarding } from "@/lib/onboarding/finalizeChatOnboarding";
 
 export default async function DashboardPage({
   searchParams,
@@ -62,7 +63,7 @@ export default async function DashboardPage({
     redirect(route);
   }
 
-  const { data: business } = await supabaseAdmin
+  let { data: business } = await supabaseAdmin
     .from("businesses")
     .select("id, name, user_id")
     .eq("onboarding_completed", true)
@@ -70,6 +71,36 @@ export default async function DashboardPage({
     .order("created_at", { ascending: false })
     .limit(1)
     .maybeSingle();
+
+  if (!business) {
+    const { data: completedSession } = await supabaseAdmin
+      .from("onboarding_chat_sessions")
+      .select("collected_data")
+      .eq("user_id", user.id)
+      .eq("status", "completed")
+      .not("collected_data", "is", null)
+      .order("updated_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (completedSession?.collected_data) {
+      try {
+        const repairedBusinessId = await finalizeChatOnboarding(
+          supabaseAdmin,
+          user,
+          completedSession.collected_data
+        );
+        const { data: repairedBusiness } = await supabaseAdmin
+          .from("businesses")
+          .select("id, name, user_id")
+          .eq("id", repairedBusinessId)
+          .maybeSingle();
+        business = repairedBusiness;
+      } catch (repairError) {
+        console.error("[dashboard] failed to repair missing onboarding business:", repairError);
+      }
+    }
+  }
 
   if (!business) {
     redirect("/onboarding-chat");

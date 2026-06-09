@@ -4,6 +4,7 @@ import { useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { AlertTriangle, Zap, Quote, Target, Loader2, ChevronDown, ChevronUp, CheckCircle2, Clock, Check } from "lucide-react";
+import { ContactModal } from "@/components/leads/ContactModal";
 
 // Types based on the expected JSON structure
 interface Pain {
@@ -113,6 +114,7 @@ export default function AnalysisReportPage({ params }: { params: Promise<{ repor
   const [loading, setLoading] = useState(true);
   const [expandedOpp, setExpandedOpp] = useState<number | null>(null);
   const [activatingTrial, setActivatingTrial] = useState(false);
+  const [contactOpen, setContactOpen] = useState(false);
 
   const handleEnterDashboard = async () => {
     setActivatingTrial(true);
@@ -558,7 +560,45 @@ export default function AnalysisReportPage({ params }: { params: Promise<{ repor
           </div>
         </section>
 
-        {/* SECTION 10: CTA */}
+        {/* SECTION 10: IMPLEMENTATION */}
+        <FadeIn delay={0.2}>
+          <section className="space-y-8">
+            <div className="text-center">
+              <h2 className="text-3xl md:text-4xl font-bold">רוצה שנעשה את זה בשבילך?</h2>
+              <p className="mx-auto mt-4 max-w-3xl text-lg leading-8 text-gray-400">
+                יש לך את הניתוח — עכשיו אפשר לתת לנו לטפל בכל היישום. אנחנו מיישמים את כל ההזדמנויות עבורך, מהתחלה ועד סוף.
+              </p>
+            </div>
+
+            <div className="mx-auto max-w-3xl rounded-[2rem] bg-gradient-to-l from-indigo-500/70 via-purple-500/55 to-amber-400/65 p-px shadow-[0_28px_90px_rgba(99,102,241,0.22)]">
+              <div className="rounded-[calc(2rem-1px)] bg-[#10111d]/95 p-6 text-center backdrop-blur-2xl md:p-9">
+                <div className="grid gap-4 text-right text-base text-gray-200 sm:grid-cols-2">
+                  {[
+                    "יישום כל האוטומציות מהניתוח",
+                    "הגדרת כל הכלים והחיבורים",
+                    "הדרכה לצוות",
+                    "תמיכה שוטפת",
+                  ].map((item) => (
+                    <div key={item} className="flex items-start gap-3">
+                      <Check className="mt-1 h-5 w-5 shrink-0 text-emerald-400" aria-hidden="true" />
+                      <span>{item}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setContactOpen(true)}
+                  className="mt-8 inline-flex min-h-14 items-center justify-center rounded-full bg-gradient-to-l from-indigo-500 via-violet-500 to-amber-400 px-8 py-4 text-base font-black text-white shadow-[0_18px_48px_rgba(99,102,241,0.3)] transition hover:scale-[1.03] focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:ring-offset-2 focus:ring-offset-[#10111d]"
+                >
+                  אני מעוניין — השאר פרטים ←
+                </button>
+              </div>
+            </div>
+          </section>
+        </FadeIn>
+
+        {/* SECTION 11: CTA */}
         <FadeIn delay={0.2}>
           <section className="relative overflow-hidden rounded-[3rem] p-10 md:p-16 text-center mt-32 border border-white/20 bg-gradient-to-b from-indigo-900/40 to-black/60 shadow-[0_0_50px_rgba(79,70,229,0.15)]">
             <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.03] mix-blend-overlay"></div>
@@ -608,6 +648,11 @@ export default function AnalysisReportPage({ params }: { params: Promise<{ repor
         </div>
 
       </div>
+      <ContactModal
+        isOpen={contactOpen}
+        onClose={() => setContactOpen(false)}
+        source="analysis_report"
+      />
     </div>
   );
 }

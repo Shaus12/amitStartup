@@ -1,4 +1,4 @@
-import { Sidebar, MobileNav } from "@/components/layout/Sidebar";
+import { AppShell } from "@/components/layout/AppShell";
 import { FloatingAgent } from "@/components/dashboard/FloatingAgent";
 import { FeedbackWidget } from "@/components/feedback/FeedbackWidget";
 import { supabaseAdmin } from "@/lib/supabase-admin";
@@ -49,8 +49,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="flex h-screen overflow-hidden">
-      <Sidebar />
-      <div className="flex min-w-0 flex-1 flex-col">
+      <AppShell>
         {effectivePlan === "trial" && trialDaysLeft > 0 && (
           <div className="shrink-0 border-b border-amber-300/20 bg-amber-400/10 px-4 py-2 text-center text-sm font-medium text-amber-100">
             <span>⏳ נשארו לך {trialDaysLeft} ימים בניסיון החינמי · </span>
@@ -60,10 +59,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           </div>
         )}
         <main className="flex-1 overflow-auto pb-16 md:pb-0">{children}</main>
-      </div>
+      </AppShell>
       {business && <FloatingAgent businessId={business.id} />}
       {business && <FeedbackWidget businessId={business.id} />}
-      <MobileNav />
     </div>
   );
 }

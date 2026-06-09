@@ -4,6 +4,7 @@ export type UserRoute =
   | "/checkout"
   | "/onboarding-chat"
   | "/dashboard"
+  | "/analysis-latest"
   | "/subscription-expired";
 
 type UserRoutingProfile = {
@@ -50,6 +51,8 @@ export async function getUserRoute(
       (!user.subscription_ends_at || new Date(user.subscription_ends_at) > now);
 
     if (trialActive || subActive) return "/dashboard";
+
+    if (!user.trial_ends_at && !user.subscription_plan) return "/analysis-latest";
 
     return "/subscription-expired";
   } catch (err) {

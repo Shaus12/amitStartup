@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { createClient } from "@/lib/supabase/server";
 import Anthropic from "@anthropic-ai/sdk";
+import { finalizeChatOnboarding } from "@/lib/onboarding/finalizeChatOnboarding";
 
 const SYSTEM_PROMPT = `
 אתה מנתח עסקי בכיר של BizMap — פלטפורמת ניתוח עסקי מבוססת AI.
@@ -190,6 +191,13 @@ ${JSON.stringify(collectedData, null, 2)}
     if (reportError) {
       console.error("Error saving analysis report:", reportError);
       return NextResponse.json({ error: "Failed to save analysis report" }, { status: 500 });
+    }
+
+    try {
+      await finalizeChatOnboarding(supabaseAdmin, user, collectedData);
+    } catch (finalizeError) {
+      console.error("Error finalizing onboarding business:", finalizeError);
+      return NextResponse.json({ error: "Failed to finalize onboarding" }, { status: 500 });
     }
 
     const { error: userUpdateError } = await supabaseAdmin

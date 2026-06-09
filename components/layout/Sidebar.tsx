@@ -36,7 +36,11 @@ export function MobileNav() {
   );
 }
 
-export function Sidebar() {
+export function Sidebar({
+  onImplementationClick,
+}: {
+  onImplementationClick?: () => void;
+}) {
   const pathname = usePathname();
   const t = useT();
   const nav = t.sidebar.nav.map((item, i) => ({ ...item, icon: NAV_ICONS[i] }));
@@ -102,6 +106,39 @@ export function Sidebar() {
       </nav>
 
       <div className="flex-1" />
+
+      {/* Implementation lead */}
+      <div className="px-3 pb-3">
+        <button
+          type="button"
+          onClick={onImplementationClick}
+          className="w-full text-right transition-all duration-150"
+          style={{
+            borderRadius: 12,
+            border: "1px solid rgba(245,158,11,0.18)",
+            background: "linear-gradient(135deg, rgba(99,102,241,0.12), rgba(245,158,11,0.08))",
+            padding: "10px 12px",
+          }}
+          onMouseEnter={e => {
+            (e.currentTarget as HTMLElement).style.borderColor = "rgba(245,158,11,0.34)";
+            (e.currentTarget as HTMLElement).style.background = "linear-gradient(135deg, rgba(99,102,241,0.18), rgba(245,158,11,0.12))";
+          }}
+          onMouseLeave={e => {
+            (e.currentTarget as HTMLElement).style.borderColor = "rgba(245,158,11,0.18)";
+            (e.currentTarget as HTMLElement).style.background = "linear-gradient(135deg, rgba(99,102,241,0.12), rgba(245,158,11,0.08))";
+          }}
+        >
+          <div className="flex items-center gap-2 mb-1">
+            <span style={{ fontSize: 15 }}>🚀</span>
+            <span style={{ fontSize: 11, fontWeight: 800, color: "var(--bv-text-2)", fontFamily: "var(--font-inter)" }}>
+              ליישום מקצועי
+            </span>
+          </div>
+          <p style={{ fontSize: 10, color: "var(--bv-border-subtle)", fontFamily: "var(--font-inter)", lineHeight: 1.4 }}>
+            נעשה את זה בשבילך
+          </p>
+        </button>
+      </div>
 
       {/* Business Brain */}
       <div className="px-3 pb-3">
