@@ -143,6 +143,29 @@ function CTAButton({ children, large, className = "" }: { children: React.ReactN
    NAV
    ============================================================================ */
 function Nav() {
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    import("@/lib/supabase/client").then(({ createClient }) => {
+      const supabase = createClient();
+      supabase.auth.getUser().then(({ data }) => {
+        setUser(data.user);
+        setLoading(false);
+      });
+      supabase.auth.onAuthStateChange((_event, session) => {
+        setUser(session?.user || null);
+      });
+    });
+  }, []);
+
+  const handleSignOut = async () => {
+    const { createClient } = await import("@/lib/supabase/client");
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    setUser(null);
+  };
+
   return (
     <header
       className="fixed top-0 left-0 right-0 z-50"
@@ -179,13 +202,36 @@ function Nav() {
         </nav>
 
         <div className="flex items-center gap-3">
-          <Link
-            href="/login?auth=1"
-            className="hidden sm:block text-xs font-medium transition-colors duration-200"
-            style={{ ...IF, color: C.muted }}
-            onMouseEnter={e => (e.currentTarget.style.color = C.sub)}
-            onMouseLeave={e => (e.currentTarget.style.color = C.muted)}
-          >{"התחבר"}</Link>
+          {!loading && user ? (
+            <>
+              <button
+                onClick={handleSignOut}
+                className="hidden sm:block text-xs font-medium transition-colors duration-200"
+                style={{ ...IF, color: C.muted }}
+                onMouseEnter={e => (e.currentTarget.style.color = C.sub)}
+                onMouseLeave={e => (e.currentTarget.style.color = C.muted)}
+              >
+                התנתק
+              </button>
+              <Link
+                href="/dashboard"
+                className="hidden sm:block text-xs font-medium transition-colors duration-200"
+                style={{ ...IF, color: C.muted }}
+                onMouseEnter={e => (e.currentTarget.style.color = C.sub)}
+                onMouseLeave={e => (e.currentTarget.style.color = C.muted)}
+              >
+                למערכת
+              </Link>
+            </>
+          ) : !loading && !user ? (
+            <Link
+              href="/login?auth=1"
+              className="hidden sm:block text-xs font-medium transition-colors duration-200"
+              style={{ ...IF, color: C.muted }}
+              onMouseEnter={e => (e.currentTarget.style.color = C.sub)}
+              onMouseLeave={e => (e.currentTarget.style.color = C.muted)}
+            >{"התחבר"}</Link>
+          ) : null}
 
           <Link
             href="/checkout"

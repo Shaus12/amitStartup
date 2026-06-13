@@ -92,7 +92,7 @@ export async function POST(req: NextRequest) {
       payment_type: "analysis",
       plan: "analysis",
       plan_name: "ניתוח עסקי מלא",
-      plan_price: 1,
+      plan_price: 497,
       success_url: `${appUrl()}/payment-success?type=analysis`,
     };
 
