@@ -282,6 +282,9 @@ function Hero() {
             השידור מתחיל בעוד
           </p>
           <Countdown />
+          <div className="mt-8 flex justify-center">
+            <RegisterButton large>אני רוצה מקום בהדרכה</RegisterButton>
+          </div>
         </div>
 
         <CtaBlock />
