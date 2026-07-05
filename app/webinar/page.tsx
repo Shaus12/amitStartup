@@ -4,8 +4,11 @@ import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import {
   Calendar, Clock, Ticket, PlayCircle, Sparkles, Zap, AlertTriangle,
-  Search, Cog, Check, ArrowLeft, ShieldCheck, Loader2,
+  Search, Cog, Check, ArrowLeft, ShieldCheck, Loader2, MessageCircle, X
 } from "lucide-react";
+
+/* ---- Modal Context --------------------------------------------------------- */
+const ModalContext = React.createContext({ isOpen: false, open: () => {}, close: () => {} });
 
 /* ---- Design tokens (aligned with LandingPage) ------------------------------ */
 const C = {
@@ -77,9 +80,10 @@ function Section({ children, bg = C.bg, className = "", id }: {
 
 /* ---- Register CTA button (scrolls to form) --------------------------------- */
 function RegisterButton({ children, large, className = "" }: { children: React.ReactNode; large?: boolean; className?: string }) {
+  const { open } = React.useContext(ModalContext);
   return (
-    <a
-      href="#register"
+    <button
+      onClick={open}
       className={`group inline-flex items-center justify-center gap-2 font-extrabold transition-all duration-200 active:scale-[0.97] ${large ? "px-10 py-5 rounded-2xl text-lg md:text-xl" : "px-8 py-4 rounded-xl text-base"} ${className}`}
       style={{
         ...MF,
@@ -100,7 +104,7 @@ function RegisterButton({ children, large, className = "" }: { children: React.R
     >
       {children}
       <ArrowLeft className="w-5 h-5 transition-transform duration-200 group-hover:-translate-x-1" strokeWidth={2.5} />
-    </a>
+    </button>
   );
 }
 
@@ -201,6 +205,7 @@ function CtaBlock() {
    NAV
    ============================================================================ */
 function Nav() {
+  const { open } = React.useContext(ModalContext);
   return (
     <header
       className="fixed top-0 left-0 right-0 z-50"
@@ -221,13 +226,13 @@ function Nav() {
           </div>
           <span className="text-sm font-bold tracking-tight" style={{ ...MF, color: C.text }}>BizMap</span>
         </Link>
-        <a
-          href="#register"
+        <button
+          onClick={open}
           className="text-xs md:text-sm font-bold px-4 py-2 rounded-lg transition-all duration-200"
           style={{ ...MF, background: `${C.blue}18`, color: C.glow, border: `1px solid ${C.blue}30` }}
         >
           שמור מקום
-        </a>
+        </button>
       </div>
     </header>
   );
@@ -282,9 +287,6 @@ function Hero() {
             השידור מתחיל בעוד
           </p>
           <Countdown />
-          <div className="mt-8 flex justify-center">
-            <RegisterButton large>אני רוצה מקום בהדרכה</RegisterButton>
-          </div>
         </div>
 
         <CtaBlock />
@@ -489,9 +491,10 @@ function Urgency() {
 }
 
 /* ============================================================================
-   REGISTRATION FORM
+   REGISTRATION MODAL
    ============================================================================ */
-function RegisterForm() {
+function RegisterModal() {
+  const { isOpen, close } = React.useContext(ModalContext);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
@@ -527,96 +530,145 @@ function RegisterForm() {
     color: C.text,
   };
 
+  const getCalendarUrl = () => {
+    const date = getTargetDate();
+    const start = date.toISOString().replace(/-|:|\.\d\d\d/g, "");
+    const end = new Date(date.getTime() + 90 * 60000).toISOString().replace(/-|:|\.\d\d\d/g, "");
+    return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent("הדרכת AI לעסקים - BizMap")}&dates=${start}/${end}&details=${encodeURIComponent("הדרכה מיוחדת על שימוש בבינה מלאכותית לייעול העסק.\n\nקישור לשידור יישלח בסמוך למועד ההדרכה.")}`;
+  };
+
+  if (!isOpen) return null;
+
   return (
-    <Section id="register" bg={C.bg}>
-      <Orb color={C.blue} x="50%" y="30%" size={680} opacity={0.14} />
-      <div className="max-w-lg mx-auto relative z-10">
-        <div className="text-center mb-8">
-          <div
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-5"
-            style={{ background: `${C.blue}15`, border: `1px solid ${C.blue}30` }}
-          >
-            <Calendar className="w-3.5 h-3.5" style={{ color: C.glow }} strokeWidth={2.5} />
-            <span className="text-xs font-bold" style={{ ...MF, color: C.glow }}>15.7 · 20:00 · שידור חי</span>
-          </div>
-          <h2 className="text-2xl md:text-4xl font-extrabold mb-3" style={{ ...MF, color: C.text }}>
-            שמור את המקום שלך בהדרכה
-          </h2>
-          <p className="text-sm md:text-base" style={{ ...IF, color: C.sub }}>
-            מספר המקומות מוגבל. השאר פרטים ונשמור לך מקום לשידור החי.
-          </p>
-        </div>
-
-        {status === "success" ? (
-          <div
-            className="rounded-2xl p-8 text-center"
-            style={{ ...glassCard, border: `1px solid ${C.green}30`, boxShadow: `inset 0 1px 0 rgba(255,255,255,0.05), 0 0 40px ${C.green}15` }}
-          >
-            <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: `${C.green}18` }}>
-              <Check className="w-7 h-7" style={{ color: C.green }} strokeWidth={2.5} />
-            </div>
-            <h3 className="text-xl font-bold mb-2" style={{ ...MF, color: C.text }}>המקום שלך שמור! 🎉</h3>
-            <p className="text-sm leading-relaxed" style={{ ...IF, color: C.sub }}>
-              נשלח לך תזכורת עם קישור לשידור לפני שהוא מתחיל. נתראה ב-15.7 בשעה 20:00.
-            </p>
-          </div>
-        ) : (
-          <form onSubmit={submit} className="rounded-2xl p-6 md:p-8 space-y-4" style={glassCard}>
-            <div>
-              <label className="block text-sm font-semibold mb-2" style={{ ...MF, color: C.sub }}>שם מלא</label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="ישראל ישראלי"
-                className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-colors focus:border-[#4f8bff]"
-                style={inputStyle}
-                dir="rtl"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-semibold mb-2" style={{ ...MF, color: C.sub }}>טלפון נייד</label>
-              <input
-                type="tel"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="050-0000000"
-                className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-colors focus:border-[#4f8bff]"
-                style={inputStyle}
-                dir="ltr"
-              />
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={close} />
+      <div className="relative z-10 w-full max-w-lg animate-in fade-in zoom-in duration-200">
+        <button onClick={close} className="absolute top-4 right-4 z-20 w-8 h-8 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 text-white transition-colors">
+          <X className="w-4 h-4" />
+        </button>
+        <div className="rounded-2xl relative overflow-hidden" style={{ backgroundColor: C.bg, border: `1px solid ${C.outline}`, boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.7)" }}>
+          <Orb color={C.blue} x="50%" y="30%" size={680} opacity={0.14} />
+          <div className="relative z-10 p-6 md:p-8">
+            <div className="text-center mb-8">
+              <div
+                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-5 mt-2"
+                style={{ background: `${C.blue}15`, border: `1px solid ${C.blue}30` }}
+              >
+                <Calendar className="w-3.5 h-3.5" style={{ color: C.glow }} strokeWidth={2.5} />
+                <span className="text-xs font-bold" style={{ ...MF, color: C.glow }}>15.7 · 20:00 · שידור חי</span>
+              </div>
+              <h2 className="text-2xl md:text-3xl font-extrabold mb-3" style={{ ...MF, color: C.text }}>
+                שמור את המקום שלך בהדרכה
+              </h2>
+              <p className="text-sm md:text-base" style={{ ...IF, color: C.sub }}>
+                מספר המקומות מוגבל. השאר פרטים ונשמור לך מקום לשידור החי.
+              </p>
             </div>
 
-            {error && (
-              <p className="text-sm font-medium" style={{ ...IF, color: C.red }}>{error}</p>
+            {status === "success" ? (
+              <div
+                className="rounded-2xl p-8 text-center"
+                style={{ ...glassCard, border: `1px solid ${C.green}30`, boxShadow: `inset 0 1px 0 rgba(255,255,255,0.05), 0 0 40px ${C.green}15` }}
+              >
+                <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: `${C.green}18` }}>
+                  <Check className="w-7 h-7" style={{ color: C.green }} strokeWidth={2.5} />
+                </div>
+                <h3 className="text-xl font-bold mb-2" style={{ ...MF, color: C.text }}>המקום שלך שמור! 🎉</h3>
+                <p className="text-sm leading-relaxed mb-6" style={{ ...IF, color: C.sub }}>
+                  נשלח לך תזכורת עם קישור לשידור לפני שהוא מתחיל. נתראה ב-15.7 בשעה 20:00.
+                </p>
+                <div className="flex flex-col gap-3 max-w-sm mx-auto">
+                  <a
+                    href="https://chat.whatsapp.com/L5YSVCMCtJa77yLX7Do6FG?mode=gi_t"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center gap-2 font-extrabold px-6 py-3 rounded-xl text-base transition-all duration-200 active:scale-[0.98] hover:opacity-90"
+                    style={{
+                      ...MF,
+                      background: "#25D366",
+                      color: "#ffffff",
+                      boxShadow: "0 4px 14px rgba(37, 211, 102, 0.4)",
+                    }}
+                  >
+                    <MessageCircle className="w-5 h-5" strokeWidth={2.5} />
+                    להצטרפות לקבוצת הוואטסאפ השקטה
+                  </a>
+                  <a
+                    href={getCalendarUrl()}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center gap-2 font-extrabold px-6 py-3 rounded-xl text-base transition-all duration-200 active:scale-[0.98] hover:opacity-90"
+                    style={{
+                      ...MF,
+                      background: `${C.blue}18`,
+                      color: C.glow,
+                      border: `1px solid ${C.blue}40`,
+                    }}
+                  >
+                    <Calendar className="w-5 h-5" strokeWidth={2.5} />
+                    הוסף ליומן (Google Calendar)
+                  </a>
+                </div>
+              </div>
+            ) : (
+              <form onSubmit={submit} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-semibold mb-2" style={{ ...MF, color: C.sub }}>שם מלא</label>
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="ישראל ישראלי"
+                    className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-colors focus:border-[#4f8bff]"
+                    style={inputStyle}
+                    dir="rtl"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold mb-2" style={{ ...MF, color: C.sub }}>טלפון נייד</label>
+                  <input
+                    type="tel"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="050-0000000"
+                    className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-colors focus:border-[#4f8bff]"
+                    style={inputStyle}
+                    dir="ltr"
+                  />
+                </div>
+
+                {error && (
+                  <p className="text-sm font-medium" style={{ ...IF, color: C.red }}>{error}</p>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={status === "loading"}
+                  className="w-full inline-flex items-center justify-center gap-2 font-extrabold py-4 rounded-xl text-base transition-all duration-200 active:scale-[0.98] disabled:opacity-60"
+                  style={{
+                    ...MF,
+                    background: `linear-gradient(135deg, ${C.blue}, ${C.purple}90)`,
+                    color: "#fff",
+                    boxShadow: `0 0 0 1px ${C.blue}40, 0 6px 24px ${C.blue}30`,
+                  }}
+                >
+                  {status === "loading" ? (
+                    <><Loader2 className="w-5 h-5 animate-spin" /> שולח...</>
+                  ) : (
+                    <>אני רוצה מקום בהדרכה <ArrowLeft className="w-5 h-5" strokeWidth={2.5} /></>
+                  )}
+                </button>
+
+                <div className="flex items-center justify-center gap-1.5 pt-1">
+                  <ShieldCheck className="w-3.5 h-3.5" style={{ color: C.muted }} />
+                  <span className="text-xs" style={{ ...IF, color: C.muted }}>הפרטים שלך מאובטחים ולא יועברו לאף אחד.</span>
+                </div>
+              </form>
             )}
-
-            <button
-              type="submit"
-              disabled={status === "loading"}
-              className="w-full inline-flex items-center justify-center gap-2 font-extrabold py-4 rounded-xl text-base transition-all duration-200 active:scale-[0.98] disabled:opacity-60"
-              style={{
-                ...MF,
-                background: `linear-gradient(135deg, ${C.blue}, ${C.purple}90)`,
-                color: "#fff",
-                boxShadow: `0 0 0 1px ${C.blue}40, 0 6px 24px ${C.blue}30`,
-              }}
-            >
-              {status === "loading" ? (
-                <><Loader2 className="w-5 h-5 animate-spin" /> שולח...</>
-              ) : (
-                <>אני רוצה מקום בהדרכה <ArrowLeft className="w-5 h-5" strokeWidth={2.5} /></>
-              )}
-            </button>
-
-            <div className="flex items-center justify-center gap-1.5 pt-1">
-              <ShieldCheck className="w-3.5 h-3.5" style={{ color: C.muted }} />
-              <span className="text-xs" style={{ ...IF, color: C.muted }}>הפרטים שלך מאובטחים ולא יועברו לאף אחד.</span>
-            </div>
-          </form>
-        )}
+          </div>
+        </div>
       </div>
-    </Section>
+    </div>
   );
 }
 
@@ -651,20 +703,23 @@ function Footer() {
    ============================================================================ */
 export default function WebinarPage() {
   const ref = useRef<HTMLDivElement>(null);
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div ref={ref} dir="rtl" style={{ backgroundColor: C.bg, minHeight: "100vh" }}>
-      <Nav />
-      <main>
-        <Hero />
-        <Pain />
-        <Curriculum />
-        <MidCta />
-        <About />
-        <Urgency />
-        <RegisterForm />
-      </main>
-      <Footer />
-    </div>
+    <ModalContext.Provider value={{ isOpen, open: () => setIsOpen(true), close: () => setIsOpen(false) }}>
+      <div ref={ref} dir="rtl" style={{ backgroundColor: C.bg, minHeight: "100vh" }}>
+        <Nav />
+        <main>
+          <Hero />
+          <Pain />
+          <Curriculum />
+          <MidCta />
+          <About />
+          <Urgency />
+        </main>
+        <Footer />
+        <RegisterModal />
+      </div>
+    </ModalContext.Provider>
   );
 }
