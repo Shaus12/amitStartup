@@ -517,6 +517,9 @@ function RegisterModal() {
       });
       if (!res.ok) throw new Error("failed");
       setStatus("success");
+      if (typeof window !== "undefined" && (window as any).fbq) {
+        (window as any).fbq('track', 'Lead');
+      }
     } catch {
       setStatus("error");
       setError("משהו השתבש. נסה שוב או פנה אלינו.");
