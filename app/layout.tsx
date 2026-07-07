@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import { Manrope, Inter, Heebo } from "next/font/google";
 import "./globals.css";
 import { QueryProvider } from "@/components/providers/QueryProvider";
@@ -85,6 +86,7 @@ export default function RootLayout({
         <Toaster position="bottom-right" />
         <AccessibilityWidget />
         <CookieBanner />
+        <GoogleAnalytics gaId="G-YQZRS0BV1M" />
       </body>
     </html>
   );

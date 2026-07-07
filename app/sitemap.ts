@@ -13,6 +13,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const routes = [
     "",
+    "/ai-level",
     "/landing",
     "/login",
     "/onboarding-chat",

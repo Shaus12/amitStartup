@@ -2,15 +2,15 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useRef, useState } from "react";
+import { useRef, useState, type FormEvent } from "react";
 
 type Level = {
   n: number;
   name: string;
-  en: string;
   unit: string;
   short: string;
   desc: string;
+  pain: string;
   gap: string;
 };
 
@@ -28,55 +28,55 @@ const levels: Level[] = [
   {
     n: 1,
     name: "שיחה",
-    en: "Conversational",
     unit: "חוסך דקות",
     short: "עובד מול צ'אט בודד — שאלה, תשובה, תיקון",
     desc: "זו נקודת הפתיחה של כולם: פותחים צ'אט, שואלים, מתקנים, ומקבלים עזרה נקודתית. זה שימוש חשוב, אבל רוב בעלי העסקים נתקעים כאן ולא רואים שיש מעליהם עולם שלם של עבודה חוזרת, תהליכים ומערכות.",
+    pain: "המחיר של להישאר כאן: כל תוצאה תלויה במצב הרוח ובניסוח של הרגע — אתה מתחיל מאפס כל פעם, ושום דבר לא נשמר לפעם הבאה.",
     gap: "הצעד הבא: להפסיק להתחיל מאפס בכל פעם, ולבנות נכסים חוזרים כמו פרומפטים, תבניות וצ'קליסטים שמקצרים עבודה שבוע אחרי שבוע.",
   },
   {
     n: 2,
     name: "נכסים",
-    en: "Assets",
     unit: "חוסך שעות בשבוע",
     short: "בונה נכסים חוזרים: פרומפטים, תבניות, Custom GPT",
     desc: "ברמה הזו AI כבר לא רק עונה לך, אלא נשען על נכסים שחוזרים לעבוד עבורך: תבניות, פרומפטים קבועים, מאגרי ידע או Custom GPT. הערך מתחיל להצטבר, כי כל שימוש חדש נשען על משהו שבנית קודם.",
+    pain: "המחיר של להישאר כאן: יש לך כלים טובים, אבל אתה עדיין זה שמפעיל כל אחד מהם ידנית — התהליך לא זז בלעדיך.",
     gap: "הצעד הבא: לקחת נכסים שעובדים טוב ולחבר אותם לזרימה מלאה: קלט ברור, עיבוד מובנה, ופלט שאפשר להשתמש בו בלי להרכיב הכול ידנית.",
   },
   {
     n: 3,
     name: "זרימות",
-    en: "Workflows",
     unit: "חוסך תהליך שלם",
     short: "משרשר צעדים לתהליך: קלט → עיבוד → פלט",
     desc: "כאן AI כבר משתתף בתהליך עסקי שלם, לא רק במשימה אחת. יש רצף: מידע נכנס, AI מנתח או כותב, ואז יוצא פלט שמשרת מכירה, שירות, תפעול או ניהול.",
+    pain: "המחיר של להישאר כאן: התהליך מוגדר ועובד — אבל *אתה* עדיין צריך ללחוץ על כל שלב. זה לא קורה כשאתה בפגישה, בחופש, או ישן.",
     gap: "הצעד הבא: לחבר את הזרימה לכלים של העסק, כך שהיא לא תהיה תלויה בהעתק-הדבק ובזמן הפנוי שלך.",
   },
   {
     n: 4,
     name: "אוטומציות",
-    en: "Automations",
     unit: "חוסך משרה חלקית",
     short: "מחבר AI לכלים, רץ בלי יד אנושית (טריגרים)",
     desc: "ברמה הזו AI מחובר לכלים כמו מייל, CRM, טפסים, וואטסאפ או מערכות פנימיות. טריגר מפעיל תהליך, והעסק מקבל תוצאה בלי שמישהו יצטרך לזכור להפעיל את זה.",
+    pain: "המחיר של להישאר כאן: דברים רצים לבד, אבל רק לפי כללים נוקשים שהגדרת — ברגע שמשהו יוצא מהתבנית, המערכת נתקעת ומחכה לך.",
     gap: "הצעד הבא: להוסיף שכבת שיקול דעת: לא רק אוטומציה קבועה, אלא סוכן שמבין מטרה, בוחר פעולה, ומתקדם גם כשיש כמה אפשרויות.",
   },
   {
     n: 5,
     name: "סוכנים",
-    en: "Agents",
     unit: "חוסך מחלקה שלמה",
     short: "סוכן שמקבל מטרה ומחליט לבד איך להשיג",
     desc: "ברמה הזו AI כבר מתנהג כמו בעל תפקיד: מקבל מטרה, ניגש לכלים, בוחר צעדים, בודק תוצאה וממשיך. זה כבר לא רק קיצור דרך, אלא יכולת תפעולית שמחליפה חלקים שלמים בעבודה.",
+    pain: "המחיר של להישאר כאן: יש לך סוכן שמנהל תחום — אבל כל תחום עומד לבד. אין מי שמנצח על כולם יחד, ואתה עדיין הדבק שמחבר ביניהם.",
     gap: "הצעד הבא: לחבר כמה סוכנים למערכת אחת עם ניטור, מדידה, גבולות פעולה ושיפור מתמשך.",
   },
   {
     n: 6,
     name: "מערכת",
-    en: "System / Native",
     unit: "חוסך את ניהול העסק כולו",
     short: "מנצח על מערכת סוכנים, ניטור, ROI, שיפור עצמי",
     desc: "זו הרמה שבה AI כבר טבעי בתוך העסק: כמה סוכנים, כמה תהליכים, מדידת ROI, ניטור חריגות ושיפור מתמשך. בעל העסק לא מפעיל כלי, אלא מנהל מערכת שעובדת מעל העסק כולו.",
+    pain: "הגעת לפסגה. מכאן זה כבר לא שאלה של רמה, אלא של עומק — כמה טוב המערכת מודדת את עצמה, משתפרת, ויודעת מתי לבנות, לקנות, או לא להשתמש בכלל.",
     gap: "הצעד הבא: לשמור על בקרה, איכות וגבולות ברורים כדי שהמערכת תמשיך להשתפר בלי לאבד אמינות או שליטה ניהולית.",
   },
 ];
@@ -186,11 +186,32 @@ function computeLevel(answers: Record<number, number>) {
   return Math.min(6, Math.max(1, level));
 }
 
+function normalizePhone(phone: string) {
+  return phone.replace(/\D/g, "");
+}
+
+function isValidIsraeliPhone(phone: string) {
+  return /^05\d{8}$/.test(normalizePhone(phone));
+}
+
+function renderPainText(text: string) {
+  const parts = text.split(/(\*[^*]+\*)/g);
+
+  return parts.map((part, index) => {
+    if (part.startsWith("*") && part.endsWith("*")) {
+      return <em key={`${part}-${index}`}>{part.slice(1, -1)}</em>;
+    }
+
+    return part;
+  });
+}
+
 export function AiLevelQuiz() {
   const [started, setStarted] = useState(false);
   const [current, setCurrent] = useState(0);
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const [selected, setSelected] = useState<number | null>(null);
+  const [consultationOpen, setConsultationOpen] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const isDone = Object.keys(answers).length === questions.length;
@@ -260,9 +281,16 @@ export function AiLevelQuiz() {
             level={level}
             nextLevel={nextLevel}
             onRestart={restart}
+            onOpenConsultation={() => setConsultationOpen(true)}
           />
         )}
       </section>
+
+      <ConsultationModal
+        isOpen={consultationOpen}
+        level={level}
+        onClose={() => setConsultationOpen(false)}
+      />
     </main>
   );
 }
@@ -273,7 +301,7 @@ function IntroScreen({ onStart }: { onStart: () => void }) {
       <section className="intro-card reveal">
         <p className="eyebrow">אבחון · 8 שאלות · דקה וחצי</p>
         <h1>
-          באיזו <span>רמת גובה</span> אתה טס עם AI בעסק?
+          באיזו <span className="gradient-phrase">רמת גובה</span> אתה טס עם AI בעסק?
         </h1>
         <p className="intro-copy">
           רוב בעלי העסקים משתמשים ב-AI בלי לדעת שהם על הקרקע — בזמן שהמתחרים כבר טסים מעל. ענה על 8 שאלות קצרות וגלה איפה אתה במפה, ומה מפריד אותך מהרמה הבאה.
@@ -327,7 +355,6 @@ function QuestionScreen({
             onClick={() => onChoose(answer.lvl, index)}
           >
             <span>{answer.text}</span>
-            <small>רמה {answer.lvl}</small>
           </button>
         ))}
       </div>
@@ -339,10 +366,12 @@ function ResultScreen({
   level,
   nextLevel,
   onRestart,
+  onOpenConsultation,
 }: {
   level: Level;
   nextLevel: Level | null;
   onRestart: () => void;
+  onOpenConsultation: () => void;
 }) {
   const ctaTitle =
     level.n <= 3
@@ -353,10 +382,11 @@ function ResultScreen({
     <section className="result-layout reveal">
       <div className="result-card">
         <div className="score-badge">{level.n}/6</div>
-        <p className="level-kicker">רמה {level.n} — {level.name}</p>
-        <h1>{level.en}</h1>
+        <p className="level-kicker">התוצאה שלך</p>
+        <h1 className="hebrew-level-title">רמה {level.n} — {level.name}</h1>
         <span className="unit-pill">{level.unit}</span>
         <p>{level.desc}</p>
+        <p className="hidden-cost">{renderPainText(level.pain)}</p>
       </div>
 
       <LevelMiniMap current={level.n} />
@@ -383,16 +413,172 @@ function ResultScreen({
       </div>
 
       <div className="cta-card">
-        <h2>{ctaTitle}</h2>
-        <p>
-          בוובינר נראה איך עוברים משימוש נקודתי ב-AI למערכת שממפה את העסק, מזהה צווארי בקבוק ומפעילה תהליכים חכמים בצורה מסודרת.
-        </p>
+        <div className="cta-copy">
+          <h2>{ctaTitle}</h2>
+          <p>
+            בוובינר נראה איך עוברים משימוש נקודתי ב-AI למערכת שממפה את העסק, מזהה צווארי בקבוק ומפעילה תהליכים חכמים בצורה מסודרת.
+          </p>
+          <div className="consult-strip">
+            <strong>מעוניין בשיחת יעוץ בחינם?</strong>
+            <span>תשאיר פרטים ונחזור אליך</span>
+          </div>
+        </div>
         <div className="cta-actions">
           <Link href="/webinar" className="primary-cta">שמור מקום בוובינר החינם ←</Link>
+          <button type="button" className="consult-cta" onClick={onOpenConsultation}>השאר פרטים לשיחה</button>
           <button type="button" className="secondary-cta" onClick={onRestart}>עשה את המבחן שוב</button>
         </div>
       </div>
     </section>
+  );
+}
+
+function ConsultationModal({
+  isOpen,
+  level,
+  onClose,
+}: {
+  isOpen: boolean;
+  level: Level;
+  onClose: () => void;
+}) {
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [nameTouched, setNameTouched] = useState(false);
+  const [phoneTouched, setPhoneTouched] = useState(false);
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [error, setError] = useState("");
+
+  if (!isOpen) return null;
+
+  const nameValid = name.trim().length > 0;
+  const phoneValid = isValidIsraeliPhone(phone);
+  const showNameError = nameTouched && !nameValid;
+  const showPhoneError = phoneTouched && phone.length > 0 && !phoneValid;
+
+  function handleClose() {
+    if (status === "loading") return;
+    setError("");
+    setStatus("idle");
+    setNameTouched(false);
+    setPhoneTouched(false);
+    onClose();
+  }
+
+  async function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setNameTouched(true);
+    setPhoneTouched(true);
+    setError("");
+
+    if (!nameValid || !phoneValid || status === "loading") return;
+
+    setStatus("loading");
+    try {
+      const res = await fetch("/api/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: name.trim(),
+          phone: normalizePhone(phone),
+          source: "ai_level",
+          message: `AI level survey result: ${level.n}/6 - ${level.name}`,
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Lead request failed");
+      }
+
+      setStatus("success");
+      setName("");
+      setPhone("");
+      setNameTouched(false);
+      setPhoneTouched(false);
+    } catch {
+      setStatus("error");
+      setError("משהו השתבש. נסה שוב בעוד רגע.");
+    }
+  }
+
+  return (
+    <div
+      className="consult-modal-backdrop"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="consult-modal-title"
+      onClick={handleClose}
+    >
+      <div className="consult-modal" onClick={(event) => event.stopPropagation()}>
+        <button
+          type="button"
+          className="consult-close"
+          onClick={handleClose}
+          disabled={status === "loading"}
+          aria-label="סגור"
+        >
+          ×
+        </button>
+
+        {status === "success" ? (
+          <div className="consult-success">
+            <div className="consult-success-mark">✓</div>
+            <h2 id="consult-modal-title">קיבלנו, נחזור אליך בקרוב</h2>
+            <p>השארת פרטים אחרי תוצאה ברמה {level.n} — {level.name}. ניצור קשר לשיחת יעוץ חינמית.</p>
+            <button type="button" className="primary-cta" onClick={handleClose}>סגור</button>
+          </div>
+        ) : (
+          <>
+            <p className="eyebrow">שיחת יעוץ חינמית</p>
+            <h2 id="consult-modal-title">מעוניין להבין איך לעלות מהרמה שלך?</h2>
+            <p className="consult-modal-copy">
+              תשאיר שם וטלפון, ונחזור אליך עם כיוון ראשוני שמתאים לתוצאה שקיבלת.
+            </p>
+
+            <form className="consult-form" onSubmit={submit}>
+              <label htmlFor="consult-name">שם מלא</label>
+              <input
+                id="consult-name"
+                type="text"
+                autoComplete="name"
+                placeholder="ישראל ישראלי"
+                value={name}
+                onChange={(event) => {
+                  setName(event.target.value);
+                  setError("");
+                }}
+                onBlur={() => setNameTouched(true)}
+                disabled={status === "loading"}
+              />
+              {showNameError && <span className="field-error">יש להזין שם מלא</span>}
+
+              <label htmlFor="consult-phone">טלפון</label>
+              <input
+                id="consult-phone"
+                type="tel"
+                inputMode="tel"
+                autoComplete="tel"
+                placeholder="0501234567"
+                value={phone}
+                onChange={(event) => {
+                  setPhone(event.target.value);
+                  setError("");
+                }}
+                onBlur={() => setPhoneTouched(true)}
+                disabled={status === "loading"}
+              />
+              {showPhoneError && <span className="field-error">יש להזין מספר נייד ישראלי תקין</span>}
+
+              {error && <span className="field-error">{error}</span>}
+
+              <button type="submit" className="primary-cta" disabled={status === "loading"}>
+                {status === "loading" ? "שולח..." : "חזור אליי לשיחת יעוץ ←"}
+              </button>
+            </form>
+          </>
+        )}
+      </div>
+    </div>
   );
 }
 
@@ -401,7 +587,7 @@ function LevelMiniMap({ current, intro = false }: { current: number; intro?: boo
     <section className={intro ? "map-card intro-map reveal" : "map-card"}>
       <div className="map-head">
         <p className="eyebrow">מפת 6 הרמות</p>
-        <strong>מהקרקע ועד מערכת AI מלאה</strong>
+        <h2>מהקרקע ועד מערכת AI מלאה</h2>
       </div>
       <ol className="level-map">
         {levels.map((item) => {
@@ -593,6 +779,11 @@ const styles = `
   color: transparent;
 }
 
+.gradient-phrase {
+  display: inline-block;
+  white-space: nowrap;
+}
+
 .intro-copy {
   max-width: 720px;
   margin: 24px 0 34px;
@@ -640,9 +831,12 @@ const styles = `
   margin-bottom: 20px;
 }
 
-.map-head strong {
+.map-head h2 {
+  margin: 0;
   color: var(--ink);
   font-size: 15px;
+  line-height: 1.35;
+  font-weight: 900;
 }
 
 .level-map {
@@ -814,12 +1008,6 @@ const styles = `
   font-weight: 700;
 }
 
-.answer small {
-  flex: 0 0 auto;
-  color: var(--accent);
-  font-weight: 900;
-}
-
 .answer:hover,
 .answer.selected {
   transform: translateX(-4px);
@@ -839,6 +1027,14 @@ const styles = `
 
 .result-card {
   min-height: 430px;
+}
+
+.hebrew-level-title {
+  max-width: 100%;
+  overflow-wrap: normal;
+  text-align: right;
+  font-size: clamp(42px, 6vw, 74px);
+  line-height: 1.05;
 }
 
 .score-badge {
@@ -870,6 +1066,22 @@ const styles = `
   color: var(--ink-dim);
   font-size: 17px;
   line-height: 1.7;
+}
+
+.result-card .hidden-cost {
+  margin-top: 18px;
+  padding: 16px 18px;
+  border-right: 3px solid var(--accent-2);
+  border-radius: 14px;
+  background: rgba(255,178,87,0.08);
+  color: var(--ink);
+  font-weight: 800;
+}
+
+.hidden-cost em {
+  color: var(--accent-2);
+  font-style: normal;
+  font-weight: 900;
 }
 
 .roadmap-card,
@@ -917,19 +1129,204 @@ const styles = `
 
 .cta-card {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 24px;
+  grid-template-columns: minmax(0, 1fr) minmax(240px, auto);
+  gap: clamp(24px, 5vw, 56px);
   align-items: center;
 }
 
-.cta-card p {
+.cta-copy {
+  min-width: 0;
+  max-width: 780px;
+}
+
+.cta-copy p {
   margin-bottom: 0;
+}
+
+.consult-strip {
+  display: grid;
+  gap: 4px;
+  margin-top: 22px;
+  padding: 16px 18px;
+  border: 1px solid rgba(95,212,196,0.26);
+  border-radius: 16px;
+  background: rgba(95,212,196,0.07);
+}
+
+.consult-strip strong {
+  color: var(--ink);
+  font-size: 18px;
+}
+
+.consult-strip span {
+  color: var(--ink-dim);
+  font-size: 15px;
 }
 
 .cta-actions {
   display: grid;
   gap: 12px;
-  justify-items: start;
+  justify-items: stretch;
+}
+
+.cta-actions .primary-cta,
+.cta-actions .secondary-cta,
+.cta-actions .consult-cta {
+  width: 100%;
+  min-height: 62px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.consult-cta {
+  width: 100%;
+  border: 1px solid rgba(95,212,196,0.38);
+  border-radius: 999px;
+  padding: 14px 22px;
+  color: var(--ink);
+  background: rgba(95,212,196,0.1);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 900;
+}
+
+.consult-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(3,7,18,0.72);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.consult-modal {
+  position: relative;
+  width: min(100%, 480px);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: rgba(13,21,48,0.96);
+  box-shadow: 0 32px 100px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.06);
+  padding: 28px;
+  text-align: right;
+  animation: riseIn 220ms ease both;
+}
+
+.consult-close {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink-dim);
+  background: rgba(255,255,255,0.05);
+  cursor: pointer;
+  font-size: 24px;
+  line-height: 1;
+}
+
+.consult-modal h2 {
+  margin: 0;
+  padding-left: 36px;
+  color: var(--ink);
+  font-size: clamp(26px, 4vw, 36px);
+  line-height: 1.12;
+  font-weight: 900;
+}
+
+.consult-modal-copy {
+  margin: 14px 0 0;
+  color: var(--ink-dim);
+  line-height: 1.65;
+}
+
+.consult-form {
+  display: grid;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.consult-form label {
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.consult-form input {
+  width: 100%;
+  height: 52px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(255,255,255,0.055);
+  color: var(--ink);
+  padding: 0 16px;
+  text-align: right;
+  font: inherit;
+  font-weight: 700;
+  outline: none;
+}
+
+.consult-form input:focus {
+  border-color: rgba(95,212,196,0.72);
+  box-shadow: 0 0 0 3px rgba(95,212,196,0.14);
+}
+
+.consult-form input::placeholder {
+  color: rgba(234,240,255,0.32);
+}
+
+.consult-form .primary-cta,
+.consult-success .primary-cta {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.consult-form .primary-cta:disabled {
+  cursor: wait;
+  opacity: 0.68;
+}
+
+.field-error {
+  color: #fca5a5;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.consult-success {
+  display: grid;
+  gap: 14px;
+  justify-items: center;
+  padding: 10px 0 4px;
+  text-align: center;
+}
+
+.consult-success-mark {
+  width: 62px;
+  height: 62px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  color: #06101d;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  font-size: 32px;
+  font-weight: 900;
+}
+
+.consult-success h2 {
+  padding-left: 0;
+}
+
+.consult-success p {
+  margin: 0;
+  color: var(--ink-dim);
+  line-height: 1.65;
 }
 
 .altimeter {
@@ -969,7 +1366,8 @@ const styles = `
 }
 
 .ai-level-page button:focus-visible,
-.ai-level-page a:focus-visible {
+.ai-level-page a:focus-visible,
+.ai-level-page input:focus-visible {
   outline: 3px solid var(--accent);
   outline-offset: 4px;
 }
@@ -1005,6 +1403,16 @@ const styles = `
     padding: 32px 22px;
   }
 
+  .intro-card h1 {
+    font-size: clamp(38px, 12vw, 58px);
+    line-height: 1.05;
+  }
+
+  .hebrew-level-title {
+    font-size: clamp(34px, 10vw, 56px);
+    line-height: 1.08;
+  }
+
   .map-card {
     padding: 18px;
   }
@@ -1035,6 +1443,10 @@ const styles = `
 
   .cta-actions {
     justify-items: stretch;
+  }
+
+  .consult-modal {
+    padding: 24px 18px;
   }
 
   .primary-cta,

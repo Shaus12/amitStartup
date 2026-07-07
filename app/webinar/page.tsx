@@ -174,7 +174,7 @@ function EventDetails() {
   const rows = [
     { icon: Calendar, text: "שידור חי אחד. ב-15.7, בשעה 20:00." },
     { icon: Ticket, text: "מספר המקומות מוגבל." },
-    { icon: PlayCircle, text: "וזה לא יעלה כהקלטה — מי שלא שם, לא רואה את זה." },
+    { icon: PlayCircle, text: "השיעור לא יעלה כהקלטה — מי שלא שם, לא רואה את זה." },
   ];
   return (
     <div className="flex flex-col gap-3 max-w-xl mx-auto">
@@ -640,7 +640,7 @@ function RegisterModal() {
                     placeholder="050-0000000"
                     className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-colors focus:border-[#4f8bff]"
                     style={inputStyle}
-                    dir="ltr"
+                    dir="rtl"
                   />
                 </div>
 

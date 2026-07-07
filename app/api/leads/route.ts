@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 
-const VALID_SOURCES = new Set(["analysis_report", "dashboard", "webinar"]);
+const VALID_SOURCES = new Set(["analysis_report", "dashboard", "webinar", "ai_level"]);
 const MAX_NAME_LENGTH = 120;
 const MAX_MESSAGE_LENGTH = 1200;
 
