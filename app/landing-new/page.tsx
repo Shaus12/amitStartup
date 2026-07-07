@@ -218,7 +218,7 @@ const faqItems = [
   },
   {
     q: "האם זה תשלום חד-פעמי או מנוי?",
-    a: "תשלום חד-פעמי בלבד — 497 ₪. אין חיובים נוספים, אין מנוי, אין הפתעות.",
+    a: "תשלום חד-פעמי בלבד — 49 ₪. אין חיובים נוספים, אין מנוי, אין הפתעות.",
   },
   {
     q: "איך עובדת האחריות להחזר כספי?",
@@ -800,7 +800,7 @@ export default function LandingNewPage() {
                 className="text-4xl font-black text-white"
                 style={{ fontFamily: "var(--font-manrope)" }}
               >
-                497 ₪
+                49 ₪
               </p>
               <p className="text-indigo-300 text-sm mt-1">חד-פעמי</p>
             </div>
@@ -819,7 +819,7 @@ export default function LandingNewPage() {
               className="text-7xl md:text-8xl font-black gradient-text"
               style={{ fontFamily: "var(--font-manrope)" }}
             >
-              497 ₪
+              49 ₪
             </p>
             <p className="text-xl text-white/60 mt-4 font-semibold">
               תשלום חד-פעמי. לא חודשי. לא מנוי.
@@ -1166,7 +1166,7 @@ export default function LandingNewPage() {
                 animation: "pulse-glow 3s ease infinite",
               }}
             >
-              התחל עכשיו — 497 ₪ בלבד ←
+              התחל עכשיו — 49 ₪ בלבד ←
             </Link>
 
             <p className="text-white/40 text-sm mt-6">
