@@ -6,7 +6,7 @@ import Link from "next/link";
 import {
   ArrowLeft, ChevronDown, Zap, Shield, Brain, CheckCircle, Check,
   Target, TrendingUp, Users, MessageSquare, Search, Gift,
-  Star, Clock, DollarSign, ArrowRight, Globe, ChevronRight,
+  Star, Clock, DollarSign, ArrowRight, Globe, ChevronRight, Menu, X,
 } from "lucide-react";
 import { CosmicParallaxBg } from "@/components/ui/parallax-cosmic-background";
 import { useLanguage } from "@/lib/i18n";
@@ -111,10 +111,10 @@ function Section({ children, bg = C.bg, className = "", id }: {
 }
 
 /* ---- CTA Button ------------------------------------------------------------ */
-function CTAButton({ children, large, className = "" }: { children: React.ReactNode; large?: boolean; className?: string }) {
+function CTAButton({ children, large, className = "", href = "/checkout" }: { children: React.ReactNode; large?: boolean; className?: string; href?: string }) {
   return (
     <Link
-      href="/checkout"
+      href={href}
       className={`inline-flex items-center justify-center gap-2 font-extrabold transition-all duration-200 active:scale-[0.97] ${large ? "px-12 py-6 rounded-2xl text-lg md:text-xl" : "px-9 py-4 rounded-xl text-base"} ${className}`}
       style={{
         ...MF,
@@ -142,9 +142,21 @@ function CTAButton({ children, large, className = "" }: { children: React.ReactN
 /* ============================================================================
    NAV
    ============================================================================ */
+const anchorNavLinks = [
+  { label: "איך זה עובד", href: "#method" },
+  { label: "מה מקבלים", href: "#offer" },
+  { label: "מחיר", href: "#pricing" },
+];
+
+const pageNavLinks = [
+  { label: "וובינר חינם", href: "/webinar", featured: true },
+  { label: "מבחן רמת AI", href: "/ai-level", featured: false },
+];
+
 function Nav() {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
     import("@/lib/supabase/client").then(({ createClient }) => {
@@ -177,26 +189,55 @@ function Nav() {
         boxShadow: "0 1px 0 rgba(79,139,255,0.06)",
       }}
     >
-      <div className="max-w-[1400px] mx-auto px-6 md:px-10 h-14 flex items-center justify-between gap-8">
+      <div className="max-w-[1400px] mx-auto px-4 md:px-10 h-14 flex items-center justify-between gap-3 lg:gap-8">
         <Link href="/" className="flex items-center gap-2.5 shrink-0">
           <BizLogo size={18} />
           <span className="text-sm font-bold tracking-tight" style={{ ...MF, color: C.text }}>BizMap</span>
         </Link>
 
-        <nav className="hidden md:flex items-center gap-7">
-          {["איך זה עובד", "מה מקבלים", "מחיר"].map((l) => (
+        <nav className="hidden md:flex items-center gap-4 lg:gap-7">
+          {anchorNavLinks.map((link) => (
             <a
-              key={l}
-              href={l === "איך זה עובד" ? "#method" : l === "מה מקבלים" ? "#offer" : "#pricing"}
+              key={link.href}
+              href={link.href}
               className="text-xs font-medium cursor-pointer transition-colors duration-200"
               style={{ ...IF, color: C.muted }}
               onMouseEnter={e => (e.currentTarget.style.color = C.sub)}
               onMouseLeave={e => (e.currentTarget.style.color = C.muted)}
-            >{l}</a>
+            >{link.label}</a>
+          ))}
+          <span className="h-4 w-px bg-white/10" aria-hidden="true" />
+          {pageNavLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold transition-all duration-200 ${link.featured ? "" : "border border-white/10"}`}
+              style={{
+                ...IF,
+                color: link.featured ? C.glow : C.sub,
+                backgroundColor: link.featured ? "rgba(79,139,255,0.10)" : "rgba(255,255,255,0.02)",
+                boxShadow: link.featured ? `inset 0 0 0 1px ${C.blue}35` : "none",
+              }}
+              onMouseEnter={e => {
+                const el = e.currentTarget as HTMLElement;
+                el.style.color = C.text;
+                el.style.backgroundColor = link.featured ? "rgba(79,139,255,0.16)" : "rgba(255,255,255,0.06)";
+              }}
+              onMouseLeave={e => {
+                const el = e.currentTarget as HTMLElement;
+                el.style.color = link.featured ? C.glow : C.sub;
+                el.style.backgroundColor = link.featured ? "rgba(79,139,255,0.10)" : "rgba(255,255,255,0.02)";
+              }}
+            >
+              {link.featured ? (
+                <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: C.green, boxShadow: `0 0 8px ${C.green}` }} />
+              ) : null}
+              {link.label}
+            </Link>
           ))}
         </nav>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           {!loading && user ? (
             <>
               <button
@@ -230,7 +271,7 @@ function Nav() {
 
           <Link
             href="/checkout"
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-200 active:scale-[0.97]"
+            className="inline-flex items-center gap-1.5 px-3 py-2 sm:px-4 rounded-lg text-xs font-semibold transition-all duration-200 active:scale-[0.97]"
             style={{
               ...IF,
               background: `linear-gradient(135deg, ${C.blue}, ${C.purple}80)`,
@@ -240,8 +281,78 @@ function Nav() {
           >
             {"אני רוצה את המפה"}
           </Link>
+
+          <button
+            type="button"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-lg transition-colors duration-200 md:hidden"
+            style={{
+              color: C.text,
+              backgroundColor: "rgba(255,255,255,0.04)",
+              border: "1px solid rgba(255,255,255,0.08)",
+            }}
+            onClick={() => setMobileOpen((open) => !open)}
+            aria-label={mobileOpen ? "סגור תפריט" : "פתח תפריט"}
+            aria-expanded={mobileOpen}
+          >
+            {mobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+          </button>
         </div>
       </div>
+
+      <AnimatePresence>
+        {mobileOpen ? (
+          <motion.div
+            className="absolute left-0 right-0 top-full px-4 pb-4 md:hidden"
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.18 }}
+          >
+            <div
+              className="grid gap-2 rounded-2xl p-3"
+              style={{
+                backgroundColor: "rgba(11,14,26,0.96)",
+                border: "1px solid rgba(255,255,255,0.08)",
+                boxShadow: "0 18px 60px rgba(0,0,0,0.45)",
+                backdropFilter: "blur(20px)",
+                WebkitBackdropFilter: "blur(20px)",
+              }}
+            >
+              {anchorNavLinks.map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setMobileOpen(false)}
+                  className="rounded-xl px-4 py-3 text-sm font-bold transition-colors duration-200"
+                  style={{ ...IF, color: C.sub, backgroundColor: "rgba(255,255,255,0.02)" }}
+                >
+                  {link.label}
+                </a>
+              ))}
+              <div className="my-1 h-px bg-white/10" />
+              {pageNavLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-bold transition-colors duration-200"
+                  style={{
+                    ...IF,
+                    color: link.featured ? C.glow : C.text,
+                    backgroundColor: link.featured ? "rgba(79,139,255,0.12)" : "rgba(255,255,255,0.04)",
+                    border: link.featured ? `1px solid ${C.blue}35` : "1px solid rgba(255,255,255,0.08)",
+                  }}
+                >
+                  {link.featured ? (
+                    <span className="h-2 w-2 rounded-full" style={{ backgroundColor: C.green, boxShadow: `0 0 8px ${C.green}` }} />
+                  ) : null}
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
     </header>
   );
 }
@@ -295,16 +406,16 @@ function Hero() {
           className="text-[2rem] sm:text-[2.5rem] md:text-[3.5rem] lg:text-[4.2rem] font-black leading-[1.12] tracking-[-0.03em] mb-7"
           style={{ ...MF, color: C.text }}
         >
-          {"בכמה דקות הקרובות תוכלו להבין בדיוק איפה העסק "}
+          {"הדרך של בעלי עסקים "}
           <span style={{
             background: `linear-gradient(135deg, ${C.blue}, ${C.glow})`,
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
             backgroundClip: "text",
           }}>
-            {"מפסיד כסף כרגע"}
+            {"לייעל את העסק עם AI"}
           </span>
-          {" ואיך AI יכול לחסוך לכם אלפי שקלים כל חודש ולהפוך את המתחרים ללא רלוונטים."}
+          {" — ולהשיג יתרון \u201Cלא חוקי\u201D על המתחרים"}
         </motion.h1>
 
         {/* Subtitle */}
@@ -317,14 +428,37 @@ function Hero() {
         </motion.p>
 
         {/* CTA */}
-        <motion.div variants={fadeUp} className="flex justify-center mb-8">
-          <CTAButton large>{"אני רוצה לראות את העסק שלי מלמעלה"}</CTAButton>
+        <motion.div variants={fadeUp} className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
+          <CTAButton large href="/webinar">{"מתחילים מכאן — וובינר חינם"}</CTAButton>
+          <Link
+            href="/checkout"
+            className="inline-flex items-center justify-center rounded-2xl px-8 py-5 text-base md:text-lg font-extrabold transition-all duration-200 active:scale-[0.97]"
+            style={{
+              ...MF,
+              color: C.text,
+              backgroundColor: "rgba(255,255,255,0.03)",
+              border: "1px solid rgba(255,255,255,0.12)",
+              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.05)",
+            }}
+            onMouseEnter={e => {
+              const el = e.currentTarget as HTMLElement;
+              el.style.borderColor = `${C.blue}66`;
+              el.style.backgroundColor = "rgba(79,139,255,0.08)";
+            }}
+            onMouseLeave={e => {
+              const el = e.currentTarget as HTMLElement;
+              el.style.borderColor = "rgba(255,255,255,0.12)";
+              el.style.backgroundColor = "rgba(255,255,255,0.03)";
+            }}
+          >
+            {"או קבלו את מפת העסק שלכם עכשיו \u2190"}
+          </Link>
         </motion.div>
 
         {/* Trust indicators */}
         <motion.div variants={fadeUp} className="flex items-center justify-center gap-4 md:gap-6 flex-wrap">
           {[
-            "תוך דקות בודדות",
+            "בלי ידע טכני קודם",
             "אחריות 100% החזר כספי",
             "ללא ידע טכני",
           ].map((text) => (
@@ -441,6 +575,115 @@ function ProblemSection() {
               <strong style={{ color: C.blue, fontSize: "1.2em" }}>{"רק בעזרת הבנה מדויקת של איפה להתחיל ומה בדיוק לעשות."}</strong>
             </p>
           </div>
+        </div>
+      </div>
+    </Section>
+  );
+}
+
+/* ============================================================================
+   ENTRY ROUTER
+   ============================================================================ */
+function EntryRouterSection() {
+  const routes = [
+    {
+      title: "לא בטוחים איפה אתם עומדים?",
+      description: "ענו על 8 שאלות קצרות וגלו את רמת ה-AI של העסק שלכם — ומה הצעד הבא.",
+      cta: "למבחן החינם ←",
+      href: "/ai-level",
+      icon: <Search className="h-5 w-5" />,
+      color: C.glow,
+    },
+    {
+      title: "רוצים ללמוד איך מיישמים?",
+      description: "וובינר חינם וחי ב-15.7 — איך מטמיעים AI בעסק צעד אחר צעד, בלי רקע טכני.",
+      cta: "לשמור מקום ←",
+      href: "/webinar",
+      badge: "חינם · 15.7",
+      icon: <Users className="h-5 w-5" />,
+      color: C.green,
+    },
+    {
+      title: "רוצים מפה מדויקת לעסק שלכם?",
+      description: "BizMap ממפה את העסק שלכם מלמעלה ומראה בדיוק מאיפה הכסף בורח והצעד הראשון.",
+      cta: "לגלות עוד ←",
+      href: "#offer",
+      icon: <Target className="h-5 w-5" />,
+      color: C.blue,
+    },
+  ];
+
+  return (
+    <Section bg={C.bg} className="py-16 md:py-24">
+      <div className="max-w-[1160px] mx-auto relative">
+        <div className="text-center mb-10 md:mb-12 bv-reveal">
+          <h2 className="text-3xl md:text-5xl font-black leading-tight mb-4" style={{ ...MF, color: C.text }}>
+            {"מאיפה מתחילים?"}
+          </h2>
+          <p className="text-base md:text-lg leading-relaxed font-medium mx-auto" style={{ ...IF, color: C.sub, maxWidth: "54ch" }}>
+            {"כל עסק במקום אחר בדרך ל-AI. בחרו את נקודת הפתיחה שמתאימה לכם."}
+          </p>
+        </div>
+
+        <div className="grid gap-5 md:grid-cols-3">
+          {routes.map((route, i) => (
+            <Link
+              key={route.href}
+              href={route.href}
+              className={`group rounded-3xl p-6 md:p-7 min-h-[260px] flex flex-col bv-reveal bv-reveal-d${i + 1} transition-all duration-200 active:scale-[0.99]`}
+              style={{
+                ...glassCard,
+                borderTop: `3px solid ${route.color}90`,
+              }}
+              onMouseEnter={e => {
+                const el = e.currentTarget as HTMLElement;
+                Object.assign(el.style, glassCardHover(route.color));
+                el.style.transform = "translateY(-4px)";
+              }}
+              onMouseLeave={e => {
+                const el = e.currentTarget as HTMLElement;
+                Object.assign(el.style, glassCard);
+                el.style.borderTop = `3px solid ${route.color}90`;
+                el.style.transform = "translateY(0)";
+              }}
+            >
+              <div className="flex items-start justify-between gap-4 mb-6">
+                <div
+                  className="flex h-11 w-11 items-center justify-center rounded-2xl"
+                  style={{
+                    color: route.color,
+                    backgroundColor: `${route.color}14`,
+                    border: `1px solid ${route.color}24`,
+                  }}
+                >
+                  {route.icon}
+                </div>
+                {route.badge ? (
+                  <span
+                    className="rounded-full px-3 py-1 text-xs font-extrabold"
+                    style={{
+                      ...IF,
+                      color: C.green,
+                      backgroundColor: `${C.green}12`,
+                      border: `1px solid ${C.green}30`,
+                    }}
+                  >
+                    {route.badge}
+                  </span>
+                ) : null}
+              </div>
+
+              <h3 className="text-xl md:text-2xl font-extrabold leading-tight mb-3" style={{ ...MF, color: C.text }}>
+                {route.title}
+              </h3>
+              <p className="text-sm md:text-base leading-relaxed font-medium mb-7" style={{ ...IF, color: C.sub }}>
+                {route.description}
+              </p>
+              <span className="mt-auto inline-flex items-center text-sm md:text-base font-extrabold transition-colors duration-200" style={{ ...MF, color: route.color }}>
+                {route.cta}
+              </span>
+            </Link>
+          ))}
         </div>
       </div>
     </Section>
@@ -1512,6 +1755,7 @@ export function LandingPage() {
       <Nav />
       <Hero />
       <ProblemSection />
+      <EntryRouterSection />
       <VisionSection />
       <ProductReveal />
       <WhatYouGet />
