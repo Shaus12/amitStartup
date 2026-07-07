@@ -179,12 +179,7 @@ function Nav() {
     >
       <div className="max-w-[1400px] mx-auto px-6 md:px-10 h-14 flex items-center justify-between gap-8">
         <Link href="/" className="flex items-center gap-2.5 shrink-0">
-          <div
-            className="w-7 h-7 rounded-lg flex items-center justify-center"
-            style={{ background: `linear-gradient(135deg, ${C.blue}cc, ${C.purple}80)`, boxShadow: `0 0 12px ${C.blue}30` }}
-          >
-            <BizLogo size={10} />
-          </div>
+          <BizLogo size={18} />
           <span className="text-sm font-bold tracking-tight" style={{ ...MF, color: C.text }}>BizMap</span>
         </Link>
 
@@ -589,12 +584,7 @@ function HeroBrowserMockup() {
           style={{ backgroundColor: "rgba(8,10,18,0.95)", borderLeft: "1px solid rgba(255,255,255,0.05)" }}
         >
           <div className="flex items-center gap-2 px-2 mb-5">
-            <div
-              className="w-5 h-5 rounded-md flex items-center justify-center"
-              style={{ background: `linear-gradient(135deg, ${C.blue}cc, ${C.purple}80)` }}
-            >
-              <BizLogo size={7} />
-            </div>
+            <BizLogo size={14} />
             <span className="text-[11px] font-bold" style={{ ...MF, color: C.text }}>BizMap</span>
           </div>
           {[{ label: "Business Map", active: true }, { label: "AI Opportunities", active: false }].map(({ label, active }) => (
@@ -1411,12 +1401,7 @@ function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-[2fr_1fr_1fr_1fr] gap-10 mb-16">
           <div className="col-span-2 md:col-span-1">
             <Link href="/" className="flex w-fit items-center gap-2.5 mb-5">
-              <div
-                className="w-7 h-7 rounded-lg flex items-center justify-center"
-                style={{ background: `linear-gradient(135deg, ${C.blue}cc, ${C.purple}80)`, boxShadow: `0 0 12px ${C.blue}25` }}
-              >
-                <BizLogo size={10} />
-              </div>
+              <BizLogo size={18} />
               <span className="text-sm font-bold" style={{ ...MF, color: C.text }}>BizMap</span>
             </Link>
             <p className="text-xs leading-relaxed mb-4" style={{ ...IF, color: C.muted, maxWidth: "26ch" }}>

@@ -7,6 +7,12 @@ import {
   Search, Cog, Check, ArrowLeft, ShieldCheck, Loader2, MessageCircle, X
 } from "lucide-react";
 
+declare global {
+  interface Window {
+    fbq?: (...args: unknown[]) => void;
+  }
+}
+
 /* ---- Modal Context --------------------------------------------------------- */
 const ModalContext = React.createContext({ isOpen: false, open: () => {}, close: () => {} });
 
@@ -42,7 +48,7 @@ const glassCard: React.CSSProperties = {
 /* ---- Webinar target date: July 15, 20:00 (next occurrence) ----------------- */
 function getTargetDate() {
   const now = new Date();
-  let year = now.getFullYear();
+  const year = now.getFullYear();
   let target = new Date(year, 6, 15, 20, 0, 0); // month 6 = July
   if (target.getTime() < now.getTime()) {
     target = new Date(year + 1, 6, 15, 20, 0, 0);
@@ -218,12 +224,7 @@ function Nav() {
     >
       <div className="max-w-[1400px] mx-auto px-6 md:px-10 h-14 flex items-center justify-between gap-8">
         <Link href="/" className="flex items-center gap-2.5 shrink-0">
-          <div
-            className="w-7 h-7 rounded-lg flex items-center justify-center"
-            style={{ background: `linear-gradient(135deg, ${C.blue}cc, ${C.purple}80)`, boxShadow: `0 0 12px ${C.blue}30` }}
-          >
-            <img src="/logo.png" alt="BizMap" style={{ width: 15, height: 15, objectFit: "contain" }} />
-          </div>
+          <img src="/logo.png" alt="BizMap" style={{ width: 27, height: 27, objectFit: "contain" }} />
           <span className="text-sm font-bold tracking-tight" style={{ ...MF, color: C.text }}>BizMap</span>
         </Link>
         <button
@@ -499,11 +500,13 @@ function RegisterModal() {
   const [phone, setPhone] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [error, setError] = useState("");
+  const leadTrackedRef = useRef(false);
 
   const isValidPhone = (p: string) => /^05\d{8}$/.test(p.replace(/\D/g, ""));
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (status === "loading" || status === "success") return;
     setError("");
     if (!name.trim()) { setError("נא למלא שם מלא"); return; }
     if (!isValidPhone(phone)) { setError("נא להזין מספר טלפון תקין (05XXXXXXXX)"); return; }
@@ -517,8 +520,9 @@ function RegisterModal() {
       });
       if (!res.ok) throw new Error("failed");
       setStatus("success");
-      if (typeof window !== "undefined" && (window as any).fbq) {
-        (window as any).fbq('track', 'Lead');
+      if (!leadTrackedRef.current && typeof window !== "undefined" && window.fbq) {
+        leadTrackedRef.current = true;
+        window.fbq('track', 'Lead');
       }
     } catch {
       setStatus("error");
@@ -682,12 +686,7 @@ function Footer() {
   return (
     <footer className="py-10 px-6 text-center" style={{ backgroundColor: C.s2, borderTop: "1px solid rgba(255,255,255,0.05)" }}>
       <div className="flex items-center justify-center gap-2.5 mb-4">
-        <div
-          className="w-7 h-7 rounded-lg flex items-center justify-center"
-          style={{ background: `linear-gradient(135deg, ${C.blue}cc, ${C.purple}80)` }}
-        >
-          <img src="/logo.png" alt="BizMap" style={{ width: 15, height: 15, objectFit: "contain" }} />
-        </div>
+        <img src="/logo.png" alt="BizMap" style={{ width: 27, height: 27, objectFit: "contain" }} />
         <span className="text-sm font-bold" style={{ ...MF, color: C.text }}>BizMap</span>
       </div>
       <div className="flex items-center justify-center gap-5 mb-4 text-xs" style={{ ...IF, color: C.muted }}>
