@@ -149,6 +149,7 @@ const anchorNavLinks = [
 ];
 
 const pageNavLinks = [
+  { label: "הסדנה", href: "/workshop", featured: false },
   { label: "וובינר חינם", href: "/webinar", featured: true },
   { label: "מבחן רמת AI", href: "/ai-level", featured: false },
 ];
@@ -611,6 +612,15 @@ function EntryRouterSection() {
       icon: <Target className="h-5 w-5" />,
       color: C.blue,
     },
+    {
+      title: "מוכנים להטמיע הכל בעסק?",
+      description: "סדנת AI מעשית — 4 מפגשים שלוקחים אתכם משלב הבסיס עד AI שעובד בשביל העסק שלכם.",
+      cta: "לפרטים והרשמה ←",
+      href: "/workshop",
+      badge: "מחזור ראשון · מקומות מוגבלים",
+      icon: <Brain className="h-5 w-5" />,
+      color: C.purple,
+    },
   ];
 
   return (
@@ -625,7 +635,7 @@ function EntryRouterSection() {
           </p>
         </div>
 
-        <div className="grid gap-5 md:grid-cols-3">
+        <div className="grid gap-5 md:grid-cols-2">
           {routes.map((route, i) => (
             <Link
               key={route.href}

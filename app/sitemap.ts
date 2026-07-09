@@ -19,6 +19,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/onboarding-chat",
     "/privacy",
     "/terms",
+    "/workshop",
   ];
 
   return routes.map((route) => ({
