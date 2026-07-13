@@ -45,13 +45,13 @@ const glassCard: React.CSSProperties = {
   boxShadow: "inset 0 1px 0 rgba(255,255,255,0.05), 0 8px 40px rgba(0,0,0,0.4)",
 };
 
-/* ---- Webinar target date: July 15, 20:00 (next occurrence) ----------------- */
+/* ---- Webinar target date: July 20, 20:00 (next occurrence) ----------------- */
 function getTargetDate() {
   const now = new Date();
   const year = now.getFullYear();
-  let target = new Date(year, 6, 15, 20, 0, 0); // month 6 = July
+  let target = new Date(year, 6, 20, 20, 0, 0); // month 6 = July
   if (target.getTime() < now.getTime()) {
-    target = new Date(year + 1, 6, 15, 20, 0, 0);
+    target = new Date(year + 1, 6, 20, 20, 0, 0);
   }
   return target;
 }
@@ -172,7 +172,7 @@ function Countdown() {
 /* ---- Event details strip --------------------------------------------------- */
 function EventDetails() {
   const rows = [
-    { icon: Calendar, text: "שידור חי אחד. ב-15.7, בשעה 20:00." },
+    { icon: Calendar, text: "שידור חי אחד. ב-20.7, בשעה 20:00." },
     { icon: Ticket, text: "מספר המקומות מוגבל." },
     { icon: PlayCircle, text: "השיעור לא יעלה כהקלטה — מי שלא שם, לא רואה את זה." },
   ];
@@ -562,7 +562,7 @@ function RegisterModal() {
                 style={{ background: `${C.blue}15`, border: `1px solid ${C.blue}30` }}
               >
                 <Calendar className="w-3.5 h-3.5" style={{ color: C.glow }} strokeWidth={2.5} />
-                <span className="text-xs font-bold" style={{ ...MF, color: C.glow }}>15.7 · 20:00 · שידור חי</span>
+                <span className="text-xs font-bold" style={{ ...MF, color: C.glow }}>20.7 · 20:00 · שידור חי</span>
               </div>
               <h2 className="text-2xl md:text-3xl font-extrabold mb-3" style={{ ...MF, color: C.text }}>
                 שמור את המקום שלך בהדרכה
@@ -582,7 +582,7 @@ function RegisterModal() {
                 </div>
                 <h3 className="text-xl font-bold mb-2" style={{ ...MF, color: C.text }}>המקום שלך שמור! 🎉</h3>
                 <p className="text-sm leading-relaxed mb-6" style={{ ...IF, color: C.sub }}>
-                  נשלח לך תזכורת עם קישור לשידור לפני שהוא מתחיל. נתראה ב-15.7 בשעה 20:00.
+                  נשלח לך תזכורת עם קישור לשידור לפני שהוא מתחיל. נתראה ב-20.7 בשעה 20:00.
                 </p>
                 <div className="flex flex-col gap-3 max-w-sm mx-auto">
                   <a
